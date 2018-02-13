@@ -1,0 +1,18 @@
+# Default values for splunk-connector.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+splunk-kubernetes-objects: &hec
+  splunk:
+    hec:
+      token: "14fc1454-b71c-4190-b80b-ef2a1be29bbb"
+      endpoints:
+        - https://54.156.204.203:8088
+
+splunk-kubernetes-logging:
+  <<: *hec
+
+splunk-kubernetes-metrics:
+  splunk:
+    udp:
+      endpoint: 54.156.204.203:9995

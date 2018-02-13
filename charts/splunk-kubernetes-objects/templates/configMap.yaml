@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "splunk-kubernetes-objects.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-objects.name" . }}
+    chart: {{ template "splunk-kubernetes-objects.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  fluent.conf: |
+    <system>
+      log_level {{ .Values.logLevel }}
+    </system>
+
+    <source>
+      @type kubernetes_objects
+      verify_ssl false
+    </source>
+
+    <filter kubernetes.pods>
+      @type record_transformer
+      renew_record true
+      keep_keys []
+      enable_ruby true
+      <record>
+        conditions ${record["status"]["conditions"]}
+        containerStatuses ${record["status"]["containerStatuses"]}
+        hostIP ${record["status"]["hostIP"]}
+        phase ${record["status"]["phase"]}
+        podIP ${record["status"]["podIP"]}
+        qosClass ${record["status"]["qosClass"]}
+        startTime ${record["status"]["startTime"]}
+      </record>
+    </filter>
+
+    <match kubernetes.*>
+      @type splunk_hec
+      hec_endpoints {{ required "splunk.hec.endpoints is required." .Values.splunk.hec.endpoints | join "," }}
+      ssl_verify {{ .Values.splunk.hec.sslVerify }}
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      {{ if .Values.splunk.index }}index {{ .Values.splunk.index }}{{ end }}
+      {{ if .Values.splunk.source }}source {{ .Values.splunk.source }}{{ end }}
+      {{ if .Values.splunk.sourceType }}source_type {{ .Values.splunk.source }}{{ end }}
+      <buffer>
+        @type memory
+        chunk_limit_size 10m
+        chunk_limit_records 100
+        flush_interval 3s
+        retry_max_times 3
+      </buffer>
+    </match>

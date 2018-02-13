@@ -1,0 +1,58 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-metrics.name" . }}
+    chart: {{ template "splunk-kubernetes-metrics.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    k8s-app: heapster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "splunk-kubernetes-metrics.name" . }}
+      release: {{ .Release.Name }}
+      k8s-app: heapster
+  template:
+    metadata:
+      labels:
+        app: {{ template "splunk-kubernetes-metrics.name" . }}
+        release: {{ .Release.Name }}
+        k8s-app: heapster
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      serviceAccountName: {{ template "splunk-kubernetes-metrics.fullname" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      containers:
+        - image: gcr.io/google_containers/heapster:v1.5.0
+          name: heapster
+          command:
+            - /heapster
+            - --source=kubernetes
+            # - --source=kubernetes.summary_api:''
+            # this is the key to send data to Splunk
+            # it's required to create an UDP input in Splunk
+            - --sink=statsd:udp://{{ required "splunk.udp.endpoint is required" .Values.splunk.udp.endpoint }}?numMetricsPerMsg=2
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.service.targetPort }}
+              scheme: HTTP
+            initialDelaySeconds: 180
+            timeoutSeconds: 5
+          resources:
+{{ toYaml .Values.resources | indent 12 }}

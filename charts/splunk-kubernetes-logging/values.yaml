@@ -1,0 +1,43 @@
+# Default values for splunk-kubernetes-logging.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# logLevel is to set log level of the Splunk log collector. Avaiable values are:
+# * trace
+# * debug
+# * info
+# * warn
+# * error
+logLevel: "info"
+
+splunk:
+  hec:
+    # endpoints: <required from user input>
+    # token: <required from user input>
+    protocol: "https"
+    sslVerify: false
+    ack: false
+    # define which API to use, options are: "raw", "event".
+    # - raw: can use index-time field extraction
+    # - event: no index-time field extraction, but understand JSON
+    api: event
+
+image:
+  tag: 1.0.0-debian-alpha.2
+  pullPolicy: IfNotPresent
+
+resources:
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  requests:
+   cpu: 100m
+   memory: 200Mi
+
+nodeSelector: {}
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+
+affinity: {}

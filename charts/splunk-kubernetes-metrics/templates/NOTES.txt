@@ -1,0 +1,4 @@
+Splunk> Now with more code!
+
+If you get stuck, we're here to help.
+Look for answers here: http://docs.splunk.com
