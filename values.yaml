@@ -4,13 +4,14 @@
 
 splunk-kubernetes-objects: &hec
   splunk:
-    hec:
+    hec: &hec
       token: "14fc1454-b71c-4190-b80b-ef2a1be29bbb"
-      endpoints:
-        - https://54.156.204.203:8088
+      host: 54.156.204.203
 
 splunk-kubernetes-logging:
-  <<: *hec
+  splunk:
+    hec:
+      <<: *hec
 
 splunk-kubernetes-metrics:
   splunk:

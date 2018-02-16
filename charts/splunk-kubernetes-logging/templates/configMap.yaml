@@ -27,9 +27,10 @@ data:
     # reading container logs from filesystem
     <source>
       @type tail
-      tag tail.containers.*
+      tag tail.containers
       path /var/log/containers/*.log
       pos_file /var/log/fluentd-containers.log.pos
+      path_key _file_path
       time_format %Y-%m-%dT%H:%M:%S.%NZ
       format json
       read_from_head true
@@ -39,19 +40,17 @@ data:
     <match fluent.**>
       @type null
     </match>
-    <match fluentd.**>
-      @type null
-    </match>
 
-    <match **>
+    <match journal.**>
       @type splunk_hec
-      hec_endpoints {{ required "splunk.hec.endpoints is required." .Values.splunk.hec.endpoints | join "," }}
-      ssl_verify {{ .Values.splunk.hec.sslVerify }}
+      hec_host {{ required "splunk.hec.host is required." .Values.splunk.hec.host }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['SPLUNK_HEC_HOST']}"
+      source "kubernetes.{{ "{{" }} tag | split: '.' | last {{ "}}" }}"
       {{ if .Values.splunk.index }}index {{ .Values.splunk.index }}{{ end }}
-      {{ if .Values.splunk.source }}source {{ .Values.splunk.source }}{{ end }}
-      {{ if .Values.splunk.sourceType }}source_type {{ .Values.splunk.source }}{{ end }}
+      <ssl>
+        insecure {{ .Values.splunk.hec.insecureSSL }}
+      </ssl>
       <buffer>
         @type memory
         chunk_limit_size 500m
@@ -61,4 +60,30 @@ data:
         overflow_action block
         retry_max_times 3
       </buffer>
+    </match>
+
+    <match tail.**>
+      @type splunk_hec
+      hec_host {{ required "splunk.hec.host is required." .Values.splunk.hec.host }}
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      host "#{ENV['SPLUNK_HEC_HOST']}"
+      source "{{ "{{" }} record._file_path {{ "}}" }}"
+      {{ if .Values.splunk.index }}index {{ .Values.splunk.index }}{{ end }}
+      <ssl>
+        insecure {{ .Values.splunk.hec.insecureSSL }}
+      </ssl>
+      <buffer>
+        @type memory
+        chunk_limit_size 500m
+        chunk_limit_records 512000
+        flush_interval 5s
+        flush_thread_count 1
+        overflow_action block
+        retry_max_times 3
+      </buffer>
+      <format>
+        @type single_value
+        message_key log
+        add_newline false
+      </format>
     </match>

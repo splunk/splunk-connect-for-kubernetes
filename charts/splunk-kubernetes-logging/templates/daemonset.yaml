@@ -28,8 +28,8 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       containers:
-      - name: fluentd
-        image: gimil/fluentd-splunk-hec:1.0.0-debian-alpha.2
+      - name: splunk-fluentd-log-collector
+        image: gimil/k8s-l:{{ .Values.image.tag }}
         command:
           - fluentd
         args:

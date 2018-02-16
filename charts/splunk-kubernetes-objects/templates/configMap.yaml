@@ -15,33 +15,31 @@ data:
 
     <source>
       @type kubernetes_objects
-      verify_ssl false
+      insecure_ssl {{ .Values.splunk.hec.insecureSSL }}
+      <pull>
+        resource_name namespaces
+      </pull>
+      <pull>
+        resource_name nodes
+      </pull>
+      <pull>
+        resource_name pods
+      </pull>
+      <watch>
+        resource_name events
+      </watch>
     </source>
 
-    <filter kubernetes.pods>
-      @type record_transformer
-      renew_record true
-      keep_keys []
-      enable_ruby true
-      <record>
-        conditions ${record["status"]["conditions"]}
-        containerStatuses ${record["status"]["containerStatuses"]}
-        hostIP ${record["status"]["hostIP"]}
-        phase ${record["status"]["phase"]}
-        podIP ${record["status"]["podIP"]}
-        qosClass ${record["status"]["qosClass"]}
-        startTime ${record["status"]["startTime"]}
-      </record>
-    </filter>
-
-    <match kubernetes.*>
+    <match kubernetes.**>
       @type splunk_hec
-      hec_endpoints {{ required "splunk.hec.endpoints is required." .Values.splunk.hec.endpoints | join "," }}
-      ssl_verify {{ .Values.splunk.hec.sslVerify }}
+      hec_host {{ required "splunk.hec.host is required." .Values.splunk.hec.host }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       {{ if .Values.splunk.index }}index {{ .Values.splunk.index }}{{ end }}
       {{ if .Values.splunk.source }}source {{ .Values.splunk.source }}{{ end }}
-      {{ if .Values.splunk.sourceType }}source_type {{ .Values.splunk.source }}{{ end }}
+      {{ if .Values.splunk.sourcetype }}sourcetype {{ .Values.splunk.sourcetype }}{{ end }}
+      <ssl>
+        insecure {{ .Values.splunk.hec.insecureSSL }}
+      </ssl>
       <buffer>
         @type memory
         chunk_limit_size 10m

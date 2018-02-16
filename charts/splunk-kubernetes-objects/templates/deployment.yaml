@@ -35,8 +35,8 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       containers:
-      - name: fluentd-splunk-k8s-objects
-        image: gimil/splunk-fluentd-kubernetes-objects:1.0.0-alpha.22
+      - name: splunk-kubernetes-objects-collector
+        image: gimil/k8s-o:{{ .Values.image.tag }}
         env:
           - name: SPLUNK_HEC_HOST
             valueFrom:
