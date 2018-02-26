@@ -1,0 +1,14 @@
+# Use global configurations
+global:
+  splunk:
+    hec:
+      host: 12.34.56.78
+      token: 11111111-2222-3333-4444-555555555555
+    udp:
+      host: 21.43.65.87
+      port: 1234
+
+# Defines objects to pull and/or watch
+splunk-kubernetes-objects:
+  watchObjects:
+    - name: events

@@ -1,0 +1,4 @@
+splunk:
+  udp:
+    port: 9995
+    host: 12.34.56.78

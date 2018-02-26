@@ -1,3 +1,4 @@
+{{- required "At least one pull object or one watch object is required." (or (first .Values.pullObjects) (first .Values.watchObjects)) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,40 +11,94 @@ metadata:
 data:
   fluent.conf: |
     <system>
-      log_level {{ .Values.logLevel }}
+      log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
     </system>
 
     <source>
       @type kubernetes_objects
-      insecure_ssl {{ .Values.splunk.hec.insecureSSL }}
+      insecure_ssl {{ .Values.kubernetes.insecureSSL | default false }}
+      {{- if .Values.caFile }}
+      ca_file {{ .Values.caFile }}
+      {{- end }}
+      {{- if .Values.secretDir }}
+      secret_dir {{ .Values.secretDir }}
+      {{- end }}
+      {{- if .Values.clientKey }}
+      client_key {{ .Values.clientKey }}
+      {{- end }}
+      {{- if .Values.clientCert }}
+      client_cert {{ .Values.clientCert }}
+      {{- end }}
+      {{- if .Values.bearerTokenFile }}
+      bearer_token_file {{ .Values.bearerTokenFile }}
+      {{- end }}
+      {{- if .Values.checkpointFile.volume }}
+      <storage>
+        path /fluentd/var/checkpoints/{{ .Values.checkpointFile.name | default "kubernetes-objects" }}
+      </storage> 
+      {{- end }}
+      {{- range $index, $object := .Values.pullObjects }}
       <pull>
-        resource_name namespaces
+        resource_name {{ required "name of the object to be pulled is required" $object.name }}
+        {{- if $object.namespace }}
+        namespace {{ $object.namespace }}
+        {{- end }}
+        {{- if $object.labelSelector }}
+        label_selector {{ $object.labelSelector }}
+        {{- end }}
+        {{- if $object.fieldSelector }}
+        field_selector {{ $object.fieldSelector }}
+        {{- end }}
+        {{- if $object.interval }}
+        interval {{ $object.interval }}
+        {{- end }}
       </pull>
-      <pull>
-        resource_name nodes
-      </pull>
-      <pull>
-        resource_name pods
-      </pull>
+      {{- end -}}
+      {{ range $index, $object := .Values.watchObjects }}
       <watch>
-        resource_name events
+        resource_name {{ required "name of the object to be watched is required" $object.name }}
+        {{- if $object.namespace }}
+        namespace {{ $object.namespace }}
+        {{- end }}
+        {{- if $object.labelSelector }}
+        label_selector {{ $object.labelSelector }}
+        {{- end }}
+        {{- if $object.fieldSelector }}
+        field_selector {{ $object.fieldSelector }}
+        {{- end }}
       </watch>
+      {{- end }}
     </source>
 
     <match kubernetes.**>
       @type splunk_hec
-      hec_host {{ required "splunk.hec.host is required." .Values.splunk.hec.host }}
+      template_engine jq
+      protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol | default "https" }}
+      hec_host {{ required "splunk.hec.host is required." (or .Values.splunk.hec.host .Values.global.splunk.hec.host) }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      {{ if .Values.splunk.index }}index {{ .Values.splunk.index }}{{ end }}
-      {{ if .Values.splunk.source }}source {{ .Values.splunk.source }}{{ end }}
-      {{ if .Values.splunk.sourcetype }}sourcetype {{ .Values.splunk.sourcetype }}{{ end }}
-      <ssl>
-        insecure {{ .Values.splunk.hec.insecureSSL }}
-      </ssl>
+      {{- with $indexName := or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
+      {{ if $indexName }}index {{ $indexName }}{{ end }}
+      {{- end }}
+      source 'kubernetes.objects.{% .tag | split(".") | .[-1] %}'
+      sourcetype '_json'
+      insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
+      {{- with $clientCert := or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
+      {{ if $clientCert }}client_cert {{ $clientCert }}{{ end }}
+      {{- end }}
+      {{- with $clientKey := or .Values.splunk.hec.clientKey .Values.global.splunk.hec.clientKey }}
+      {{ if $clientKey }}client_key {{ $clientKey }}{{ end }}
+      {{- end }}
+      {{- with $caFile := or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+      {{ if $caFile }}ca_file {{ $caFile }}{{ end }}
+      {{- end }}
+      {{- with $caPath := or .Values.splunk.hec.caPath .Values.global.splunk.hec.caPath }}
+      {{ if $caPath }}ca_path {{ $caPath }}{{ end }}
+      {{- end }}
       <buffer>
         @type memory
-        chunk_limit_size 10m
-        chunk_limit_records 100
+        {{- $limit := .Values.resources.limit }}
+        chunk_limit_size {{ if $limit.memory }}{{ template "splunk-kubernetes-objects.convert-memory" $limit.memory }}{{ else }}{{ "200m" }}{{ end }}
+        chunk_limit_records 10000
         flush_interval 3s
         retry_max_times 3
       </buffer>

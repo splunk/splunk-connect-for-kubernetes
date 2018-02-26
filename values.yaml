@@ -1,19 +1,15 @@
-# Default values for splunk-connector.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# splunk-connector is a umbraller chart which itself does not contain any template,
+# so there is no values needed for it.
 
-splunk-kubernetes-objects: &hec
-  splunk:
-    hec: &hec
-      token: "14fc1454-b71c-4190-b80b-ef2a1be29bbb"
-      host: 54.156.204.203
-
-splunk-kubernetes-logging:
-  splunk:
-    hec:
-      <<: *hec
-
-splunk-kubernetes-metrics:
-  splunk:
-    udp:
-      endpoint: 54.156.204.203:9995
+# Use global configurations for shared configurations between sub-charts.
+# Supported global configurations:
+#
+# global:
+#   logLevel:
+#   splunk:
+#     # HEC related configurations
+#     hec:
+#     # UDP inpute configurations
+#     udp:
+#
+# For other configurations for sub-charts, please check their Values.yaml for details.

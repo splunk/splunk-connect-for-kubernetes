@@ -5,39 +5,62 @@
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
 # * debug
-# * info
+# * info (default)
 # * warn
 # * error
-logLevel: "info"
+logLevel:
 
+# local splunk configurations
 splunk:
+  # configurations for HEC (HTTP Event Collector)
   hec:
-    # host: <required from user input>
-    # token: <required from user input>
-    protocol: "https"
-    insecureSSL: true
-    ack: false
-    # define which API to use, options are: "raw", "event".
-    # - raw: can use index-time field extraction
-    # - event: no index-time field extraction, but understand JSON
-    api: event
+    # host is required and should be provided by user
+    host:
+    # token is required and should be provided by user
+    token:
+    # protocol has two options: "http" and "https", default is "https"
+    protocol:
+    # indexName tells which index to use, this is optional. If it's not present, will use the default one configured in HEC.
+    indexName:
+    # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default is false.
+    insecureSSL:
+    # The path to a file containing a PEM-format CA certificate for this client.
+    clientCert:
+    # The private key for this client.
+    clientKey:
+    # The path to a file containing a PEM-format CA certificate.
+    caFile:
+    # The path to a directory containing CA certificates in PEM format.
+    caPath:
+
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
+global:
+  logLevel:
+  # if local splunk configurations are not present, the global ones will be used (if available)
+  splunk:
+    # it has exactly the same configs as splunk.hec does
+    hec: {}
 
 image:
-  tag: 0.0.2
+  tag: 0.0.4
   pullPolicy: IfNotPresent
 
 resources:
   # limits:
   #  cpu: 100m
-  #  memory: 128Mi
+  #  memory: 200Mi
   requests:
    cpu: 100m
    memory: 200Mi
 
-nodeSelector: {}
-
+# this default tolerations allow the daemonset to be deployed on master nodes,
+# so that we can also collect logs from those nodes.
 tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
+
+nodeSelector: {}
 
 affinity: {}

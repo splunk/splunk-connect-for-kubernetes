@@ -37,6 +37,7 @@ spec:
       containers:
       - name: splunk-kubernetes-objects-collector
         image: gimil/k8s-o:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
           - name: SPLUNK_HEC_HOST
             valueFrom:
@@ -52,7 +53,15 @@ spec:
         volumeMounts:
         - name: conf-configmap
           mountPath: /fluentd/etc
+        {{- if .Values.checkpointFile.volume }}
+        - name: conf-configmap
+          mountPath: /fluentd/var/checkpoints
+        {{- end }}
       volumes:
       - name: conf-configmap
         configMap:
           name: {{ template "splunk-kubernetes-objects.fullname" . }}
+      {{- if .Values.checkpointFile.volume }}
+      - name: checkpoints
+{{ toYaml .Values.checkpointFile.volume | indent 8 }}
+      {{- end -}}

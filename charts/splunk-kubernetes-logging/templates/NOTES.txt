@@ -1,3 +1,12 @@
-Welcome using splunk-kubernetes-logging to collect your logs with Splunk.
 
-You should be seeing logs being indexed in your Splunk indexer(s) soon.
+███████╗██████╗ ██╗     ██╗   ██╗███╗   ██╗██╗  ██╗██╗    
+██╔════╝██╔══██╗██║     ██║   ██║████╗  ██║██║ ██╔╝╚██╗   
+███████╗██████╔╝██║     ██║   ██║██╔██╗ ██║█████╔╝  ╚██╗  
+╚════██║██╔═══╝ ██║     ██║   ██║██║╚██╗██║██╔═██╗  ██╔╝  
+███████║██║     ███████╗╚██████╔╝██║ ╚████║██║  ██╗██╔╝
+╚══════╝╚═╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝
+
+Listen to your data.
+
+If you get stuck, we're here to help.
+Look for answers here: http://docs.splunk.com

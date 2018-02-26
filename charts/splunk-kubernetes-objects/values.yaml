@@ -2,28 +2,116 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# logLevel is to set log level of the Splunk log collector. Avaiable values are:
+
+# = Log Level =
+# logLevel is to set log level of the object collector. Avaiable values are:
 # * trace
 # * debug
-# * info
+# * info (default)
 # * warn
 # * error
-logLevel: "info"
+logLevel:
 
+
+# = Kubernetes Connection Configs =
+kubernetes:
+  # the URL for calling kubernetes API, by default it will be read from the environment variables
+  url:
+  # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
+  insecureSSL:
+  # Path to the certificate file for this client.
+  clientCert:
+  # Path to the private key file for this client.
+  clientKey:
+  # Path to the CA file.
+  caFile:
+  # Path to the file contains the API token. By default it reads from the file "token" in the `secret_dir`.
+  bearerTokenFile:
+  # Path of the location where pod's service account's credentials are stored. Usually you don't need to care about this config, the default value should work in most cases.
+  secretDir:
+  # a list of kubernetes objects to pull periodically
+ 
+
+# = Object Lists =
+# NOTE: at least one pull object or watch object must be provided.
+
+# A list of kubernetes objects to pull
+pullObjects: []
+  # - name:          name of the object to pull [REQUIRED]
+  #   namespace:     only pull objects from the specified namespace, by default it's all namespaces
+  #   labelSelector: select objects by label(s)
+  #   fieldSelector: select objects by field(s)
+  #   interval:      the interval at which object is pulled, default 15 minutes
+
+# A list of kubernetes objects to watch
+# A list of kubernetes objects to watch
+watchObjects: []
+  # - name: name of the object to watch [REQUIRED]
+  #   namespace: only watch objects from the specified namespace, by default it's all namespaces
+  #   labelSelector: select objects by label(s)
+  #   fieldSelector: select objects by field(s)
+
+
+# = Checkpoint Configs =
+# defines the checkpoint file used for recording the resourceVersion of watched objects,
+# so that when the fluentd pod restarts, it will continue from where it stopped.
+# NOTE: since kubernetes has its own cache limit, if the fluentd pod has stopped for a long time,
+# it might not be able to start watch from the checkpoint.
+checkpointFile:
+  # the name of the checkpoint file.
+  name: kubernetes-objects.pos
+  # volume is the kubernetes volume configuration object. The volume has to be a directory, not a file.
+  # If volume is not defined, no checkpoint file will be used.
+  # For example, if you want to use hostpath, the it should look like this:
+  #
+  #     checkpointFile:
+  #       volume:
+  #         hostPath:
+  #           path: /var/data
+  #           type: Directory
+  volume:
+
+
+# = Configure Splunk HEC connection =
 splunk:
-  sourcetype: _json
-  source: |-
-    kubernetes.objects.{{ tag | split: '.' | last }}
   hec:
-    # host: <required from user input>
-    # token: <required from user input>
-    protocol: "https"
-    insecureSSL: true
+    # host to the HEC endpoint [REQUIRED]
+    host:
+    # token for the HEC [REQUIRED]
+    token:
+    # protocol has two options: "http" and "https", default is "https"
+    protocol:
+    # indexName tells which index to use, this is optional. If it's not present, will use the default one configured in HEC.
+    indexName:
+    # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default is false.
+    insecureSSL:
+    # The path to a file containing a PEM-format CA certificate for this client.
+    clientCert:
+    # The private key for this client.
+    clientKey:
+    # The path to a file containing a PEM-format CA certificate.
+    caFile:
+    # The path to a directory containing CA certificates in PEM format.
+    caPath:
+
+
+# = Global Configs =
+# Global configs allow parent chart to set values with `global`.
+# The purpose for using global configs is to share the same configs with sibling/sub charts.
+#
+# Supported global configs: logLevel and splunk HEC connection.
+global:
+  logLevel:
+  splunk:
+    hec: {}
+
 
 image:
-  tag: 0.0.3
+  tag: 0.0.5
   pullPolicy: IfNotPresent
 
+
+# = Resoruce Limitation Configs =
 resources:
   # limits:
   #  cpu: 100m
@@ -32,8 +120,11 @@ resources:
    cpu: 100m
    memory: 200Mi
 
+
 nodeSelector: {}
 
+
 tolerations: []
+
 
 affinity: {}

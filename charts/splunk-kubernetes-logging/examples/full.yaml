@@ -1,0 +1,16 @@
+logLevel: error
+
+splunk:
+  hec:
+    token: 11111111-2222-3333-4444-555555555555
+    host: 12.34.56.78
+    ndexName: myIndex
+    insecureSSL: true
+    clientCert: /path/to/client/cert.pem
+    clientKey: /path/to/client/key
+    caFile: /path/to/ca/file.pem
+    caPath: /path/to/all/ca
+
+resources:
+  limit:
+    memory: 300m
