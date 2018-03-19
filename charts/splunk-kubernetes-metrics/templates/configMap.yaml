@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-metrics.name" . }}
+    chart: {{ template "splunk-kubernetes-metrics.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  namespace: kube-system
+data:
+  fluent.conf: |
+    # system wide configurations
+    <system>
+      log_level "info"
+    </system>
+
+    # reading kubelet logs from journal
+    <source>
+      @type udp
+      tag udp.metrics
+      port 5160
+      message_length_limit 100m
+      <parse>
+        @type none
+        message_key log
+      </parse>
+    </source>
+
+    # ignore fluentd's log
+    <match fluent.**>
+      @type null
+    </match>
+
+    <match **>
+      @type stdout
+      <format>
+        # we just want to keep the raw logs, not the structure created by container or journal
+        @type single_value
+        message_key log
+        add_newline false
+      </format>
+    </match>

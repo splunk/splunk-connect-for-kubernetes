@@ -21,6 +21,9 @@ spec:
         release: {{ .Release.Name }}
         engine: fluentd
     spec:
+      {{- if not .Values.disableRBAC }}
+      serviceAccountName: {{ template "splunk-kubernetes-objects.fullname" . }}
+      {{- end }}
       terminationGracePeriodSeconds: 30
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -57,10 +60,16 @@ spec:
         - name: conf-configmap
           mountPath: /fluentd/var/checkpoints
         {{- end }}
+        - name: secrets
+          mountPath: /fluentd/etc/splunk
+          readOnly: true
       volumes:
       - name: conf-configmap
         configMap:
           name: {{ template "splunk-kubernetes-objects.fullname" . }}
+      - name: secrets
+        secret:
+          secretName: {{ template "splunk-kubernetes-objects.fullname" . }}
       {{- if .Values.checkpointFile.volume }}
       - name: checkpoints
 {{ toYaml .Values.checkpointFile.volume | indent 8 }}

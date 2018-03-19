@@ -59,3 +59,36 @@ Rules:
 {{- $mem -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+This is a configuration block for a fluentd tail input plugin to support glob multiline format.
+Since it will be used in multiple places, make it a template.
+*/}}
+{{- define "splunk-kubernetes-logging.tail-glog-multiline" -}}
+multiline_flush_interval 5s
+<parse>
+  @type multiline
+  format_firstline /^\w\d{4}/
+  format1 /^(?<log>\w(?<time>\d{4} [^\s]*)\s+.*)/
+  time_key time
+  time_type string
+  time_format %m%d %H:%M:%S.%N
+</parse>
+{{- end -}}
+
+{{/*
+This is a fluentd configuration block that shared by all journald sources.
+*/}}
+{{- define "splunk-kubernetes-logging.common-journald-source-conf" -}}
+@type systemd
+path  {{ .Values.journalLogPath | default "/run/log/journal" | quote }}
+read_from_head true
+<storage>
+  @type local
+  persistent true
+</storage>
+<entry>
+  field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+  field_map_strict true
+</entry>
+{{- end -}}

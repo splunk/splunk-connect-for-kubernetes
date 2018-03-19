@@ -45,11 +45,13 @@ spec:
           command:
             - /heapster
             - --source=kubernetes
+            - --sink=log
             # - --source=kubernetes.summary_api:''
-            - --sink=statsd:udp://
-              {{- required "splunk.udp.host is required" (or .Values.splunk.udp.host .Values.global.splunk.udp.host) -}}
-              :
-              {{- required "splunk.udp.port is required" (or .Values.splunk.udp.port .Values.global.splunk.udp.port) }}?numMetricsPerMsg=2
+            - --sink=statsd:udp://127.0.0.1:5160
+            # - --sink=statsd:udp://
+            #   {{- required "splunk.udp.host is required" (or .Values.splunk.udp.host .Values.global.splunk.udp.host) -}}
+            #   :
+            #   {{- required "splunk.udp.port is required" (or .Values.splunk.udp.port .Values.global.splunk.udp.port) }}?numMetricsPerMsg=2
           livenessProbe:
             httpGet:
               path: /healthz
@@ -59,3 +61,18 @@ spec:
             timeoutSeconds: 5
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+        - name: fluentd-splunk-forwarder
+          image: gimil/k8s-l:0.0.4
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - fluentd
+          args:
+            - -c
+            - /fluentd/etc/fluent.conf
+          volumeMounts:
+          - name: conf-configmap
+            mountPath: /fluentd/etc
+      volumes:
+      - name: conf-configmap
+        configMap:
+          name: {{ template "splunk-kubernetes-metrics.fullname" . }}

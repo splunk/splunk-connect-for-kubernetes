@@ -1,5 +1,5 @@
 # splunk-connector is a umbraller chart which itself does not contain any template,
-# so there is no values needed for it.
+# so there is no configurable parameters for itself.
 
 # Use global configurations for shared configurations between sub-charts.
 # Supported global configurations:
@@ -12,4 +12,4 @@
 #     # UDP inpute configurations
 #     udp:
 #
-# For other configurations for sub-charts, please check their Values.yaml for details.
+# For other configurations for sub-charts, please check their values.yaml for details.

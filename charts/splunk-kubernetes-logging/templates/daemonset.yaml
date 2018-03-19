@@ -65,6 +65,9 @@ spec:
         - name: runlogjournal
           mountPath: /run/log/journal
           readOnly: true
+        - name: secrets
+          mountPath: /fluentd/etc/splunk
+          readOnly: true
       terminationGracePeriodSeconds: 30
       volumes:
       - name: conf-configmap
@@ -85,3 +88,6 @@ spec:
       - name: runlogjournal
         hostPath:
           path: /run/log/journal
+      - name: secrets
+        secret:
+          secretName: {{ template "splunk-kubernetes-logging.fullname" . }}

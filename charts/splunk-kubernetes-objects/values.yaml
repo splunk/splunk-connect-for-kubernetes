@@ -13,6 +13,13 @@
 logLevel:
 
 
+# Disable RBAC (Role-Based Access Control)
+# By default, this chart creates a service account which is bound to a cluster role that has necessary permissions
+# for the fluentd pods to read/watch objects.
+# If you don't want it to create the service account and cluster role, set `disableRBAC` to `true`.
+disableRBAC: false
+
+
 # = Kubernetes Connection Configs =
 kubernetes:
   # the URL for calling kubernetes API, by default it will be read from the environment variables
@@ -85,13 +92,13 @@ splunk:
     indexName:
     # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default is false.
     insecureSSL:
-    # The path to a file containing a PEM-format CA certificate for this client.
+    # The *content* of a PEM-format CA certificate for this client.
     clientCert:
-    # The private key for this client.
+    # The *content* of the private key for this client.
     clientKey:
-    # The path to a file containing a PEM-format CA certificate.
+    # The *content* of a PEM-format CA certificate.
     caFile:
-    # The path to a directory containing CA certificates in PEM format.
+    # The path to a directory containing CA certificates which are in PEM format.
     caPath:
 
 
@@ -107,7 +114,7 @@ global:
 
 
 image:
-  tag: 0.0.5
+  tag: 0.0.6
   pullPolicy: IfNotPresent
 
 

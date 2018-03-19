@@ -1,6 +1,6 @@
-# Default values for splunk-kubernetes-logging.
+# Configurable parameters and default values for splunk-kubernetes-logging.
 # This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# Declared variables will be passed into templates.
 
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
@@ -10,12 +10,14 @@
 # * error
 logLevel:
 
-# local splunk configurations
+# Local splunk configurations
 splunk:
-  # configurations for HEC (HTTP Event Collector)
+  # Configurations for HEC (HTTP Event Collector)
   hec:
     # host is required and should be provided by user
     host:
+    # port to HEC, optional, default 8088
+    port:
     # token is required and should be provided by user
     token:
     # protocol has two options: "http" and "https", default is "https"
@@ -24,29 +26,37 @@ splunk:
     indexName:
     # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default is false.
     insecureSSL:
-    # The path to a file containing a PEM-format CA certificate for this client.
+    # The PEM-format CA certificate for this client.
+    # NOTE: The content of the certificate itself should be used here, not the file path.
+    #       The certificate will be stored as a secret in kubernetes.
     clientCert:
     # The private key for this client.
+    # NOTE: The content of the key itself should be used here, not the file path.
+    #       The key will be stored as a secret in kubernetes.
     clientKey:
-    # The path to a file containing a PEM-format CA certificate.
+    # The PEM-format CA certificate file.
+    # NOTE: The content of the file itself should be used here, not the file path.
+    #       The file will be stored as a secret in kubernetes.
     caFile:
-    # The path to a directory containing CA certificates in PEM format.
-    caPath:
 
 # Global configurations
 # These configurations will be used if the corresponding local configurations are not set.
 # For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
 global:
   logLevel:
-  # if local splunk configurations are not present, the global ones will be used (if available)
+  # If local splunk configurations are not present, the global ones will be used (if available)
   splunk:
-    # it has exactly the same configs as splunk.hec does
+    # It has exactly the same configs as splunk.hec does
     hec: {}
 
+
+# Defines which version of image to use, and how it should be pulled.
 image:
-  tag: 0.0.4
+  tag: 0.0.7
   pullPolicy: IfNotPresent
 
+
+# Controls the resources used by the fluentd daemonset
 resources:
   # limits:
   #  cpu: 100m
@@ -55,12 +65,17 @@ resources:
    cpu: 100m
    memory: 200Mi
 
-# this default tolerations allow the daemonset to be deployed on master nodes,
+
+# This default tolerations allow the daemonset to be deployed on master nodes,
 # so that we can also collect logs from those nodes.
 tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
 
+
+# Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector: {}
 
+
+# Defines node affinity to restrict pod deployment.
 affinity: {}

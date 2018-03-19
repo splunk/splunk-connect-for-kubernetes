@@ -1,0 +1,24 @@
+{{- if not .Values.disableRBAC -}}
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "splunk-kubernetes-objects.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-objects.name" . }}
+    chart: {{ template "splunk-kubernetes-objects.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+  - apiGroups: [""]
+    resources:
+    {{- range $index, $object := .Values.pullObjects }}
+    - {{ $object.name }}
+    {{- end }}
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources:
+    {{- range $index, $object := .Values.watchObjects }}
+    - {{ $object.name }}
+    {{- end }}
+    verbs: ["watch"]
+{{- end -}}
