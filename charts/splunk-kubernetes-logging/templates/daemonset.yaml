@@ -41,6 +41,14 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
+          - name: MY_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
@@ -49,45 +57,33 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
-        - name: conf-configmap
-          mountPath: /fluentd/etc
         - name: varlog
           mountPath: /var/log
-        - name: containerslog
-          mountPath: /var/log/containers
-          readOnly: true
-        - name: podslog
-          mountPath: /var/log/pods
-          readOnly: true
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
-        - name: runlogjournal
-          mountPath: /run/log/journal
+        - name: journallogpath
+          mountPath: {{ .Values.journalLogPath | default "/run/log/journal" | quote }}
           readOnly: true
+        - name: conf-configmap
+          mountPath: /fluentd/etc
         - name: secrets
           mountPath: /fluentd/etc/splunk
           readOnly: true
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: conf-configmap
-        configMap:
-          name: {{ template "splunk-kubernetes-logging.fullname" . }}
       - name: varlog
         hostPath:
           path: /var/log
-      - name: containerslog
-        hostPath:
-          path: /var/log/containers
-      - name: podslog
-        hostPath:
-          path: /var/log/pods
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
-      - name: runlogjournal
+      - name: journallogpath
         hostPath:
-          path: /run/log/journal
+          path: {{ .Values.journalLogPath | default "/run/log/journal" | quote }}
+      - name: conf-configmap
+        configMap:
+          name: {{ template "splunk-kubernetes-logging.fullname" . }}
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-logging.fullname" . }}

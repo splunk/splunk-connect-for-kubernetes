@@ -265,14 +265,16 @@ data:
 
   monit.conf: |-
     <source>
+      @id fluentd-monitor-agent
       @type monitor_agent
-      tag splunk.fluentd.monitor
+      tag monitor_agent
     </source>
 
   transform.conf: |-
+    # these filters are for generating the source and sourcetype for each event.
     <filter tail.**>
       @type jq_transformer
-      jq '{log: .record.log, source: .record._file_path, sourcetype: (if (.tag | startswith("tail.containers.")) then (.record._file_path | split("_") | .[-1] | split("-") | .[:-1] | join("-")) else (.tag | ltrimstr("tail.")) end)}'
+      jq '{log: .record.log, source: .record._file_path, sourcetype: (if (.tag | startswith("tail.containers.")) then (.record._file_path | split("_") | .[-1] | split("-") | .[:-1] | join("-")) else (.tag | ltrimstr("tail.")) end)} | .sourcetype = "kube:" + .sourcetype | .'
     </filter>
 
     <filter splunk.fluentd.monitor>
@@ -283,6 +285,11 @@ data:
     <filter journal.**>
       @type jq_transformer
       jq '.record.source = "{{ .Values.journalLogPath | default "/run/log/journal" }}/" + .record.source | .record'
+    </filter>
+
+    <filter monitor_agent>
+      @type jq_transformer
+      jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor_agent\" | .record"
     </filter>
 
 
