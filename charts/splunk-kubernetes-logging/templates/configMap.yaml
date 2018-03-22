@@ -277,11 +277,6 @@ data:
       jq '{log: .record.log, source: .record._file_path, sourcetype: (if (.tag | startswith("tail.containers.")) then (.record._file_path | split("_") | .[-1] | split("-") | .[:-1] | join("-")) else (.tag | ltrimstr("tail.")) end)} | .sourcetype = "kube:" + .sourcetype | .'
     </filter>
 
-    <filter splunk.fluentd.monitor>
-      @type jq_transformer
-      jq '.record.source = .tag | .record.sourcetype = "_json" | .record'
-    </filter>
-
     <filter journal.**>
       @type jq_transformer
       jq '.record.source = "{{ .Values.journalLogPath | default "/run/log/journal" }}/" + .record.source | .record'
@@ -333,7 +328,7 @@ data:
         overflow_action block
         retry_max_times 3
       </buffer>
-      <format splunk.fluentd.monitor>
+      <format monitor_agent>
         @type json
       </format>
       <format>

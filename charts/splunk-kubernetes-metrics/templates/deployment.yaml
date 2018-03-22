@@ -8,7 +8,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     k8s-app: heapster
-  namespace: kube-system
 spec:
   replicas: 1
   selector:
@@ -25,7 +24,9 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
+      {{- if not .Values.disableRBAC }}
       serviceAccountName: {{ template "splunk-kubernetes-metrics.fullname" . }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -45,34 +46,50 @@ spec:
           command:
             - /heapster
             - --source=kubernetes
-            - --sink=log
             # - --source=kubernetes.summary_api:''
-            - --sink=statsd:udp://127.0.0.1:5160
-            # - --sink=statsd:udp://
-            #   {{- required "splunk.udp.host is required" (or .Values.splunk.udp.host .Values.global.splunk.udp.host) -}}
-            #   :
-            #   {{- required "splunk.udp.port is required" (or .Values.splunk.udp.port .Values.global.splunk.udp.port) }}?numMetricsPerMsg=2
+            - --sink=statsd:udp://127.0.0.1:9001
+            # ?numMetricsPerMsg=2
+            - --v=3
+            # - --sink=log
           livenessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.service.targetPort }}
+              port: 8082
               scheme: HTTP
             initialDelaySeconds: 180
             timeoutSeconds: 5
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-        - name: fluentd-splunk-forwarder
-          image: gimil/k8s-l:0.0.4
+        - image: gimil/k8s-l:0.0.9
+          name: splunk-fluentd-heapster
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - fluentd
           args:
             - -c
             - /fluentd/etc/fluent.conf
+          env:
+            - name: SPLUNK_HEC_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+                  key: splunk_hec_token
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
           volumeMounts:
           - name: conf-configmap
             mountPath: /fluentd/etc
+          - name: secrets
+            mountPath: /fluentd/etc/splunk
+            readOnly: true
       volumes:
       - name: conf-configmap
         configMap:
           name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+      - name: secrets
+        secret:
+          secretName: {{ template "splunk-kubernetes-metrics.fullname" . }}

@@ -1,4 +1,5 @@
-apiVersion: rbac.authorization.k8s.io/v1beta1
+{{- if not .Values.disableRBAC -}}
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ template "splunk-kubernetes-metrics.fullname" . }}
@@ -7,12 +8,12 @@ metadata:
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+  name: system:heapster
 subjects:
 - kind: ServiceAccount
   name: {{ template "splunk-kubernetes-metrics.fullname" . }}
   namespace: {{ .Release.Namespace }}
+{{- end -}}

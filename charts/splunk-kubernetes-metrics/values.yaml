@@ -12,6 +12,13 @@
 logLevel: "info"
 
 
+# Disable RBAC (Role-Based Access Control)
+# By default, this chart creates a service account which is bound to a cluster role
+# that has necessary permissions for heapster to do its job.
+# If you don't want it to create the service account and cluster role, set `disableRBAC` to `true`.
+disableRBAC: false
+
+
 # = Splunk UDP Connection =
 splunk:
   # configurations for Splunk UDP input. [REQUIRED]
@@ -28,6 +35,7 @@ splunk:
 global:
   logLevel:
   splunk:
+    hec: {}
     udp: {}
 
 
@@ -39,21 +47,21 @@ image:
 resources:
   # keep request = limit to keep this container in guaranteed class
   limits:
-    cpu: 1
+    cpu: 100m
     memory: 200Mi
   requests:
-    cpu: 1
+    cpu: 100m
     memory: 200Mi
 
 
-nodeSelector:
-  kubernetes.io/role: master
+nodeSelector: {}
+  # kubernetes.io/role: master
 
 
-tolerations:
-  - key: "node-role.kubernetes.io/master"
-    operator: "Exists"
-    effect: "NoSchedule"
+tolerations: []
+  # - key: "node-role.kubernetes.io/master"
+  #   operator: "Exists"
+  #   effect: "NoSchedule"
 
 
 affinity: {}
