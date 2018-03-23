@@ -16,7 +16,7 @@ data:
 
     <source>
       @type udp
-      tag metrics.udp
+      tag raw.metrics.udp
       port 9001
       message_length_limit 100m
       <parse>
@@ -25,9 +25,17 @@ data:
       </parse>
     </source>
 
+    <match raw.metrics.udp>
+      @type jq
+      jq {{ include "splunk-kubernetes-metrics.jq_filter" . | quote }}
+      remove_tag_prefix raw
+    </match>
+
     <match metrics.udp>
       @type splunk_hec
       data_type metric
+      metric_name_key metric
+      metric_value_key value
       protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol | default "https" }}
       hec_host {{ required "splunk.hec.host is required." (or .Values.splunk.hec.host .Values.global.splunk.hec.host) }}
       {{- with $hecPort := or .Values.splunk.hec.port .Values.global.splunk.hec.port }}

@@ -46,3 +46,5 @@ Component | Description | Template
 `ServiceAccount` | a service account for the daemonset. | [serviceaccount.yaml](templates/serviceaccount.yaml)
 `ClusterRole` | defines permissions needed by the service account. | [clusterrole.yaml](templates/clusterrole.yaml)
 `ClusterRoleBinding` | binds the cluster role to the service account. | [clusterrolebinding.yaml](templates/clusterrolebinding.yaml)
+
+Note: when `disableRBAC` is set to `true` (it should be when RBAC is not enabled in the kubernetes cluster), `ServiceAccount`, `ClusterRole`, and `ClusterRoleBinding` won't be created.

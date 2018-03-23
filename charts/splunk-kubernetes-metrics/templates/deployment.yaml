@@ -60,7 +60,7 @@ spec:
             timeoutSeconds: 5
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-        - image: gimil/k8s-l:0.0.9
+        - image: gimil/k8s-l:0.0.10
           name: splunk-fluentd-heapster
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
@@ -69,6 +69,14 @@ spec:
             - -c
             - /fluentd/etc/fluent.conf
           env:
+            - name: MY_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: SPLUNK_HEC_HOST
               valueFrom:
                 fieldRef:
