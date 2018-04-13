@@ -9,7 +9,5 @@
 #   splunk:
 #     # HEC related configurations
 #     hec:
-#     # UDP inpute configurations
-#     udp:
 #
 # For other configurations for sub-charts, please check their values.yaml for details.

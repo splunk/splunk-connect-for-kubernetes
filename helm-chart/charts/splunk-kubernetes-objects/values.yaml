@@ -7,9 +7,11 @@
 # logLevel is to set log level of the object collector. Avaiable values are:
 # * trace
 # * debug
-# * info (default)
+# * info
 # * warn
 # * error
+#
+# Default value: "info"
 logLevel:
 
 
@@ -17,6 +19,8 @@ logLevel:
 # By default, this chart creates a service account which is bound to a cluster role that has necessary permissions
 # for the fluentd pods to read/watch objects.
 # If you don't want it to create the service account and cluster role, set `disableRBAC` to `true`.
+#
+# Default value: false
 disableRBAC: false
 
 
@@ -25,7 +29,7 @@ kubernetes:
   # the URL for calling kubernetes API, by default it will be read from the environment variables
   url:
   # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
-  insecureSSL:
+  insecureSSL: false
   # Path to the certificate file for this client.
   clientCert:
   # Path to the private key file for this client.
@@ -40,34 +44,39 @@ kubernetes:
  
 
 # = Object Lists =
-# NOTE: at least one pull object or watch object must be provided.
+# NOTE: at least one object must be provided either in `pullObjects` or `watchObjects`.
 
-# A list of kubernetes objects to pull
-pullObjects: []
-  # - name:          name of the object to pull [REQUIRED]
+  # A list of kubernetes objects to pull. Default list: pods, namespaces, and nodes.
+pullObjects:
+  # Available options for each object definition:
+  #   name:          name of the object to pull [REQUIRED]
   #   namespace:     only pull objects from the specified namespace, by default it's all namespaces
   #   labelSelector: select objects by label(s)
   #   fieldSelector: select objects by field(s)
   #   interval:      the interval at which object is pulled, default 15 minutes
+  - name: pods
+  - name: namespaces
+  - name: nodes
 
-# A list of kubernetes objects to watch
-# A list of kubernetes objects to watch
-watchObjects: []
-  # - name: name of the object to watch [REQUIRED]
+# A list of kubernetes objects to watch. Default list: events.
+watchObjects:
+  # Available options for each object definition:
+  #   name: name of the object to watch [REQUIRED]
   #   namespace: only watch objects from the specified namespace, by default it's all namespaces
   #   labelSelector: select objects by label(s)
   #   fieldSelector: select objects by field(s)
+  - name: events
 
 
 # = Checkpoint Configs =
-# defines the checkpoint file used for recording the resourceVersion of watched objects,
+# defines the checkpoint file used for saving the resourceVersion of watched objects,
 # so that when the fluentd pod restarts, it will continue from where it stopped.
 # NOTE: since kubernetes has its own cache limit, if the fluentd pod has stopped for a long time,
 # it might not be able to start watch from the checkpoint.
 checkpointFile:
   # the name of the checkpoint file.
   name: kubernetes-objects.pos
-  # volume is the kubernetes volume configuration object. The volume has to be a directory, not a file.
+  # volume is a kubernetes volume configuration object. The volume has to be a directory, not a file.
   # If volume is not defined, no checkpoint file will be used.
   # For example, if you want to use hostpath, the it should look like this:
   #
@@ -86,11 +95,11 @@ splunk:
     host:
     # token for the HEC [REQUIRED]
     token:
-    # protocol has two options: "http" and "https", default is "https"
+    # protocol has two options: "http" and "https". Default value: "https"
     protocol:
-    # indexName tells which index to use, this is optional. If it's not present, will use the default one configured in HEC.
+    # indexName tells which index to use, this is optional. If it's not present, the default index configured in HEC will be used.
     indexName:
-    # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default is false.
+    # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default value: false.
     insecureSSL:
     # The *content* of a PEM-format CA certificate for this client.
     clientCert:
@@ -103,18 +112,21 @@ splunk:
 
 
 # = Global Configs =
-# Global configs allow parent chart to set values with `global`.
+# Global configs allow parent chart to set values with `global.*`.
 # The purpose for using global configs is to share the same configs with sibling/sub charts.
 #
-# Supported global configs: logLevel and splunk HEC connection.
+# Values defined here are the default values.
 global:
-  logLevel:
+  logLevel: info
   splunk:
-    hec: {}
+    hec:
+      protocol: https
+      port: 8088
+      insecureSSL: false
 
 
 image:
-  tag: 0.0.6
+  tag: 0.1.2
   pullPolicy: IfNotPresent
 
 

@@ -1,14 +1,13 @@
-# Use global configurations
 global:
   splunk:
     hec:
-      host: 12.34.56.78
-      token: 11111111-2222-3333-4444-555555555555
-    udp:
-      host: 21.43.65.87
-      port: 1234
+      token: 7fbefa0b-8c06-4a62-a54b-0fa69c016988
+      host: 45.209.241.112
+      port: 8088
+      indexName: main
 
-# Defines objects to pull and/or watch
-splunk-kubernetes-objects:
-  watchObjects:
-    - name: events
+
+splunk-kubernetes-metrics:
+  splunk:
+    hec:
+      indexName: my-metrics-index

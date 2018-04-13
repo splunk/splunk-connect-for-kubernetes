@@ -20,7 +20,7 @@ data:
   system.conf: |-
     # system wide configurations
     <system>
-      log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
+      log_level {{ or .Values.logLevel .Values.global.logLevel }}
       root_dir /tmp/fluentd
     </system>
 
@@ -46,7 +46,7 @@ data:
       tag raw.tail.containers.*
       path /var/log/containers/*.log
       pos_file /var/log/splunk-fluentd-containers.log.pos
-      path_key _file_path
+      path_key source
       read_from_head true
       <parse>
         @type json
@@ -78,10 +78,10 @@ data:
     <source>
       @id minion
       @type tail
-      tag tail.salt
+      tag tail.kube.salt
       path /var/log/salt/minion
       pos_file /var/log/splunk-fluentd-salt.pos
-      path_key _file_path
+      path_key source
       <parse>
         @type regexp
         expression /^(?<time>[^ ]* [^ ,]*)(?<message>.*)$/
@@ -96,25 +96,26 @@ data:
     <source>
       @id startupscript.log
       @type tail
-      tag tail.startupscript
+      tag tail.kube.startupscript
       path /var/log/startupscript.log
       pos_file /var/log/splunk-fluentd-startupscript.log.pos
-      path_key _file_path
+      path_key source
       <parse>
         @type syslog
       </parse>
     </source>
 
+    {{- if .Values.logSources.docker.file }}
     # Examples:
     # time="2016-02-04T06:51:03.053580605Z" level=info msg="GET /containers/json"
     # time="2016-02-04T07:53:57.505612354Z" level=error msg="HTTP Error" err="No such image: -f" statusCode=404
     <source>
       @id docker.log
       @type tail
-      tag tail.docker
-      path /var/log/docker.log
+      tag tail.kube.docker
+      path {{ .Values.logSources.docker.file.path }}
       pos_file /var/log/splunk-fluentd-docker.log.pos
-      path_key _file_path
+      path_key source
       <parse>
         @type regexp
         expression /^time="(?<time>[^)]*)" (?<message>.*)$/
@@ -123,145 +124,60 @@ data:
         time_format %Y-%m-%dT%H:%M:%S.%NZ
       </parse>
     </source>
+    {{- end }}
 
+    {{- range $name := tuple "etcd-server" "etcd-server-events" }}
+    {{- with index $.Values.logSources $name }}
+    {{- if .file }}
     # Example:
-    # 2016/02/04 06:52:38 filePurge: successfully removed file /var/etcd/data/member/wal/00000000000006d0-00000000010a23d1.wal
+    # 2018-04-13 05:04:38.537777 I | etcdmain: listening for peers on http://0.0.0.0:2381
     <source>
       @id etcd.log
       @type tail
-      tag tail.etcd
-      path /var/log/etcd.log
+      tag tail.kube.{{ $name }}
+      path {{ .file.path }}
       pos_file /var/log/splunk-fluentd-etcd.log.pos
-      path_key _file_path
+      path_key source
       <parse>
-        # Not parsing this, because it doesn't have anything particularly useful to
-        # parse out of it (like severities).
-        @type none
+        @type regexp
+        expression ^(?<time>\d{4}-d{2}-d{2} \d{2}:\d{2}:\d{2}\.\d{6}) (?<message>.*)$
+        time_key time
+        time_type string
+        time_format %Y-%m-%d %H:%M:%S.%6N
       </parse>
     </source>
+    {{- end }}
+    {{- end }}
+    {{- end }}
 
     # Multi-line parsing is required for all the kube logs because very large log
     # statements, such as those that include entire object bodies, get split into
     # multiple lines by glog.
 
-    # Example:
-    # I0204 07:32:30.020537    3368 server.go:1048] POST /stats/container/: (13.972191ms) 200 [[Go-http-client/1.1] 10.244.1.3:40537]
+    {{- range "etcd-server" | without ("etcd-server-events" | without ("docker" | without (keys .Values.logSources))) }}
+    {{- $source := index $.Values.logSources . }}
+    {{- if $source.file }}
     <source>
-      @id kubelet.log
+      @id {{ . }}.log
       @type tail
-      tag tail.kubelet
-      path /var/log/kubelet.log
-      pos_file /var/log/splunk-fluentd-kubelet.log.pos
-      path_key _file_path
+      tag tail.kube.{{ . }}
+      path {{ $source.file.path }}
+      pos_file /var/log/splunk-fluentd-{{ . }}.log.pos
+      path_key source
 {{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
     </source>
+    {{- end }}
+    {{- end }}
 
-    # Example:
-    # I1118 21:26:53.975789       6 proxier.go:1096] Port "nodePort for kube-system/default-http-backend:http" (:31429/tcp) was open before and is still needed
-    <source>
-      @id kube-proxy.log
-      @type tail
-      tag tail.kube-proxy
-      path /var/log/kube-proxy.log
-      pos_file /var/log/splunk-fluentd-kube-proxy.log.pos
-      path_key _file_path
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
-
-    # Example:
-    # I0204 07:00:19.604280       5 handlers.go:131] GET /api/v1/nodes: (1.624207ms) 200 [[kube-controller-manager/v1.1.3 (linux/amd64) kubernetes/6a81b50] 127.0.0.1:38266]
-    <source>
-      @id kube-apiserver.log
-      @type tail
-      tag tail.kube-apiserver
-      path /var/log/kube-apiserver.log
-      pos_file /var/log/splunk-fluentd-kube-apiserver.log.pos
-      path_key _file_path
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
-
-    # Example:
-    # I0204 06:55:31.872680       5 servicecontroller.go:277] LB already exists and doesn't need update for service kube-system/kube-ui
-    <source>
-      @id kube-controller-manager.log
-      @type tail
-      tag tail.kube-controller-manager
-      path /var/log/kube-controller-manager.log
-      pos_file /var/log/splunk-fluentd-kube-controller-manager.log.pos
-      path_key _file_path
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
-
-    # Example:
-    # W0204 06:49:18.239674       7 reflector.go:245] pkg/scheduler/factory/factory.go:193: watch of *api.Service ended with: 401: The event in requested index is outdated and cleared (the requested history has been cleared [2578313/2577886]) [2579312]
-    <source>
-      @id kube-scheduler.log
-      @type tail
-      tag tail.kube-scheduler
-      path /var/log/kube-scheduler.log
-      pos_file /var/log/splunk-fluentd-kube-scheduler.log.pos
-      path_key _file_path
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
-
-    # Example:
-    # I1104 10:36:20.242766       5 rescheduler.go:73] Running Rescheduler
-    <source>
-      @id rescheduler.log
-      @type tail
-      tag tail.rescheduler
-      path /var/log/rescheduler.log
-      pos_file /var/log/splunk-fluentd-rescheduler.log.pos
-      path_key _file_path
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
-
-    # Example:
-    # I0603 15:31:05.793605       6 cluster_manager.go:230] Reading config from path /etc/gce.conf
-    <source>
-      @id glbc.log
-      @type tail
-      tag tail.glbc
-      path /var/log/glbc.log
-      pos_file /var/log/splunk-fluentd-glbc.log.pos
-      path_key _file_path
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
-
-    # Example:
-    # I0603 15:31:05.793605       6 cluster_manager.go:230] Reading config from path /etc/gce.conf
-    <source>
-      @id cluster-autoscaler.log
-      @type tail
-      tag tail.cluster-autoscaler
-      path /var/log/cluster-autoscaler.log
-      pos_file /var/log/splunk-fluentd-cluster-autoscaler.log.pos
-      path_key _file_path
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
 
   source.journal.kube.conf: |-
     # This fluentd conf file contains configurations for reading logs from systemd journal.
-    <source>
-      @id journald-docker
-      tag journal.docker
-      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
-{{ include "splunk-kubernetes-logging.common-journald-source-conf" . | indent 6 }}
-    </source>
+    {{- range $name, $source := .Values.logSources }}
+    {{- if $source.journald }}
+{{ include "splunk-kubernetes-logging.journald-source" (dict "name" $name "unit" $source.journald.unit "journalLogPath" $.Values.journalLogPath) | indent 4 }}
+    {{- end }}
+    {{- end }}
 
-    <source>
-      @id journald-kubelet
-      tag journal.kubelet
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
-{{ include "splunk-kubernetes-logging.common-journald-source-conf" . | indent 6 }}
-    </source>
-
-    <source>
-      @id journald-node-problem-detector
-      tag journal.node-problem-detector
-      filters [{ "_SYSTEMD_UNIT": "node-problem-detector.service" }]
-{{ include "splunk-kubernetes-logging.common-journald-source-conf" . | indent 6 }}
-    </source>
 
   monit.conf: |-
     <source>
@@ -274,17 +190,17 @@ data:
     # these filters are for generating the source and sourcetype for each event.
     <filter tail.**>
       @type jq_transformer
-      jq '{log: .record.log, source: .record._file_path, sourcetype: (if (.tag | startswith("tail.containers.")) then (.record._file_path | split("_") | .[-1] | split("-") | .[:-1] | join("-")) else (.tag | ltrimstr("tail.")) end)} | .sourcetype = "kube:" + .sourcetype | .'
+      jq {{ include "splunk-kubernetes-logging.container_jq_filter" . | replace "\n" " " | quote }}
     </filter>
 
     <filter journal.**>
       @type jq_transformer
-      jq '.record.source = "{{ .Values.journalLogPath | default "/run/log/journal" }}/" + .record.source | .record'
+      jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journal.") | gsub("\\\\."; ":")) | .record'
     </filter>
 
     <filter monitor_agent>
       @type jq_transformer
-      jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor_agent\" | .record"
+      jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
     </filter>
 
 
@@ -296,27 +212,27 @@ data:
 
     <match **>
       @type splunk_hec
-      protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol | default "https" }}
+      protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
       hec_host {{ required "splunk.hec.host is required." (or .Values.splunk.hec.host .Values.global.splunk.hec.host) }}
-      {{- with $hecPort := or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
-      {{ if $hecPort }}hec_port {{ $hecPort }}{{ end }}
+      {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
+      hec_port {{ . }}
       {{- end }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['SPLUNK_HEC_HOST']}"
       source_key source
       sourcetype_key sourcetype
-      {{- if .Values.splunk.hec.indexName }}
-      index {{ .Values.splunk.hec.indexName }}
+      {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
+      index {{ . }}
       {{- end }}
       insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
-      {{- with $clientCert := or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
-      {{ if $clientCert }}client_cert /fluentd/etc/splunk/hec_client_cert{{ end }}
+      {{- if or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
+      client_cert /fluentd/etc/splunk/hec_client_cert
       {{- end }}
-      {{- with $clientKey := or .Values.splunk.hec.clientKey .Values.global.splunk.hec.clientKey }}
-      {{ if $clientKey }}client_key /fluentd/etc/splunk/hec_client_key{{ end }}
+      {{- if or .Values.splunk.hec.clientKey .Values.global.splunk.hec.clientKey }}
+      client_key /fluentd/etc/splunk/hec_client_key
       {{- end }}
-      {{- with $caFile := or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
-      {{ if $caFile }}ca_file /fluentd/etc/splunk/hec_ca_file{{ end }}
+      {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+      ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
       <buffer>
         @type memory

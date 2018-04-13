@@ -63,7 +63,7 @@ spec:
           mountPath: /var/lib/docker/containers
           readOnly: true
         - name: journallogpath
-          mountPath: {{ .Values.journalLogPath | default "/run/log/journal" | quote }}
+          mountPath: {{ .Values.journalLogPath | quote }}
           readOnly: true
         - name: conf-configmap
           mountPath: /fluentd/etc
@@ -80,7 +80,7 @@ spec:
           path: /var/lib/docker/containers
       - name: journallogpath
         hostPath:
-          path: {{ .Values.journalLogPath | default "/run/log/journal" | quote }}
+          path: {{ .Values.journalLogPath | quote }}
       - name: conf-configmap
         configMap:
           name: {{ template "splunk-kubernetes-logging.fullname" . }}

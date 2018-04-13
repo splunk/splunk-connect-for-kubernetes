@@ -1,16 +1,13 @@
 logLevel: error
 
+disableRBAC: false
 
 splunk:
   hec:
     token: 11111111-2222-3333-4444-555555555555
     host: 12.34.56.78
     ndexName: myIndex
-    insecureSSL: true
-    clientCert: /path/to/client/cert.pem
-    clientKey: /path/to/client/key
-    caFile: /path/to/ca/file.pem
-    caPath: /path/to/all/ca
+    insecureSSL: false
 
 
 resources:
@@ -21,9 +18,6 @@ resources:
 kubernetes:
   url: https://this.is.my/url
   insecureSSL: true
-  clientCert: /path/to/my/cert.pem
-  clientKey: /path/to/my/key
-  caFile: /path/to/my/ca_file.pem
   bearerTokenFile: /path/to/bearer/token/in/pod
   secretDir: /secret/dir/in/pod
 

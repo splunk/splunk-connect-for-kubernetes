@@ -10,6 +10,64 @@
 # * error
 logLevel:
 
+
+# Directory where to read journald logs.
+journalLogPath: /run/log/journal
+
+
+# logSources defines the sources for *kubernetes system components'* logs.
+#
+# It supports 3 kinds of sources: journald, file, and container
+# For `journald` logs, `unit` is required for filtering using _SYSTEMD_UNIT, example:
+# ```
+# docker:
+#   journald:
+#     unit: docker.service
+# ```
+#   
+# For `file` logs, `path` is required for specifying where is the log files. Log files are expected in `/var/log`, example:
+# ```
+# docker:
+#   file:
+#     path: /var/log/docker.log
+# ```
+#
+# For `container` logs, no additional configs are required, just simply set `container: true`, example:
+# ```
+# kube-apiserver:
+#   container: true
+# ```
+logSources:
+  docker:
+    journald:
+      unit: docker.service
+  containerd:
+    journald:
+      unit: containerd.service
+  kubelet:
+    journald:
+      unit: kubelet.service
+  etcd-server: 
+    container: true
+  etcd-server-events:
+    container: true
+  kube-apiserver:
+    container: true
+  kube-scheduler:
+    container: true
+  kube-controller-manager:
+    container: true
+  kube-proxy:
+    container: true
+  kube-dns:
+    container: true
+  dns-controller:
+    container: true
+  kube-dns-autoscaler:
+    container: true
+  cloud-controller-manager:
+    container: true
+
 # Local splunk configurations
 splunk:
   # Configurations for HEC (HTTP Event Collector)
@@ -43,16 +101,18 @@ splunk:
 # These configurations will be used if the corresponding local configurations are not set.
 # For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
 global:
-  logLevel:
+  logLevel: info
   # If local splunk configurations are not present, the global ones will be used (if available)
   splunk:
     # It has exactly the same configs as splunk.hec does
-    hec: {}
+    hec:
+      protocol: https
+      insecureSSL: false
 
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  tag: 0.0.7
+  tag: 0.1.2
   pullPolicy: IfNotPresent
 
 

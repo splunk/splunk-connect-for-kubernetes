@@ -48,3 +48,7 @@ Component | Description | Template
 `ClusterRoleBinding` | binds the cluster role to the service account. | [clusterrolebinding.yaml](templates/clusterrolebinding.yaml)
 
 Note: when `disableRBAC` is set to `true` (it should be when RBAC is not enabled in the kubernetes cluster), `ServiceAccount`, `ClusterRole`, and `ClusterRoleBinding` won't be created.
+
+## License ##
+
+[SPLUNK PRE-RELEASE SOFTWARE LICENSE AGREEMENT](https://www.splunk.com/en_us/legal/splunk-pre-release-software-license-agreement.html)

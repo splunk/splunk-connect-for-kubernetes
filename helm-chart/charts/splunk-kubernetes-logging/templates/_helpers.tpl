@@ -79,16 +79,35 @@ multiline_flush_interval 5s
 {{/*
 This is a fluentd configuration block that shared by all journald sources.
 */}}
-{{- define "splunk-kubernetes-logging.common-journald-source-conf" -}}
-@type systemd
-path  {{ .Values.journalLogPath | default "/run/log/journal" | quote }}
-read_from_head true
-<storage>
-  @type local
-  persistent true
-</storage>
-<entry>
-  field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
-  field_map_strict true
-</entry>
+{{- define "splunk-kubernetes-logging.journald-source" -}}
+<source>
+  @id journald-{{ .name }}
+  @type systemd
+  tag journal.kube.{{ .name }}
+  path {{ .journalLogPath | quote }}
+  filters [{ "_SYSTEMD_UNIT": {{ .unit | quote }} }]
+  read_from_head true
+  <storage>
+    @type local
+    persistent true
+  </storage>
+  <entry>
+    field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+    field_map_strict true
+  </entry>
+</source>
+{{- end -}}
+
+{{/*
+The jq filter used to generate source and sourcetype for container logs.
+Define it as a template here so there we don't need to escape the double quotes `` " ''.
+*/}}
+{{- define "splunk-kubernetes-logging.container_jq_filter" -}}
+def extract_container_name:
+  split("_") | .[-1] | split("-") | .[:-1] | join("-");
+
+def container_sourcetype:
+  . as $n | if ({{ toJson (keys .Values.logSources) }} | any(.==$n)) then "kube:" else "kube:container:" end + $n;
+  
+.record.sourcetype = (if (.tag | startswith("tail.containers.")) then (.record.source | extract_container_name | container_sourcetype) else (.tag | ltrimstr("tail.") | gsub("\\."; ":")) end) | .record
 {{- end -}}

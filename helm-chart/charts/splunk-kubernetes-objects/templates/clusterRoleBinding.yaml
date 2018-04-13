@@ -1,4 +1,4 @@
-{{- if not .Values.disableRBAC -}}
+{{- if not .Values.disableRBAC }}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
