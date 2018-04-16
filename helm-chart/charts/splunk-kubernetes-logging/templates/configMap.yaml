@@ -136,7 +136,7 @@ data:
       @type tail
       tag tail.kube.{{ $name }}
       path {{ .file.path }}
-      pos_file /var/log/splunk-fluentd-etcd.log.pos
+      pos_file /var/log/splunk-fluentd-{{ $name }}.log.pos
       path_key source
       <parse>
         @type regexp
