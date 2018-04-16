@@ -81,10 +81,11 @@ data:
       tag tail.kube.salt
       path /var/log/salt/minion
       pos_file /var/log/splunk-fluentd-salt.pos
+      read_from_head true
       path_key source
       <parse>
         @type regexp
-        expression /^(?<time>[^ ]* [^ ,]*)(?<message>.*)$/
+        expression /^(?<log>(?<time>[^ ]* [^ ,]*).*)$/
         time_key time
         time_type string
         time_format %Y-%m-%d %H:%M:%S
@@ -99,6 +100,7 @@ data:
       tag tail.kube.startupscript
       path /var/log/startupscript.log
       pos_file /var/log/splunk-fluentd-startupscript.log.pos
+      read_from_head true
       path_key source
       <parse>
         @type syslog
@@ -115,10 +117,11 @@ data:
       tag tail.kube.docker
       path {{ .Values.logSources.docker.file.path }}
       pos_file /var/log/splunk-fluentd-docker.log.pos
+      read_from_head true
       path_key source
       <parse>
         @type regexp
-        expression /^time="(?<time>[^)]*)" (?<message>.*)$/
+        expression /^(?<log>time="(?<time>[^"]*)".*)$/
         time_key time
         time_type string
         time_format %Y-%m-%dT%H:%M:%S.%NZ
@@ -137,13 +140,14 @@ data:
       tag tail.kube.{{ $name }}
       path {{ .file.path }}
       pos_file /var/log/splunk-fluentd-{{ $name }}.log.pos
+      read_from_head true
       path_key source
       <parse>
         @type regexp
-        expression ^(?<time>\d{4}-d{2}-d{2} \d{2}:\d{2}:\d{2}\.\d{6}) (?<message>.*)$
+        expression ^(?<log>(?<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}).*)$
         time_key time
         time_type string
-        time_format %Y-%m-%d %H:%M:%S.%6N
+        time_format %Y-%m-%d %H:%M:%S.%N
       </parse>
     </source>
     {{- end }}
@@ -163,6 +167,7 @@ data:
       tag tail.kube.{{ . }}
       path {{ $source.file.path }}
       pos_file /var/log/splunk-fluentd-{{ . }}.log.pos
+      read_from_head true
       path_key source
 {{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
     </source>
