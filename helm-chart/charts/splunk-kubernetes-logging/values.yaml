@@ -47,9 +47,9 @@ logSources:
   kubelet:
     journald:
       unit: kubelet.service
-  etcd-server: 
+  etcd: # or etcd-server
     container: true
-  etcd-server-events:
+  etcd-events: # or etcd-server-events
     container: true
   kube-apiserver:
     container: true

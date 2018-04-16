@@ -126,13 +126,13 @@ data:
     </source>
     {{- end }}
 
-    {{- range $name := tuple "etcd-server" "etcd-server-events" }}
+    {{- range $name := tuple "etcd" "etcd-server" "etcd-events" "etcd-server-events" }}
     {{- with index $.Values.logSources $name }}
     {{- if .file }}
     # Example:
     # 2018-04-13 05:04:38.537777 I | etcdmain: listening for peers on http://0.0.0.0:2381
     <source>
-      @id etcd.log
+      @id {{ $name }}.log
       @type tail
       tag tail.kube.{{ $name }}
       path {{ .file.path }}
@@ -154,7 +154,7 @@ data:
     # statements, such as those that include entire object bodies, get split into
     # multiple lines by glog.
 
-    {{- range "etcd-server" | without ("etcd-server-events" | without ("docker" | without (keys .Values.logSources))) }}
+    {{- range "etcd" | without ("etcd-server" | without ("etcd-events" | without ("etcd-server-events" | without ("docker" | without (keys .Values.logSources))))) }}
     {{- $source := index $.Values.logSources . }}
     {{- if $source.file }}
     <source>
