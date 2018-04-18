@@ -42,7 +42,7 @@ spec:
       containers:
         - image: k8s.gcr.io/heapster-amd64:{{ .Values.image.heapsterTag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          name: heapster
+          name: splunk-heapster
           command:
             - /heapster
             # - --source=kubernetes.summary_api:''
