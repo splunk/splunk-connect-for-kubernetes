@@ -15,4 +15,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ template "splunk-kubernetes-objects.fullname" . }}
+  namespace: {{ .Release.Namespace }}
 {{- end -}}
