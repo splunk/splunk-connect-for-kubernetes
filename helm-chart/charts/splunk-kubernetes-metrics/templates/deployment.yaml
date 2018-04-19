@@ -23,6 +23,7 @@ spec:
         k8s-app: heapster
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
+        checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
     spec:
       {{- if not .Values.disableRBAC }}
       serviceAccountName: {{ template "splunk-kubernetes-metrics.fullname" . }}
