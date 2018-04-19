@@ -14,7 +14,7 @@ rules:
     {{- range $index, $object := .Values.pullObjects }}
     - {{ $object.name }}
     {{- end }}
-    verbs: ["get"]
+    verbs: ["get", "list"]
   - apiGroups: [""]
     resources:
     {{- range $index, $object := .Values.watchObjects }}
