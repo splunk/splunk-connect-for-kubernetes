@@ -23,9 +23,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
     spec:
-      {{- if not .Values.disableRBAC }}
-      serviceAccountName: {{ template "splunk-kubernetes-objects.fullname" . }}
-      {{- end }}
+      serviceAccountName: {{ template "splunk-kubernetes-objects.serviceAccountName" . }}
       terminationGracePeriodSeconds: 30
       {{- with .Values.nodeSelector }}
       nodeSelector:

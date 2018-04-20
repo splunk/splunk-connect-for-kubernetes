@@ -32,6 +32,17 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Create the name of the service account to use
+*/}}
+{{- define "splunk-kubernetes-objects.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "splunk-kubernetes-objects.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Convert memory value from resources.limit to fluentd buffer.
 Rules:
 * fluentd does not support *i units

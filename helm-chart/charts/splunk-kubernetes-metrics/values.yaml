@@ -14,13 +14,20 @@
 logLevel:
 
 
-# Disable RBAC (Role-Based Access Control)
-# By default, this chart creates a service account which is bound to a cluster role
-# that has necessary permissions for heapster to do its job.
-# If you don't want it to create the service account and cluster role, set `disableRBAC` to `true`.
-#
-# Default value: false
-disableRBAC: false
+rbac:
+  # Specifies whether RBAC resources should be created.
+  # This should be set to `false` if either:
+  # a) RBAC is not enabled in the cluster, or
+  # b) you want to create RBAC resources by yourself.
+  create: true
+
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
 
 
 # = Splunk HEC Connection =

@@ -31,6 +31,17 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "splunk-kubernetes-metrics.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "splunk-kubernetes-metrics.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 The jq filter used to transform Heapster metrics which are formatted in statd format.
