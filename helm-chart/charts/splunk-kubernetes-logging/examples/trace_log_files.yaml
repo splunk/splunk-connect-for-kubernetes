@@ -3,7 +3,7 @@ splunk:
     token: 11111111-2222-3333-4444-555555555555
     host: 12.34.56.78
 
-logSources:
+kubeComponents:
   docker:
     file:
       path: /var/log/docker.log

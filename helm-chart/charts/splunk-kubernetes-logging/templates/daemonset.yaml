@@ -16,6 +16,7 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        checksum/helpers: {{ include (print $.Template.BasePath "/_helpers.tpl") . | sha256sum }}
     spec:
       {{- with .Values.nodeSelector }}
       nodeSelector:

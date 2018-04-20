@@ -107,7 +107,7 @@ def fs_sourcetype:
   ltrimstr("tail.") | gsub("\\."; ":");
 
 def container_sourcetype:
-  . as $n | if ({{ toJson (keys .Values.logSources) }} | any(.==$n)) then "kube:" + $n else $n end;
+  . as $n | if ({{ toJson (keys .Values.kubeComponents) }} | any(.==$n)) then "kube:" + $n else $n end;
 
 def extract_container_info:
   (.source | ltrimstr("/var/log/containers/") | split("_")) as $parts | ($parts[-1] | split("-")) as $cparts | .pod = $parts[0] | .namespace = $parts[1] | .container_name = ($cparts[:-1] | join("-")) | .container_id = ($cparts[-1] | rtrimstr(".log")) | .sourcetype = (.container_name | container_sourcetype) | .;

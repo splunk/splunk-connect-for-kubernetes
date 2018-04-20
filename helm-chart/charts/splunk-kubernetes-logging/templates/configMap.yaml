@@ -113,7 +113,7 @@ data:
       </parse>
     </source>
 
-    {{- if .Values.logSources.docker.file }}
+    {{- if .Values.kubeComponents.docker.file }}
     # Examples:
     # time="2016-02-04T06:51:03.053580605Z" level=info msg="GET /containers/json"
     # time="2016-02-04T07:53:57.505612354Z" level=error msg="HTTP Error" err="No such image: -f" statusCode=404
@@ -121,7 +121,7 @@ data:
       @id docker.log
       @type tail
       tag tail.kube.docker
-      path {{ .Values.logSources.docker.file.path }}
+      path {{ .Values.kubeComponents.docker.file.path }}
       pos_file /var/log/splunk-fluentd-docker.log.pos
       read_from_head true
       path_key source
@@ -136,7 +136,7 @@ data:
     {{- end }}
 
     {{- range $name := tuple "etcd" "etcd-server" "etcd-events" "etcd-server-events" }}
-    {{- with index $.Values.logSources $name }}
+    {{- with index $.Values.kubeComponents $name }}
     {{- if .file }}
     # Example:
     # 2018-04-13 05:04:38.537777 I | etcdmain: listening for peers on http://0.0.0.0:2381
@@ -164,8 +164,8 @@ data:
     # statements, such as those that include entire object bodies, get split into
     # multiple lines by glog.
 
-    {{- range "etcd" | without ("etcd-server" | without ("etcd-events" | without ("etcd-server-events" | without ("docker" | without (keys .Values.logSources))))) }}
-    {{- $source := index $.Values.logSources . }}
+    {{- range "etcd" | without ("etcd-server" | without ("etcd-events" | without ("etcd-server-events" | without ("docker" | without (keys .Values.kubeComponents))))) }}
+    {{- $source := index $.Values.kubeComponents . }}
     {{- if $source.file }}
     <source>
       @id {{ . }}.log
@@ -183,7 +183,7 @@ data:
 
   source.journal.kube.conf: |-
     # This fluentd conf file contains configurations for reading logs from systemd journal.
-    {{- range $name, $source := .Values.logSources }}
+    {{- range $name, $source := .Values.kubeComponents }}
     {{- if $source.journald }}
 {{ include "splunk-kubernetes-logging.journald-source" (dict "name" $name "unit" $source.journald.unit "journalLogPath" $.Values.journalLogPath) | indent 4 }}
     {{- end }}

@@ -21,7 +21,7 @@ detectMultilineExceptions:
   enable: false
 
 
-# logSources defines the sources for *kubernetes system components'* logs.
+# Defines the sources for *kubernetes system components'* logs.
 #
 # It supports 3 kinds of sources: journald, file, and container
 # For `journald` logs, `unit` is required for filtering using _SYSTEMD_UNIT, example:
@@ -43,7 +43,7 @@ detectMultilineExceptions:
 # kube-apiserver:
 #   container: true
 # ```
-logSources:
+kubeComponents:
   docker:
     journald:
       unit: docker.service
@@ -65,7 +65,7 @@ logSources:
     container: true
   kube-proxy:
     container: true
-  kube-dns:
+  kubedns:
     container: true
   dns-controller:
     container: true
