@@ -15,6 +15,12 @@ logLevel:
 journalLogPath: /run/log/journal
 
 
+detectMultilineExceptions:
+  # Enable (fluent-plugin-detect-exceptions)[https://github.com/GoogleCloudPlatform/fluent-plugin-detect-exceptions].
+  # Note: once enabled, fluentd's performance will be downgraded.
+  enable: false
+
+
 # logSources defines the sources for *kubernetes system components'* logs.
 #
 # It supports 3 kinds of sources: journald, file, and container

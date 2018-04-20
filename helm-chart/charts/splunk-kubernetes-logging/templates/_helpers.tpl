@@ -103,11 +103,14 @@ The jq filter used to generate source and sourcetype for container logs.
 Define it as a template here so there we don't need to escape the double quotes `` " ''.
 */}}
 {{- define "splunk-kubernetes-logging.container_jq_filter" -}}
-def extract_container_name:
-  split("_") | .[-1] | split("-") | .[:-1] | join("-");
+def fs_sourcetype:
+  ltrimstr("tail.") | gsub("\\."; ":");
 
 def container_sourcetype:
-  . as $n | if ({{ toJson (keys .Values.logSources) }} | any(.==$n)) then "kube:" else "kube:container:" end + $n;
+  . as $n | if ({{ toJson (keys .Values.logSources) }} | any(.==$n)) then "kube:" + $n else $n end;
+
+def extract_container_info:
+  (.source | ltrimstr("/var/log/containers/") | split("_")) as $parts | ($parts[-1] | split("-")) as $cparts | .pod = $parts[0] | .namespace = $parts[1] | .container_name = ($cparts[:-1] | join("-")) | .container_id = ($cparts[-1] | rtrimstr(".log")) | .sourcetype = (.container_name | container_sourcetype) | .;
   
-.record.sourcetype = (if (.tag | startswith("tail.containers.")) then (.record.source | extract_container_name | container_sourcetype) else (.tag | ltrimstr("tail.") | gsub("\\."; ":")) end) | .record
+if (.tag | startswith("tail.containers.")) then (.record | extract_container_info) else (.record.sourcetype = (.tag | fs_sourcetype) | .record) end
 {{- end -}}

@@ -43,7 +43,11 @@ data:
     <source>
       @id raw.containers.log
       @type tail
+      {{- if .Values.detectMultilineExceptions.enable }}
       tag raw.tail.containers.*
+      {{- else }}
+      tag tail.containers.*
+      {{- end }}
       path /var/log/containers/*.log
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
@@ -57,6 +61,7 @@ data:
       </parse>
     </source>
 
+    {{- if .Values.detectMultilineExceptions.enable }}
     # Detect exceptions in the log output and forward them as one log entry.
     <match raw.tail.containers.**>
       @id detect_exceptions.containers
@@ -68,6 +73,7 @@ data:
       max_bytes 500000
       max_lines 1000
     </match>
+    {{- end }}
 
   source.filesystem.kube.conf: |-
     # This fluentd conf file contains sources for all kinds of kubenetes system components.
@@ -191,6 +197,7 @@ data:
       tag monitor_agent
     </source>
 
+
   transform.conf: |-
     # these filters are for generating the source and sourcetype for each event.
     <filter tail.**>
@@ -239,6 +246,12 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
+      <fields>
+        pod
+        namespace
+        container_name
+        container_id
+      </fields>
       <buffer>
         @type memory
         {{- $limit := .Values.resources.limit }}
