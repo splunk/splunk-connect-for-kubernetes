@@ -58,22 +58,22 @@ def extract_metric:
   end;
   
 def extract_container:
-  split(".") | {container_type: "pod", node: .[1], namespace: .[3], pod: .[5], container: .[7]} + (.[8:] | extract_metric) | .metric = "container." + .metric | . ;
+  split(".") | {container_type: "pod", node: .[1], namespace: .[3], pod: .[5], container: .[7]} + (.[8:] | extract_metric) | .metric = "kube.container." + .metric | . ;
   
 def extract_syscontainer:
-  split(".") | {container_type: "sys", node: .[1], container: .[3]} + (.[4:] | extract_metric) | .metric = "container." + .metric | . ;
+  split(".") | {container_type: "sys", node: .[1], container: .[3]} + (.[4:] | extract_metric) | .metric = "kube.container." + .metric | . ;
   
 def extract_pod:
-  split(".") | {node: .[1], namespace: .[3], pod: .[5]} + (.[6:] | extract_metric) | .metric = "pod." + .metric | . ;
+  split(".") | {node: .[1], namespace: .[3], pod: .[5]} + (.[6:] | extract_metric) | .metric = "kube.pod." + .metric | . ;
   
 def extract_namespace:
-  split(".") | {namespace: .[1]} + (.[2:] | extract_metric) | .metric = "namespace." + .metric | . ;
+  split(".") | {namespace: .[1]} + (.[2:] | extract_metric) | .metric = "kube.namespace." + .metric | . ;
   
 def extract_node:
-  split(".") | {node: .[1]} + (.[2:] | extract_metric) | .metric = "node." + .metric | . ;
+  split(".") | {node: .[1]} + (.[2:] | extract_metric) | .metric = "kube.node." + .metric | . ;
   
 def extract_cluster:
-  split(".") | .[1:] | extract_metric | .metric = "cluster." + .metric | . ;
+  split(".") | .[1:] | extract_metric | .metric = "kube.cluster." + .metric | . ;
 
 def extract:
   if contains(".container.")
