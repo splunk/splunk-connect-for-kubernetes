@@ -1,6 +1,7 @@
 logLevel: error
 
-disableRBAC: false
+rbac:
+  create: false
 
 splunk:
   hec:

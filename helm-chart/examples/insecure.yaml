@@ -12,7 +12,8 @@ global:
 
 splunk-kubernetes-objects:
   # RBAC is disabled
-  disableRBAC: true
+  rbac:
+    create: false
 
   kubernetes:
       # connection to kubernetes is insecure
@@ -21,7 +22,12 @@ splunk-kubernetes-objects:
 
 splunk-kubernetes-metrics:
   # RBAC is disabled
-  disableRBAC: true
+  rbac:
+    create: false
+
+  # do not create service account
+  serviceAccount:
+    create: false
 
   splunk:
     hec:
