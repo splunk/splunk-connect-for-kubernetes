@@ -1,0 +1,194 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: splunk-kubernetes-metrics
+  labels:
+    app: splunk-kubernetes-metrics
+    version: 1.0.0
+
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: splunk-kubernetes-metrics
+  labels:
+    app: splunk-kubernetes-metrics
+    version: 1.0.0
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:heapster
+subjects:
+- kind: ServiceAccount
+  name: splunk-kubernetes-metrics
+  namespace: default
+
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: splunk-kubernetes-metrics
+  labels:
+    app: splunk-kubernetes-metrics
+    version: 1.0.0
+type: Opaque
+data:
+  splunk_hec_token: MmY3ZWE3N2MtZmYzMC00NmY3LTg2MzYtZjk2Mjk2YTRkYTI0
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-kubernetes-metrics
+  labels:
+    app: splunk-kubernetes-metrics
+    version: 1.0.0
+data:
+  fluent.conf: |
+    # system wide configurations
+    <system>
+      log_level info
+    </system>
+
+    <source>
+      @type udp
+      tag raw.metrics.udp
+      port 9001
+      message_length_limit 100m
+      <parse>
+        @type jq
+        jq 'split("\n") | reduce .[] as $item ({}; ($item | rindex(":")) as $i | .[$item[:$i]] = ($item[$i+1:-2] | tonumber))'
+      </parse>
+    </source>
+
+    <match raw.metrics.udp>
+      @type jq
+      jq "def extract_labels:\n  . as $labels | reduce range(length) as $n ({}; if $n % 2 == 0 then .[\"label.\" + $labels[$n]] = $labels[$n + 1] else . end);\n\ndef extract_metric:\n  if length % 2 == 0\n  then (.[:-2] | extract_labels) + {metric: (.[-2] | gsub(\"/\"; \".\")), resource_id: .[-1]}\n  else (.[:-1] | extract_labels) + {metric: (.[-1] | gsub(\"/\"; \".\"))}\n  end;\n  \ndef extract_container:\n  split(\".\") | {container_type: \"pod\", node: .[1], namespace: .[3], pod: .[5], container: .[7]} + (.[8:] | extract_metric) | .metric = \"kube.container.\" + .metric | . ;\n  \ndef extract_syscontainer:\n  split(\".\") | {container_type: \"sys\", node: .[1], container: .[3]} + (.[4:] | extract_metric) | .metric = \"kube.container.\" + .metric | . ;\n  \ndef extract_pod:\n  split(\".\") | {node: .[1], namespace: .[3], pod: .[5]} + (.[6:] | extract_metric) | .metric = \"kube.pod.\" + .metric | . ;\n  \ndef extract_namespace:\n  split(\".\") | {namespace: .[1]} + (.[2:] | extract_metric) | .metric = \"kube.namespace.\" + .metric | . ;\n  \ndef extract_node:\n  split(\".\") | {node: .[1]} + (.[2:] | extract_metric) | .metric = \"kube.node.\" + .metric | . ;\n  \ndef extract_cluster:\n  split(\".\") | .[1:] | extract_metric | .metric = \"kube.cluster.\" + .metric | . ;\n\ndef extract:\n  if contains(\".container.\")\n  then extract_container\n  elif contains(\".sys-container.\")\n  then extract_syscontainer\n  elif contains(\".pod.\")\n  then extract_pod\n  elif startswith(\"namespace.\")\n  then extract_namespace\n  elif startswith(\"node.\")\n  then extract_node\n  elif startswith(\"cluster.\")\n  then extract_cluster\n  else {}\n  end;\n\n \"heapster/namespace:\\(env.MY_NAMESPACE)/pod:\\(env.MY_POD_NAME)\" as $source | .record | to_entries | map({value, source: $source} + (.key | extract)) | ."
+      remove_tag_prefix raw
+    </match>
+
+    <match metrics.udp>
+      @type splunk_hec
+      data_type metric
+      metric_name_key metric
+      metric_value_key value
+      protocol https
+      hec_host 34.196.173.154
+      hec_port 8088
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      host "#{ENV['SPLUNK_HEC_HOST']}"
+      index demo-metrics
+      source ${tag}
+      insecure_ssl true
+      <buffer>
+        @type memory
+        chunk_limit_size 500m
+        chunk_limit_records 100000
+        flush_interval 5s
+        flush_thread_count 1
+        overflow_action block
+        retry_max_times 3
+      </buffer>
+    </match>
+
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: splunk-kubernetes-metrics
+  labels:
+    app: splunk-kubernetes-metrics
+    k8s-app: heapster-fluentd
+    version: 1.0.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: splunk-kubernetes-metrics
+      k8s-app: heapster
+      version: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: splunk-kubernetes-metrics
+        k8s-app: heapster
+        version: 1.0.0
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        checksum/config: 39923fad28ac6f942a0752f847b67c5ff8549d900153db86511c4f48e8c54bba
+        checksum/helpers: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+    spec:
+      serviceAccountName: splunk-kubernetes-metrics
+      containers:
+      - image: k8s.gcr.io/heapster-amd64:v1.5.1
+        imagePullPolicy: IfNotPresent
+        name: splunk-heapster
+        command:
+        - "/heapster"
+        - "--source=kubernetes"
+        - "--sink=statsd:udp://127.0.0.1:9001"
+        livenessProbe:
+          httpGet:
+            path: "/healthz"
+            port: 8082
+            scheme: HTTP
+          initialDelaySeconds: 180
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+      - image: gimil/k8s-l:0.1.2
+        name: splunk-fluentd-heapster
+        imagePullPolicy: IfNotPresent
+        command:
+        - fluentd
+        args:
+        - "-c"
+        - "/fluentd/etc/fluent.conf"
+        env:
+        - name: MY_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPLUNK_HEC_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: SPLUNK_HEC_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: splunk-kubernetes-metrics
+              key: splunk_hec_token
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+        volumeMounts:
+        - name: conf-configmap
+          mountPath: "/fluentd/etc"
+        - name: secrets
+          mountPath: "/fluentd/etc/splunk"
+          readOnly: true
+      volumes:
+      - name: conf-configmap
+        configMap:
+          name: splunk-kubernetes-metrics
+      - name: secrets
+        secret:
+          secretName: splunk-kubernetes-metrics

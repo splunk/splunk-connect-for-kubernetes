@@ -1,0 +1,309 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: splunk-kubernetes-logging
+  labels:
+    app: splunk-kubernetes-logging
+    version: 1.0.0
+type: Opaque
+data:
+  splunk_hec_token: MmY3ZWE3N2MtZmYzMC00NmY3LTg2MzYtZjk2Mjk2YTRkYTI0
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-kubernetes-logging
+  labels:
+    app: splunk-kubernetes-logging
+    version: 1.0.0
+data:
+  fluent.conf: |-
+    @include system.conf
+    @include source.filesystem.containers.conf
+    @include source.filesystem.kube.conf
+    @include source.journal.kube.conf
+    @include monit.conf
+    @include transform.conf
+    @include output.conf
+  system.conf: |-
+    # system wide configurations
+    <system>
+      log_level info
+      root_dir /tmp/fluentd
+    </system>
+  source.filesystem.containers.conf: |-
+    # This configuration file for Fluentd / td-agent is used
+    # to watch changes to Docker log files. The kubelet creates symlinks that
+    # capture the pod name, namespace, container name & Docker container ID
+    # to the docker logs for pods in the /var/log/containers directory on the host.
+    # If running this fluentd configuration in a Docker container, the /var/log
+    # directory should be mounted in the container.
+    # reading kubelet logs from journal
+    #
+    # Reference:
+    # https://github.com/kubernetes/community/blob/20d2f6f5498a5668bae2aea9dcaf4875b9c06ccb/contributors/design-proposals/node/kubelet-cri-logging.md
+    #
+    # Json Log Example:
+    # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}
+    # CRI Log Example (not supported):
+    # 2016-02-17T00:04:05.931087621Z stdout [info:2016-02-16T16:04:05.930-08:00] Some log text here
+    <source>
+      @id raw.containers.log
+      @type tail
+      tag tail.containers.*
+      path /var/log/containers/*.log
+      pos_file /var/log/splunk-fluentd-containers.log.pos
+      path_key source
+      read_from_head true
+      <parse>
+        @type json
+        time_key time
+        time_type string
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+        localtime false
+      </parse>
+    </source>
+  source.filesystem.kube.conf: |-
+    # This fluentd conf file contains sources for all kinds of kubenetes system components.
+
+    # logs for salt minion, if the kubernetes cluster is configured with salt.
+    # Example:
+    # 2015-12-21 23:17:22,066 [salt.state       ][INFO    ] Completed state [net.ipv4.ip_forward] at time 23:17:22.066081
+    <source>
+      @id minion
+      @type tail
+      tag tail.kube.salt
+      path /var/log/salt/minion
+      pos_file /var/log/splunk-fluentd-salt.pos
+      read_from_head true
+      path_key source
+      <parse>
+        @type regexp
+        expression /^(?<log>(?<time>[^ ]* [^ ,]*).*)$/
+        time_key time
+        time_type string
+        time_format %Y-%m-%d %H:%M:%S
+      </parse>
+    </source>
+
+    # Example:
+    # Dec 21 23:17:22 gke-foo-1-1-4b5cbd14-node-4eoj startupscript: Finished running startup script /var/run/google.startup.script
+    <source>
+      @id startupscript.log
+      @type tail
+      tag tail.kube.startupscript
+      path /var/log/startupscript.log
+      pos_file /var/log/splunk-fluentd-startupscript.log.pos
+      read_from_head true
+      path_key source
+      <parse>
+        @type syslog
+      </parse>
+    </source>
+
+    # Multi-line parsing is required for all the kube logs because very large log
+    # statements, such as those that include entire object bodies, get split into
+    # multiple lines by glog.
+  source.journal.kube.conf: |-
+    # This fluentd conf file contains configurations for reading logs from systemd journal.
+    <source>
+      @id journald-containerd
+      @type systemd
+      tag journal.kube.containerd
+      path "/var/log/journal"
+      filters [{ "_SYSTEMD_UNIT": "containerd.service" }]
+      read_from_head true
+      <storage>
+        @type local
+        persistent true
+      </storage>
+      <entry>
+        field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+        field_map_strict true
+      </entry>
+    </source>
+    <source>
+      @id journald-docker
+      @type systemd
+      tag journal.kube.docker
+      path "/var/log/journal"
+      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+      read_from_head true
+      <storage>
+        @type local
+        persistent true
+      </storage>
+      <entry>
+        field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+        field_map_strict true
+      </entry>
+    </source>
+    <source>
+      @id journald-kubelet
+      @type systemd
+      tag journal.kube.kubelet
+      path "/var/log/journal"
+      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      read_from_head true
+      <storage>
+        @type local
+        persistent true
+      </storage>
+      <entry>
+        field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+        field_map_strict true
+      </entry>
+    </source>
+  monit.conf: |-
+    <source>
+      @id fluentd-monitor-agent
+      @type monitor_agent
+      tag monitor_agent
+    </source>
+  transform.conf: |-
+    # these filters are for generating the source and sourcetype for each event.
+    <filter tail.**>
+      @type jq_transformer
+      jq "def fs_sourcetype:   ltrimstr(\"tail.\") | gsub(\"\\\\.\"; \":\");  def container_sourcetype:   . as $n | if ([\"containerd\",\"docker\",\"kube-apiserver\",\"kubelet\",\"kube-proxy\",\"kube-scheduler\",\"cloud-controller-manager\",\"dns-controller\",\"etcd\",\"etcd-events\",\"kube-controller-manager\",\"kube-dns-autoscaler\",\"kubedns\"] | any(.==$n)) then \"kube:\" + $n else $n end;  def extract_container_info:   (.source | ltrimstr(\"/var/log/containers/\") | split(\"_\")) as $parts | ($parts[-1] | split(\"-\")) as $cparts | .pod = $parts[0] | .namespace = $parts[1] | .container_name = ($cparts[:-1] | join(\"-\")) | .container_id = ($cparts[-1] | rtrimstr(\".log\")) | .sourcetype = (.container_name | container_sourcetype) | .;    if (.tag | startswith(\"tail.containers.\")) then (.record | extract_container_info) else (.record.sourcetype = (.tag | fs_sourcetype) | .record) end"
+    </filter>
+
+    <filter journal.**>
+      @type jq_transformer
+      jq '.record.source = "/var/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journal.") | gsub("\\\\."; ":")) | .record'
+    </filter>
+
+    <filter monitor_agent>
+      @type jq_transformer
+      jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
+    </filter>
+  output.conf: |-
+    # ignore fluentd's log
+    <match fluent.**>
+      @type null
+    </match>
+
+    <match **>
+      @type splunk_hec
+      protocol https
+      hec_host 34.196.173.154
+      hec_port 8088
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      host "#{ENV['SPLUNK_HEC_HOST']}"
+      source_key source
+      sourcetype_key sourcetype
+      index demo-events
+      insecure_ssl true
+      <fields>
+        pod
+        namespace
+        container_name
+        container_id
+      </fields>
+      <buffer>
+        @type memory
+        chunk_limit_size 500m
+        chunk_limit_records 100000
+        flush_interval 5s
+        flush_thread_count 1
+        overflow_action block
+        retry_max_times 3
+      </buffer>
+      <format monitor_agent>
+        @type json
+      </format>
+      <format>
+        # we just want to keep the raw logs, not the structure created by container or journal
+        @type single_value
+        message_key log
+        add_newline false
+      </format>
+    </match>
+
+
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: splunk-kubernetes-logging
+  labels:
+    app: splunk-kubernetes-logging
+    engine: fluentd
+    version: 1.0.0
+spec:
+  template:
+    metadata:
+      labels:
+        app: splunk-kubernetes-logging
+        version: 1.0.0
+      annotations:
+        checksum/config: 0dd69b46257af782343d7b49a2f8174f97b228cbc28a4992d6e6c7bff6dc92c9
+        checksum/helpers: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      containers:
+      - name: splunk-fluentd-k8s-logs
+        image: gimil/k8s-l:0.1.2
+        imagePullPolicy: IfNotPresent
+        command:
+        - fluentd
+        args:
+        - "-c"
+        - "/fluentd/etc/fluent.conf"
+        env:
+        - name: SPLUNK_HEC_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPLUNK_HEC_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: splunk-kubernetes-logging
+              key: splunk_hec_token
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: "/var/log"
+        - name: varlibdockercontainers
+          mountPath: "/var/lib/docker/containers"
+          readOnly: true
+        - name: journallogpath
+          mountPath: "/var/log/journal"
+          readOnly: true
+        - name: conf-configmap
+          mountPath: "/fluentd/etc"
+        - name: secrets
+          mountPath: "/fluentd/etc/splunk"
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: "/var/log"
+      - name: varlibdockercontainers
+        hostPath:
+          path: "/var/lib/docker/containers"
+      - name: journallogpath
+        hostPath:
+          path: "/var/log/journal"
+      - name: conf-configmap
+        configMap:
+          name: splunk-kubernetes-logging
+      - name: secrets
+        secret:
+          secretName: splunk-kubernetes-logging
