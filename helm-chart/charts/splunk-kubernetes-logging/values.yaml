@@ -53,9 +53,15 @@ kubeComponents:
   kubelet:
     journald:
       unit: kubelet.service
-  etcd: # or etcd-server
-    container: true
-  etcd-events: # or etcd-server-events
+  # etcd:
+  #   file:
+  #     path: /var/log/etcd.log
+  # etcd-events:
+  #   file:
+  #     path: /var/log/etcd-events.log
+  # 
+  # when etcd is running in a container, its name probably is not `etcd` but `etc-container`.
+  etcd-container:
     container: true
   kube-apiserver:
     container: true
