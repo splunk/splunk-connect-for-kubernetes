@@ -11,7 +11,7 @@ Splunk Connect for Kubernetes provides a way to import and search your Kubernete
   * http://docs.splunk.com/Documentation/Splunk/7.0.3/Data/ScaleHTTPEventCollector
 * You should be familiar with your Kubernetes configuration and know where your log info is collected in Kubernetes.
 * You must have administrator access to your Kubernetes cluster. 
-* To install using Helm (recommended), make sure you are running Helm in your Kubernetes configuration. See https://github.com/kubernetes/heapster
+* To install using Helm (recommended), make sure you are running Helm in your Kubernetes configuration. See https://github.com/kubernetes/helm
 * Have a minimum of two Splunk indexes ready to collect the log data, one for both logs and Kubernetes objects, and one for metrics. You can also create separate indexes for logs and objects, in which case you will need three Splunk indexes.
 
 ## Before you begin
@@ -32,40 +32,33 @@ Helm, maintained by the CNCF, allows the Kubernetes administrator to install, up
 
 To install and configure defaults with Helm:
 
-```$Helm install – name my-release - f my_values,yamlstable/splunk-connector/kubernetes-objects```
+```$ helm install --name my-release -f my_values.yaml stable/splunk-connect-for-kubernetes```
 
 To learn more about using and modifying charts, see: https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart and https://docs.helm.sh/using_helm/#using-helm.
 
+## Confiuration variables for Helm
+
+For a full list of configuration variables see the following file:
+
+https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-logging/values.yaml
+
 ## Deploy using YAML
 
-You can use YAML to `grep` the chart and manifest files and add them to your Kubernetes cluster. Please note that installation and debugging for Splunk Connect for Kubernetes through YAML is community-supported only.
+You can grab the manifest YAML files and use them to deploy the connector to your Kubernetes cluster. Please note that installation and debugging for Splunk Connect for Kubernetes through YAML is community-supported only.
 
 When you use YAML to install Splunk Connect for Kubernetes, the installation does not create the default configuration that is created when you install using Helm. To deploy the connector using YAML, you must know how to configure your Kubernetes variables to work with the connector. If you are not familiar with this process, we recommend that you use the Helm installation method. 
 
 To create YAML files in your Kubernetes cluster:
 
-1. `grep` the Charts and Manifest files from https://github.com/splunk/splunk-connect-for-kubernetes
+1. Grab the Charts and Manifest files from https://github.com/splunk/splunk-connect-for-kubernetes
 
-2. Apply the Charts file:
-
-    ```kubectl apply -f charts```
+2. Read through all YAML files in the Manifests folder and make any necessary changes. Note that the YAML files in the Manifests folder are examples and are not expected to be used as is.
 
 3. Apply the Manifest manifest file:
 
     ```kubectl apply -f manifests```
 
-Note that you may need to verify that your Kubernetes logs are recognized by the Splunk Connect for Kubernetes. See the following resources for YAML configuration properties:
-
-* https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-logging/values.yaml for information about varaible configuration using YAML.
-* charts/splunk-kubernetes-logging/values.yaml for configurable parameters for splunk-kubernetes-logging.
-* charts/splunk-kubernetes-objects/values.yaml for configurable parameters for splunk-kubernetes-objects.
-* charts/splunk-kubernetes-metrics/values.yaml for configurable parameters for splunk-kubernetes-metrics.
-
-## Confiuration variables
-
-For a full list of configuration variables see the following file:
-
-https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-logging/values.yaml
+Note that you may need to verify that your Kubernetes logs are recognized by the Splunk Connect for Kubernetes.
 
 # Architecture
 
