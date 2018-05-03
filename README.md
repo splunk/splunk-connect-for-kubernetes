@@ -54,7 +54,7 @@ To create YAML files in your Kubernetes cluster:
 
 2. Read through all YAML files in the Manifests folder and make any necessary changes. Note that the YAML files in the Manifests folder are examples and are not expected to be used as is.
 
-3. Apply the Manifest manifest file:
+3. Apply the Manifest file:
 
     ```kubectl apply -f manifests```
 
