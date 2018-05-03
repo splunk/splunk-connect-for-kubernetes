@@ -2,6 +2,20 @@
 # This is a YAML-formatted file.
 # Declared variables will be passed into templates.
 
+
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
+global:
+  logLevel: info
+  # If local splunk configurations are not present, the global ones will be used (if available)
+  splunk:
+    # It has exactly the same configs as splunk.hec does
+    hec:
+      protocol: https
+      insecureSSL: false
+
+
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
 # * debug
@@ -10,75 +24,6 @@
 # * error
 logLevel:
 
-
-# Directory where to read journald logs.
-journalLogPath: /run/log/journal
-
-
-detectMultilineExceptions:
-  # Enable (fluent-plugin-detect-exceptions)[https://github.com/GoogleCloudPlatform/fluent-plugin-detect-exceptions].
-  # Note: once enabled, fluentd's performance will be downgraded.
-  enable: false
-
-
-# Defines the sources for *kubernetes system components'* logs.
-#
-# It supports 3 kinds of sources: journald, file, and container
-# For `journald` logs, `unit` is required for filtering using _SYSTEMD_UNIT, example:
-# ```
-# docker:
-#   journald:
-#     unit: docker.service
-# ```
-#   
-# For `file` logs, `path` is required for specifying where is the log files. Log files are expected in `/var/log`, example:
-# ```
-# docker:
-#   file:
-#     path: /var/log/docker.log
-# ```
-#
-# For `container` logs, no additional configs are required, just simply set `container: true`, example:
-# ```
-# kube-apiserver:
-#   container: true
-# ```
-kubeComponents:
-  docker:
-    journald:
-      unit: docker.service
-  containerd:
-    journald:
-      unit: containerd.service
-  kubelet:
-    journald:
-      unit: kubelet.service
-  # etcd:
-  #   file:
-  #     path: /var/log/etcd.log
-  # etcd-events:
-  #   file:
-  #     path: /var/log/etcd-events.log
-  # 
-  # when etcd is running in a container, its name probably is not `etcd` but `etc-container`.
-  etcd-container:
-    container: true
-  kube-apiserver:
-    container: true
-  kube-scheduler:
-    container: true
-  kube-controller-manager:
-    container: true
-  kube-proxy:
-    container: true
-  kubedns:
-    container: true
-  dns-controller:
-    container: true
-  kube-dns-autoscaler:
-    container: true
-  cloud-controller-manager:
-    container: true
 
 # Local splunk configurations
 splunk:
@@ -109,22 +54,166 @@ splunk:
     #       The file will be stored as a secret in kubernetes.
     caFile:
 
-# Global configurations
-# These configurations will be used if the corresponding local configurations are not set.
-# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
-global:
-  logLevel: info
-  # If local splunk configurations are not present, the global ones will be used (if available)
-  splunk:
-    # It has exactly the same configs as splunk.hec does
-    hec:
-      protocol: https
-      insecureSSL: false
+
+# Directory where to read journald logs.
+journalLogPath: /run/log/journal
+
+
+# `logs` defines the source of logs, multiline support, and their sourcetypes.
+#
+# The scheme to define a log is:
+#
+# ```
+# <name>:
+#   from:
+#     <source>
+#   timestampExtraction:
+#     regexp: "<regexp_to_extract_timestamp_from_log>"
+#     format: "<format_of_the_timestamp>"
+#   multiline:
+#     firstline: "<regexp_to_detect_firstline_of_multiline>"
+#     flushInterval 5s
+#   sourcetype: "<sourcetype_of_logs>"
+# ```
+#
+# = <source> =
+# It supports 3 kinds of sources: journald, file, and container.
+# For `journald` logs, `unit` is required for filtering using _SYSTEMD_UNIT, example:
+# ```
+# docker:
+#   from:
+#     journald:
+#       unit: docker.service
+# ```
+#   
+# For `file` logs, `path` is required for specifying where is the log files. Log files are expected in `/var/log`, example:
+# ```
+# docker:
+#   from:
+#     file:
+#       path: /var/log/docker.log
+# ```
+#
+# For `container` logs, pod name is required. You can also provide the container name, if it's not provided, the name of this source will be used as the container name:
+# ```
+# kube-apiserver:
+#   from:
+#     pod: kube-apiserver
+#
+# etcd:
+#   from:
+#     pod: etcd-server
+#     container: etcd-container
+# ```
+#
+# = timestamp =
+# `timestampExtraction` defines how to extract timestamp from logs. This *only* works for `file` source.
+# To use `timestampExtraction` you need to define both:
+# - `regexp`: the Regular Expression used to find the timestamp from a log entry.
+#             The timestamp part must be in a `time` named group. E.g.
+#             (?<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})
+# - `format`: a format string defintes how to parse the timestamp, e.g. "%Y-%m-%d %H:%M:%S".
+#             More details can be find: http://ruby-doc.org/stdlib-2.5.0/libdoc/time/rdoc/Time.html#method-c-strptime
+#
+# = multiline =
+# `multiline` options provide basic multiline support. Two options:
+# - `firstline`: a Regular Expression used to detect the first line of a multiline log.
+# - `flushInterval`: The interval between data flushes, default value: 5s.
+#
+# = sourcetype =
+# sourcetype of each kind of log can be defined using the `sourcetype` field.
+# If `sourcetype` is not defined, `name` will be used.
+#
+# ---
+# Here we have some default timestampExtraction and multiline settings for kubernetes components.
+# So, usually you just need to redefine the source of those components if necessary.
+logs:
+  docker:
+    from:
+      journald:
+        unit: docker.service
+    timestampExtraction:
+      regexp: time="(?<time>\d{4}-\d{2}-\d{2}T[0-2]\d:[0-5]\d:[0-5]\d.\d{9}Z)"
+      format: "%Y-%m-%dT%H:%M:%S.%NZ"
+    sourcetype: kube:docker
+  kubelet: &glog
+    from:
+      journald:
+        unit: kubelet.service
+    timestampExtraction:
+      regexp: \w(?<time>[0-1]\d[0-3]\d [^\s]*)
+      format: "%m%d %H:%M:%S.%N"
+    multiline:
+      firstline: /^\w[0-1]\d[0-3]\d/
+    sourcetype: kube:kubelet
+  etcd:
+    from:
+      pod: etcd-server
+      container: etcd-container
+    timestampExtraction:
+      regexp: (?<time>\d{4}-\d{2}-\d{2} [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
+      format: "%Y-%m-%d %H:%M:%S.%N"
+    sourcetype: kube:etcd
+  etcd-events:
+    from:
+      pod: etcd-server-events
+      container: etcd-container
+    timestampExtraction:
+      regexp: (?<time>\d{4}-[0-1]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
+      format: "%Y-%m-%d %H:%M:%S.%N"
+    sourcetype: kube:etcd-events
+  kube-apiserver:
+    <<: *glog
+    from:
+      pod: kube-apiserver
+    sourcetype: kube:kube-apiserver
+  kube-scheduler:
+    <<: *glog
+    from:
+      pod: kube-scheduler
+    sourcetype: kube:kube-scheduler
+  kube-controller-manager:
+    <<: *glog
+    from:
+      pod: kube-controller-manager
+    sourcetype: kube:kube-controller-manager
+  kube-proxy:
+    <<: *glog
+    from:
+      pod: kube-proxy
+    sourcetype: kube:kube-proxy
+  kubedns:
+    <<: *glog
+    from:
+      pod: kube-dns
+    sourcetype: kube:kubedns
+  dnsmasq:
+    <<: *glog
+    from:
+      pod: kube-dns
+    sourcetype: kube:dnsmasq
+  dns-sidecar:
+    <<: *glog
+    from:
+      pod: kube-dns
+      container: sidecar
+    sourcetype: kube:kubedns-sidecar
+  dns-controller:
+    <<: *glog
+    from:
+      pod: dns-controller
+    sourcetype: kube:dns-controller
+  kube-dns-autoscaler:
+    <<: *glog
+    from:
+      pod: kube-dns-autoscaler
+      container: autoscaler
+    sourcetype: kube:kube-dns-autoscaler
 
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  tag: 0.1.2
+  tag: 0.2.1
   pullPolicy: IfNotPresent
 
 

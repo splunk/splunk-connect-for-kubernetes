@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: splunk-kubernetes-objects
+  labels:
+    app: splunk-kubernetes-objects
+    version: 1.0.0
+spec:
+  selector:
+    matchLabels:
+      app: splunk-kubernetes-objects
+      engine: fluentd
+      version: 1.0.0
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: splunk-kubernetes-objects
+        engine: fluentd
+        version: 1.0.0
+      annotations: {}
+    spec:
+      serviceAccountName: splunk-kubernetes-objects
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: splunk-fluentd-k8s-objects
+        image: gimil/k8s-o:0.2.2
+        imagePullPolicy: IfNotPresent
+        args:
+        - "-c"
+        - "/fluentd/etc/fluent.conf"
+        env:
+        - name: MY_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPLUNK_HEC_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: SPLUNK_HEC_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: splunk-kubernetes-objects
+              key: splunk_hec_token
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: conf-configmap
+          mountPath: "/fluentd/etc"
+        - name: secrets
+          mountPath: "/fluentd/etc/splunk"
+          readOnly: true
+      volumes:
+      - name: conf-configmap
+        configMap:
+          name: splunk-kubernetes-objects
+      - name: secrets
+        secret:
+          secretName: splunk-kubernetes-objects

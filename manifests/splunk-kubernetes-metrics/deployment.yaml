@@ -1,0 +1,92 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: splunk-kubernetes-metrics
+  labels:
+    app: splunk-kubernetes-metrics
+    k8s-app: heapster-fluentd
+    version: 1.0.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: splunk-kubernetes-metrics
+      k8s-app: heapster
+      version: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: splunk-kubernetes-metrics
+        k8s-app: heapster
+        version: 1.0.0
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      serviceAccountName: splunk-kubernetes-metrics
+      containers:
+      - image: k8s.gcr.io/heapster-amd64:v1.5.1
+        imagePullPolicy: IfNotPresent
+        name: splunk-heapster
+        command:
+        - "/heapster"
+        - "--source=kubernetes"
+        - "--sink=statsd:udp://127.0.0.1:9001"
+        livenessProbe:
+          httpGet:
+            path: "/healthz"
+            port: 8082
+            scheme: HTTP
+          initialDelaySeconds: 180
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+      - image: gimil/k8s-l:0.2.1
+        name: splunk-fluentd-heapster
+        imagePullPolicy: IfNotPresent
+        args:
+        - "-c"
+        - "/fluentd/etc/fluent.conf"
+        env:
+        - name: MY_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPLUNK_HEC_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: SPLUNK_HEC_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: splunk-kubernetes-metrics
+              key: splunk_hec_token
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+        volumeMounts:
+        - name: conf-configmap
+          mountPath: "/fluentd/etc"
+        - name: secrets
+          mountPath: "/fluentd/etc/splunk"
+          readOnly: true
+      volumes:
+      - name: conf-configmap
+        configMap:
+          name: splunk-kubernetes-metrics
+      - name: secrets
+        secret:
+          secretName: splunk-kubernetes-metrics

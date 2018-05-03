@@ -1,0 +1,80 @@
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: splunk-kubernetes-logging
+  labels:
+    app: splunk-kubernetes-logging
+    engine: fluentd
+    version: 1.0.0
+spec:
+  template:
+    metadata:
+      labels:
+        app: splunk-kubernetes-logging
+        version: 1.0.0
+      annotations: {}
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      containers:
+      - name: splunk-fluentd-k8s-logs
+        image: gimil/k8s-l:0.2.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - "-c"
+        - "/fluentd/etc/fluent.conf"
+        env:
+        - name: SPLUNK_HEC_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SPLUNK_HEC_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: splunk-kubernetes-logging
+              key: splunk_hec_token
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: "/var/log"
+        - name: varlibdockercontainers
+          mountPath: "/var/lib/docker/containers"
+          readOnly: true
+        - name: journallogpath
+          mountPath: "/run/log/journal"
+          readOnly: true
+        - name: conf-configmap
+          mountPath: "/fluentd/etc"
+        - name: secrets
+          mountPath: "/fluentd/etc/splunk"
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: "/var/log"
+      - name: varlibdockercontainers
+        hostPath:
+          path: "/var/lib/docker/containers"
+      - name: journallogpath
+        hostPath:
+          path: "/run/log/journal"
+      - name: conf-configmap
+        configMap:
+          name: splunk-kubernetes-logging
+      - name: secrets
+        secret:
+          secretName: splunk-kubernetes-logging

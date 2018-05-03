@@ -1,0 +1,45 @@
+splunk:
+  hec:
+    token: 11111111-2222-3333-4444-555555555555
+    host: 12.34.56.78
+
+logs:
+  # we want to read logs for `kube-apiserver` from a log file other then from the container logs
+  kube-apiserver:
+    from:
+      file:
+        path: /var/log/kube-apiserver.log
+  # read log files other then the default ones
+  my-log-file:
+    from:
+      file:
+        path: /var/log/my-app.log
+    timestampExtraction:
+      regexp: (?<time>\d{4}-\d{2}-\d{2}T\d{2}\d{2}\d{2}Z)
+      format: "%Y-%m-%dT%H:%M:%SZ"
+    multiline:
+      firstline: \d{4}-\d{2}-\d{2}
+    sourcetype: "combined_access"
+  # only multiline
+  my-multiline-file:
+    from:
+      file:
+        path: /var/log/my-multiline.log
+    multiline:
+      firstline: \d{4}-\d{2}-\d{2}
+    sourcetype: "some:sourcetype"
+  # no multiline
+  my-json-file:
+    from:
+      file:
+        path: /var/log/web-access.json
+    timestampExtraction:
+      regexp: (?<time>\d{4}-\d{2}-\d{2}T\d{2}\d{2}\d{2}Z)
+      format: "%Y-%m-%dT%H:%M:%SZ"
+    sourcetype: "_json"
+  # no timestampExtraction
+  my-data-file:
+    from:
+      file:
+        path: /var/log/my-data.csv
+    sourcetype: "csv"

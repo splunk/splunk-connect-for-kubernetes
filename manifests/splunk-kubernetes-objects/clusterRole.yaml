@@ -1,0 +1,24 @@
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: splunk-kubernetes-objects
+  labels:
+    app: splunk-kubernetes-objects
+    version: 1.0.0
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  - namespaces
+  - nodes
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ''
+  resources:
+  - events
+  verbs:
+  - watch

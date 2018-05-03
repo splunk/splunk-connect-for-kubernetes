@@ -51,29 +51,59 @@ kubernetes:
  
 
 # = Object Lists =
-# NOTE: at least one object must be provided either in `pullObjects` or `watchObjects`.
-
-  # A list of kubernetes objects to pull. Default list: pods, namespaces, and nodes.
-pullObjects:
-  # Available options for each object definition:
-  #   name:          name of the object to pull [REQUIRED]
-  #   namespace:     only pull objects from the specified namespace, by default it's all namespaces
-  #   labelSelector: select objects by label(s)
-  #   fieldSelector: select objects by field(s)
-  #   interval:      the interval at which object is pulled, default 15 minutes
-  - name: pods
-  - name: namespaces
-  - name: nodes
-
-# A list of kubernetes objects to watch. Default list: events.
-watchObjects:
-  # Available options for each object definition:
-  #   name: name of the object to watch [REQUIRED]
-  #   namespace: only watch objects from the specified namespace, by default it's all namespaces
-  #   labelSelector: select objects by label(s)
-  #   fieldSelector: select objects by field(s)
-  - name: events
-
+# NOTE: at least one object must be provided.
+#
+# == Schema ==
+# ```
+# objects:
+#   <apiGroup>:
+#     <apiVersion>:
+#       - <objectDefinition>
+# ```
+#
+# Each `objectDefinition` has the following fields:
+# * mode:
+#     define in which way it collects this type of object, either "poll" or "watch".
+#     - "poll" mode will read all objects of this type use the list API at an interval.
+#     - "watch" mode will setup a long connection using the watch API to just get updates.
+# * name: [REQUIRED]
+#     name of the object, e.g. `pods`, `namespaces`.
+#     Note that for resource names that contains multiple words, like `daemonsets`,
+#     words need to be separated with `_`, so `daemonsets` becomes `daemon_sets`.
+# * namespace:
+#     only collects objects from the specified namespace, by default it's all namespaces
+# * labelSelector:
+#     select objects by label(s)
+# * fieldSelector:
+#     select objects by field(s)
+# * interval:
+#     the interval at which object is pulled, default 15 minutes.
+#     Only useful for "poll" mode.
+#
+# == Example ==
+# ```
+# objects:
+#   core:
+#     v1:
+#       - name: pods
+#         namespace: default
+#         mode: pull
+#         interval: 60m
+#       - name: events
+#         mode: watch
+#   apps:
+#     v1:
+#       - name: daemon_sets
+#         labelSelector: environment=production
+# ```
+objects:
+  core:
+    v1:
+      - name: pods
+      - name: namespaces
+      - name: nodes
+      - name: events
+        mode: watch
 
 # = Checkpoint Configs =
 # defines the checkpoint file used for saving the resourceVersion of watched objects,
@@ -118,22 +148,8 @@ splunk:
     caPath:
 
 
-# = Global Configs =
-# Global configs allow parent chart to set values with `global.*`.
-# The purpose for using global configs is to share the same configs with sibling/sub charts.
-#
-# Values defined here are the default values.
-global:
-  logLevel: info
-  splunk:
-    hec:
-      protocol: https
-      port: 8088
-      insecureSSL: false
-
-
 image:
-  tag: 0.1.2
+  tag: 0.2.2
   pullPolicy: IfNotPresent
 
 
@@ -154,3 +170,17 @@ tolerations: []
 
 
 affinity: {}
+
+
+# = Global Configs =
+# Global configs allow parent chart to set values with `global.*`.
+# The purpose for using global configs is to share the same configs with sibling/sub charts.
+#
+# Values defined here are the default values.
+global:
+  logLevel: info
+  splunk:
+    hec:
+      protocol: https
+      port: 8088
+      insecureSSL: false

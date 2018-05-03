@@ -10,11 +10,10 @@ metadata:
 data:
   fluent.conf: |-
     @include system.conf
-    @include source.filesystem.containers.conf
-    @include source.filesystem.kube.conf
-    @include source.journal.kube.conf
+    @include source.containers.conf
+    @include source.files.conf
+    @include source.journald.conf
     @include monit.conf
-    @include transform.conf
     @include output.conf
 
   system.conf: |-
@@ -24,7 +23,7 @@ data:
       root_dir /tmp/fluentd
     </system>
 
-  source.filesystem.containers.conf: |-
+  source.containers.conf: |-
     # This configuration file for Fluentd / td-agent is used
     # to watch changes to Docker log files. The kubelet creates symlinks that
     # capture the pod name, namespace, container name & Docker container ID
@@ -41,13 +40,10 @@ data:
     # CRI Log Example (not supported):
     # 2016-02-17T00:04:05.931087621Z stdout [info:2016-02-16T16:04:05.930-08:00] Some log text here
     <source>
-      @id raw.containers.log
+      @id containers.log
       @type tail
-      {{- if .Values.detectMultilineExceptions.enable }}
-      tag raw.tail.containers.*
-      {{- else }}
+      @label @SPLUNK
       tag tail.containers.*
-      {{- end }}
       path /var/log/containers/*.log
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
@@ -61,131 +57,72 @@ data:
       </parse>
     </source>
 
-    {{- if .Values.detectMultilineExceptions.enable }}
-    # Detect exceptions in the log output and forward them as one log entry.
-    <match raw.tail.containers.**>
-      @id detect_exceptions.containers
-      @type detect_exceptions
-      remove_tag_prefix raw
-      message log
-      stream stream
-      multiline_flush_interval 5
-      max_bytes 500000
-      max_lines 1000
-    </match>
-    {{- end }}
-
-  source.filesystem.kube.conf: |-
-    # This fluentd conf file contains sources for all kinds of kubenetes system components.
-
-    # logs for salt minion, if the kubernetes cluster is configured with salt.
-    # Example:
-    # 2015-12-21 23:17:22,066 [salt.state       ][INFO    ] Completed state [net.ipv4.ip_forward] at time 23:17:22.066081
+  source.files.conf: |-
+    # This fluentd conf file contains sources for log files other than container logs.
+    {{- $checks := dict "hasFileLog" false }}
+    {{- range $name, $logDef := .Values.logs }}
+    {{- if $logDef.from.file }}
+    {{- set $checks "hasFileLog" true | and nil }}
     <source>
-      @id minion
+      @id tail.file.{{ $name }}
       @type tail
-      tag tail.kube.salt
-      path /var/log/salt/minion
-      pos_file /var/log/splunk-fluentd-salt.pos
+      @label @SPLUNK
+      tag tail.file.{{ or $logDef.sourcetype $name }}
+      path {{ $logDef.from.file.path }}
+      pos_file /var/log/splunk-fluentd-{{ $name }}.pos
       read_from_head true
       path_key source
+      {{- if $logDef.multiline }}
+      multiline_flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
+      {{- end }}
       <parse>
-        @type regexp
-        expression /^(?<log>(?<time>[^ ]* [^ ,]*).*)$/
+        {{- if $logDef.multiline }}
+        @type multiline
+        format_firstline {{ $logDef.multiline.firstline }}
+        {{- if $logDef.timestampExtraction }}
+        format1 /^(?<log>{{ $logDef.timestampExtraction.regexp }}.*)$/
         time_key time
         time_type string
-        time_format %Y-%m-%d %H:%M:%S
-      </parse>
-    </source>
-
-    # Example:
-    # Dec 21 23:17:22 gke-foo-1-1-4b5cbd14-node-4eoj startupscript: Finished running startup script /var/run/google.startup.script
-    <source>
-      @id startupscript.log
-      @type tail
-      tag tail.kube.startupscript
-      path /var/log/startupscript.log
-      pos_file /var/log/splunk-fluentd-startupscript.log.pos
-      read_from_head true
-      path_key source
-      <parse>
-        @type syslog
-      </parse>
-    </source>
-
-    {{- if .Values.kubeComponents.docker.file }}
-    # Examples:
-    # time="2016-02-04T06:51:03.053580605Z" level=info msg="GET /containers/json"
-    # time="2016-02-04T07:53:57.505612354Z" level=error msg="HTTP Error" err="No such image: -f" statusCode=404
-    <source>
-      @id docker.log
-      @type tail
-      tag tail.kube.docker
-      path {{ .Values.kubeComponents.docker.file.path }}
-      pos_file /var/log/splunk-fluentd-docker.log.pos
-      read_from_head true
-      path_key source
-      <parse>
+        time_format {{ $logDef.timestampExtraction.format }}
+        {{- end }}
+        {{- else if $logDef.timestampExtraction }}
         @type regexp
-        expression /^(?<log>time="(?<time>[^"]*)".*)$/
+        expression /^(?<log>{{ $logDef.timestampExtraction.regexp }}.*)$/
         time_key time
         time_type string
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
-      </parse>
-    </source>
-    {{- end }}
-
-    {{- range $name := tuple "etcd" "etcd-server" "etcd-events" "etcd-server-events" }}
-    {{- with index $.Values.kubeComponents $name }}
-    {{- if .file }}
-    # Example:
-    # 2018-04-13 05:04:38.537777 I | etcdmain: listening for peers on http://0.0.0.0:2381
-    <source>
-      @id {{ $name }}.log
-      @type tail
-      tag tail.kube.{{ $name }}
-      path {{ .file.path }}
-      pos_file /var/log/splunk-fluentd-{{ $name }}.log.pos
-      read_from_head true
-      path_key source
-      <parse>
-        @type regexp
-        expression ^(?<log>(?<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}).*)$
-        time_key time
-        time_type string
-        time_format %Y-%m-%d %H:%M:%S.%N
+        time_format {{ $logDef.timestampExtraction.format }} 
+        {{- else }}
+        @type none
+        message_key log
+        {{- end }}
       </parse>
     </source>
     {{- end }}
     {{- end }}
-    {{- end }}
-
-    # Multi-line parsing is required for all the kube logs because very large log
-    # statements, such as those that include entire object bodies, get split into
-    # multiple lines by glog.
-
-    {{- range "etcd" | without ("etcd-server" | without ("etcd-events" | without ("etcd-server-events" | without ("docker" | without (keys .Values.kubeComponents))))) }}
-    {{- $source := index $.Values.kubeComponents . }}
-    {{- if $source.file }}
-    <source>
-      @id {{ . }}.log
-      @type tail
-      tag tail.kube.{{ . }}
-      path {{ $source.file.path }}
-      pos_file /var/log/splunk-fluentd-{{ . }}.log.pos
-      read_from_head true
-      path_key source
-{{ include "splunk-kubernetes-logging.tail-glog-multiline" . | indent 6 }}
-    </source>
-    {{- end }}
-    {{- end }}
 
 
-  source.journal.kube.conf: |-
+  source.journald.conf: |-
     # This fluentd conf file contains configurations for reading logs from systemd journal.
-    {{- range $name, $source := .Values.kubeComponents }}
-    {{- if $source.journald }}
-{{ include "splunk-kubernetes-logging.journald-source" (dict "name" $name "unit" $source.journald.unit "journalLogPath" $.Values.journalLogPath) | indent 4 }}
+    {{- range $name, $logDef := .Values.logs }}
+    {{- if $logDef.from.journald }}
+    {{- set $checks "hasJournald" true | and nil }}
+    <source>
+      @id journald-{{ $name }}
+      @type systemd
+      @label @SPLUNK
+      tag journald.{{ or $logDef.sourcetype $name }}
+      path {{ $.Values.journalLogPath | quote }}
+      filters [{ "_SYSTEMD_UNIT": {{ $logDef.from.journald.unit | quote }} }]
+      read_from_head true
+      <storage>
+        @type local
+        persistent true
+      </storage>
+      <entry>
+        field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+        field_map_strict true
+      </entry>
+    </source>
     {{- end }}
     {{- end }}
 
@@ -194,81 +131,118 @@ data:
     <source>
       @id fluentd-monitor-agent
       @type monitor_agent
+      @label @SPLUNK
       tag monitor_agent
     </source>
 
 
-  transform.conf: |-
-    # these filters are for generating the source and sourcetype for each event.
-    <filter tail.**>
-      @type jq_transformer
-      jq {{ include "splunk-kubernetes-logging.container_jq_filter" . | replace "\n" " " | quote }}
-    </filter>
-
-    <filter journal.**>
-      @type jq_transformer
-      jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journal.") | gsub("\\\\."; ":")) | .record'
-    </filter>
-
-    <filter monitor_agent>
-      @type jq_transformer
-      jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
-    </filter>
-
-
   output.conf: |-
-    # ignore fluentd's log
-    <match fluent.**>
-      @type null
-    </match>
+    <label @SPLUNK>
+      # = filters for container logs =
+      {{- range $name, $logDef := .Values.logs }}
+      {{- if and $logDef.from.pod $logDef.multiline }}
+      <filter tail.containers.var.log.containers.{{ $logDef.from.pod }}*{{ or $logDef.from.container $name }}*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp {{ $logDef.multiline.firstline }}
+        flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
+      </filter>
+      {{- end }}
+      {{- end }}
 
-    <match **>
-      @type splunk_hec
-      protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
-      hec_host {{ required "splunk.hec.host is required." (or .Values.splunk.hec.host .Values.global.splunk.hec.host) }}
-      {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
-      hec_port {{ . }}
+      # extract index fields and sourcetype for container logs
+      <filter tail.containers.**>
+        @type jq_transformer
+        jq {{ include "splunk-kubernetes-logging.container_jq_filter" . | replace "\n" " " | quote }}
+      </filter>
+
+      # = filters for journald logs =
+      {{- range $name, $logDef := .Values.logs }}
+      {{- if and $logDef.from.journald $logDef.multiline }}
+      <filter journald.{{ or $logDef.sourcetype $name }}>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        multiline_start_regexp {{ $logDef.multiline.firstline }}
+        flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
+      </filter>
       {{- end }}
-      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      host "#{ENV['SPLUNK_HEC_HOST']}"
-      source_key source
-      sourcetype_key sourcetype
-      {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
-      index {{ . }}
       {{- end }}
-      insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
-      {{- if or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
-      client_cert /fluentd/etc/splunk/hec_client_cert
+
+      # create source and sourcetype
+      {{- if $checks.hasJournald }}
+      <filter journald.**>
+        @type jq_transformer
+        jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record'
+      </filter>
       {{- end }}
-      {{- if or .Values.splunk.hec.clientKey .Values.global.splunk.hec.clientKey }}
-      client_key /fluentd/etc/splunk/hec_client_key
+
+      # = filters for non-container log files =
+      {{- if $checks.hasFileLog }}
+      # extract sourcetype
+      <filter tail.file.**>
+        @type jq_transformer
+        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.") | .record'
+      </filter>
       {{- end }}
-      {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
-      ca_file /fluentd/etc/splunk/hec_ca_file
-      {{- end }}
-      <fields>
-        pod
-        namespace
-        container_name
-        container_id
-      </fields>
-      <buffer>
-        @type memory
-        {{- $limit := .Values.resources.limit }}
-        chunk_limit_size {{ if $limit.memory }}{{ template "splunk-kubernetes-logging.convert-memory" $limit.memory }}{{ else }}{{ "500m" }}{{ end }}
-        chunk_limit_records 100000
-        flush_interval 5s
-        flush_thread_count 1
-        overflow_action block
-        retry_max_times 3
-      </buffer>
-      <format monitor_agent>
-        @type json
-      </format>
-      <format>
-        # we just want to keep the raw logs, not the structure created by container or journal
-        @type single_value
-        message_key log
-        add_newline false
-      </format>
-    </match>
+
+      # = filters for monitor agent =
+      <filter monitor_agent>
+        @type jq_transformer
+        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
+      </filter>
+
+      # = output =
+      <match **>
+        @type splunk_hec
+        protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
+        hec_host {{ required "splunk.hec.host is required." (or .Values.splunk.hec.host .Values.global.splunk.hec.host) }}
+        {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
+        hec_port {{ . }}
+        {{- end }}
+        hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+        host "#{ENV['SPLUNK_HEC_HOST']}"
+        source_key source
+        sourcetype_key sourcetype
+        {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
+        index {{ . }}
+        {{- end }}
+        insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
+        {{- if or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
+        client_cert /fluentd/etc/splunk/hec_client_cert
+        {{- end }}
+        {{- if or .Values.splunk.hec.clientKey .Values.global.splunk.hec.clientKey }}
+        client_key /fluentd/etc/splunk/hec_client_key
+        {{- end }}
+        {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+        ca_file /fluentd/etc/splunk/hec_ca_file
+        {{- end }}
+        <fields>
+          pod
+          namespace
+          container_name
+          container_id
+        </fields>
+        <buffer>
+          @type memory
+          {{- $limit := .Values.resources.limit }}
+          chunk_limit_size {{ if $limit.memory }}{{ template "splunk-kubernetes-logging.convert-memory" $limit.memory }}{{ else }}{{ "500m" }}{{ end }}
+          chunk_limit_records 100000
+          flush_interval 5s
+          flush_thread_count 1
+          overflow_action block
+          retry_max_times 3
+        </buffer>
+        <format monitor_agent>
+          @type json
+        </format>
+        <format>
+          # we just want to keep the raw logs, not the structure created by docker or journald
+          @type single_value
+          message_key log
+          add_newline false
+        </format>
+      </match>
+    </label>

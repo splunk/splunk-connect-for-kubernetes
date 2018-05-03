@@ -1,0 +1,243 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-kubernetes-logging
+  labels:
+    app: splunk-kubernetes-logging
+    version: 1.0.0
+data:
+  fluent.conf: |-
+    @include system.conf
+    @include source.containers.conf
+    @include source.files.conf
+    @include source.journald.conf
+    @include monit.conf
+    @include output.conf
+  system.conf: |-
+    # system wide configurations
+    <system>
+      log_level info
+      root_dir /tmp/fluentd
+    </system>
+  source.containers.conf: |-
+    # This configuration file for Fluentd / td-agent is used
+    # to watch changes to Docker log files. The kubelet creates symlinks that
+    # capture the pod name, namespace, container name & Docker container ID
+    # to the docker logs for pods in the /var/log/containers directory on the host.
+    # If running this fluentd configuration in a Docker container, the /var/log
+    # directory should be mounted in the container.
+    # reading kubelet logs from journal
+    #
+    # Reference:
+    # https://github.com/kubernetes/community/blob/20d2f6f5498a5668bae2aea9dcaf4875b9c06ccb/contributors/design-proposals/node/kubelet-cri-logging.md
+    #
+    # Json Log Example:
+    # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}
+    # CRI Log Example (not supported):
+    # 2016-02-17T00:04:05.931087621Z stdout [info:2016-02-16T16:04:05.930-08:00] Some log text here
+    <source>
+      @id containers.log
+      @type tail
+      @label @SPLUNK
+      tag tail.containers.*
+      path /var/log/containers/*.log
+      pos_file /var/log/splunk-fluentd-containers.log.pos
+      path_key source
+      read_from_head true
+      <parse>
+        @type json
+        time_key time
+        time_type string
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+        localtime false
+      </parse>
+    </source>
+  source.files.conf: "# This fluentd conf file contains sources for log files other
+    than container logs."
+  source.journald.conf: |-
+    # This fluentd conf file contains configurations for reading logs from systemd journal.
+    <source>
+      @id journald-docker
+      @type systemd
+      @label @SPLUNK
+      tag journald.kube:docker
+      path "/run/log/journal"
+      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+      read_from_head true
+      <storage>
+        @type local
+        persistent true
+      </storage>
+      <entry>
+        field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+        field_map_strict true
+      </entry>
+    </source>
+    <source>
+      @id journald-kubelet
+      @type systemd
+      @label @SPLUNK
+      tag journald.kube:kubelet
+      path "/run/log/journal"
+      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      read_from_head true
+      <storage>
+        @type local
+        persistent true
+      </storage>
+      <entry>
+        field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
+        field_map_strict true
+      </entry>
+    </source>
+  monit.conf: |-
+    <source>
+      @id fluentd-monitor-agent
+      @type monitor_agent
+      @label @SPLUNK
+      tag monitor_agent
+    </source>
+  output.conf: |-
+    <label @SPLUNK>
+      # = filters for container logs =
+      <filter tail.containers.var.log.containers.dns-controller*dns-controller*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns*sidecar*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns*dnsmasq*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-apiserver*kube-apiserver*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-controller-manager*kube-controller-manager*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns-autoscaler*autoscaler*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-proxy*kube-proxy*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-scheduler*kube-scheduler*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns*kubedns*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+
+      # extract index fields and sourcetype for container logs
+      <filter tail.containers.**>
+        @type jq_transformer
+        jq "def find_sourcetype(pod; container_name): container_name + \"/\" + pod | if startswith(\"dns-controller/dns-controller\") then \"kube:dns-controller\" elif startswith(\"sidecar/kube-dns\") then \"kube:kubedns-sidecar\" elif startswith(\"dnsmasq/kube-dns\") then \"kube:dnsmasq\" elif startswith(\"etcd-container/etcd-server\") then \"kube:etcd\" elif startswith(\"etcd-container/etcd-server-events\") then \"kube:etcd-events\" elif startswith(\"kube-apiserver/kube-apiserver\") then \"kube:kube-apiserver\" elif startswith(\"kube-controller-manager/kube-controller-manager\") then \"kube:kube-controller-manager\" elif startswith(\"autoscaler/kube-dns-autoscaler\") then \"kube:kube-dns-autoscaler\" elif startswith(\"kube-proxy/kube-proxy\") then \"kube:kube-proxy\" elif startswith(\"kube-scheduler/kube-scheduler\") then \"kube:kube-scheduler\" elif startswith(\"kubedns/kube-dns\") then \"kube:kubedns\" else empty end;  def extract_container_info:   (.source | ltrimstr(\"/var/log/containers/\") | split(\"_\")) as $parts   | ($parts[-1] | split(\"-\")) as $cparts   | .pod = $parts[0]   | .namespace = $parts[1]   | .container_name = ($cparts[:-1] | join(\"-\"))   | .container_id = ($cparts[-1] | rtrimstr(\".log\"))   | .;    .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // \"kube:container-log:\\(.container_name)\")"
+      </filter>
+
+      # = filters for journald logs =
+      <filter journald.kube:kubelet>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+
+      # create source and sourcetype
+      <filter journald.**>
+        @type jq_transformer
+        jq '.record.source = "/run/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record'
+      </filter>
+
+      # = filters for non-container log files =
+
+      # = filters for monitor agent =
+      <filter monitor_agent>
+        @type jq_transformer
+        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
+      </filter>
+
+      # = output =
+      <match **>
+        @type splunk_hec
+      protocol https
+      hec_host my.splunk.indexer
+      hec_port 8088
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      host "#{ENV['SPLUNK_HEC_HOST']}"
+      source_key source
+      sourcetype_key sourcetype
+      index my-events-index
+      insecure_ssl true
+      <fields>
+        pod
+        namespace
+        container_name
+        container_id
+      </fields>
+        <buffer>
+          @type memory
+          chunk_limit_size 500m
+          chunk_limit_records 100000
+          flush_interval 5s
+          flush_thread_count 1
+          overflow_action block
+          retry_max_times 3
+        </buffer>
+        <format monitor_agent>
+          @type json
+        </format>
+        <format>
+          # we just want to keep the raw logs, not the structure created by docker or journald
+          @type single_value
+          message_key log
+          add_newline false
+        </format>
+      </match>
+    </label>

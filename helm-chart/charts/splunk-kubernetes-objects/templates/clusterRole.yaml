@@ -9,16 +9,43 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 rules:
-  - apiGroups: [""]
+  {{/* create a map for generating the rules */}}
+  {{- $groupedObjects := dict }}
+  {{- range $apiGroup, $apiVersions := .Values.objects }}
+  {{- $lists := dict "pull" list "watch" list }}
+  {{- range $apiVersion, $objects := $apiVersions }}
+  {{- range $objects }}
+  {{- if eq (.mode | default "pull" | lower) "watch" }}
+  {{- set $lists "watch" (append $lists.watch .name) | and nil }}
+  {{- else }}
+  {{- set $lists "pull" (append $lists.pull .name) | and nil }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- $groupName := or (and (ne $apiGroup "core") $apiGroup) "" }}
+  {{- set $groupedObjects $groupName $lists | and nil }}
+  {{- end }}
+  {{/* generating the content */}}
+  {{- range $apiGroup, $lists := $groupedObjects }}
+  {{- if $lists.pull }}
+  - apiGroups: [
+    {{- $apiGroup | quote -}}
+  ]
     resources:
-    {{- range $index, $object := .Values.pullObjects }}
-    - {{ $object.name }}
+    {{- range $lists.pull }}
+    - {{ . | replace "_" "" }}
     {{- end }}
     verbs: ["get", "list"]
-  - apiGroups: [""]
+  {{- end }}
+  {{- if $lists.watch }}
+  - apiGroups: [
+    {{- $apiGroup | quote -}}
+  ]
     resources:
-    {{- range $index, $object := .Values.watchObjects }}
-    - {{ $object.name }}
+    {{- range $lists.watch }}
+    - {{ . | replace "_" "" }}
     {{- end }}
     verbs: ["watch"]
+  {{- end }}
+  {{- end }}
 {{- end -}}

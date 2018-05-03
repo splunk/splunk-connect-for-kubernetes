@@ -1,4 +1,3 @@
-{{- required "Must have at least one object defined in `pullObjects` or `watchObjects`." (or (first .Values.pullObjects) (first .Values.watchObjects)) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,48 +13,60 @@ data:
       log_level {{ or .Values.logLevel .Values.global.logLevel }}
     </system>
 
+    {{- range $apiGroup, $apiVersions := .Values.objects }}
+    {{- range $apiVersion, $objects := $apiVersions }}
     <source>
       @type kubernetes_objects
       tag kube.objects.*
-      insecure_ssl {{ .Values.kubernetes.insecureSSL }}
-      {{- with .Values.kubernetes.secretDir }}
+      {{- with $.Values.kubernetes.url }}
+      kubernetes_url {{ . }}
+      {{- end }}
+      {{- if eq ($apiGroup | lower) "core" }}
+      api_version {{ $apiVersion | quote }}
+      {{- else }}
+      api_version {{ list $apiGroup $apiVersion | join "/" | quote }}
+      {{- end }}
+      insecure_ssl {{ $.Values.kubernetes.insecureSSL }}
+      {{- with $.Values.kubernetes.secretDir }}
       secret_dir {{ . }}
       {{- end }}
-      {{- if .Values.kubernetes.clientCert }}
+      {{- if $.Values.kubernetes.clientCert }}
       client_cert /fluentd/etc/splunk/k8s_client_cert
       {{- end }}
-      {{- if .Values.kubernetes.clientKey }}
+      {{- if $.Values.kubernetes.clientKey }}
       client_key /fluentd/etc/splunk/k8s_client_key
       {{- end }}
-      {{- if .Values.kubernetes.caFile }}
+      {{- if $.Values.kubernetes.caFile }}
       ca_file /fluentd/etc/splunk/k8s_ca_file
       {{- end }}
-      {{- with .Values.kubernetes.bearerTokenFile }}
+      {{- with $.Values.kubernetes.bearerTokenFile }}
       bearer_token_file {{ . }}
       {{- end }}
-      {{- if .Values.checkpointFile.volume }}
+      {{- if $.Values.checkpointFile.volume }}
       <storage>
         path /fluentd/var/checkpoints/{{ .Values.checkpointFile.name | default "kubernetes-objects" }}
       </storage> 
       {{- end }}
-      {{- range $index, $object := .Values.pullObjects }}
+      {{- range $objects }}
+      {{- if eq (.mode | default "pull" | lower) "pull" }}
       <pull>
-        resource_name {{ required "name of the object to be pulled is required" $object.name }}
-        {{- with $object.namespace }}namespace {{ . }}{{ end }}
-        {{- with $object.labelSelector }}label_selector {{ . }}{{ end }}
-        {{- with $object.fieldSelector }}field_selector {{ $object.fieldSelector }}{{ end }}
-        {{- with $object.interval }}interval {{ $object.interval }}{{ end }}
-      </pull>
-      {{- end }}
-      {{- range $index, $object := .Values.watchObjects }}
+      {{- else }}
       <watch>
-        resource_name {{ required "name of the object to be watched is required" $object.name }}
-        {{- with $object.namespace }}namespace {{ . }}{{ end }}
-        {{- with $object.labelSelector }}label_selector {{ . }}{{ end }}
-        {{- with $object.fieldSelector }}field_selector {{ . }}{{ end }}
+      {{- end }}
+        resource_name {{ required "object name is required" .name }}
+        {{- with .namespace }}namespace {{ . }}{{ end }}
+        {{- with .labelSelector }}label_selector {{ . }}{{ end }}
+        {{- with .fieldSelector }}field_selector {{ . }}{{ end }}
+        {{- with .interval }}interval {{ . }}{{ end }}
+      {{- if eq (.mode | default "pull" | lower) "pull" }}
+      </pull>
+      {{- else }}
       </watch>
       {{- end }}
+      {{- end }}
     </source>
+    {{- end }}
+    {{- end }}
 
     <filter kube.**>
       @type jq_transformer

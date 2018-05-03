@@ -60,57 +60,39 @@ Rules:
 {{- end -}}
 {{- end -}}
 
-{{/*
-This is a configuration block for a fluentd tail input plugin to support glob multiline format.
-Since it will be used in multiple places, make it a template.
-*/}}
-{{- define "splunk-kubernetes-logging.tail-glog-multiline" -}}
-multiline_flush_interval 5s
-<parse>
-  @type multiline
-  format_firstline /^\w\d{4}/
-  format1 /^(?<log>\w(?<time>\d{4} [^\s]*)\s+.*)/
-  time_key time
-  time_type string
-  time_format %m%d %H:%M:%S.%N
-</parse>
-{{- end -}}
-
-{{/*
-This is a fluentd configuration block that shared by all journald sources.
-*/}}
-{{- define "splunk-kubernetes-logging.journald-source" -}}
-<source>
-  @id journald-{{ .name }}
-  @type systemd
-  tag journal.kube.{{ .name }}
-  path {{ .journalLogPath | quote }}
-  filters [{ "_SYSTEMD_UNIT": {{ .unit | quote }} }]
-  read_from_head true
-  <storage>
-    @type local
-    persistent true
-  </storage>
-  <entry>
-    field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
-    field_map_strict true
-  </entry>
-</source>
-{{- end -}}
 
 {{/*
 The jq filter used to generate source and sourcetype for container logs.
 Define it as a template here so there we don't need to escape the double quotes `` " ''.
+To find the sourcetype, it cannot use map here, because the `pod` extracted from source
+is not exact the pod name. That's why we generated all those `if-elif-then` here.
 */}}
 {{- define "splunk-kubernetes-logging.container_jq_filter" -}}
-def fs_sourcetype:
-  ltrimstr("tail.") | gsub("\\."; ":");
-
-def container_sourcetype:
-  . as $n | if ({{ toJson (keys .Values.kubeComponents) }} | any(.==$n)) then "kube:" + $n else $n end;
+{{- $logs := dict "list" list }}
+{{- range $name, $logDef := .Values.logs }}
+{{- if (and $logDef.from.pod $logDef.sourcetype) }}
+{{- set $logs "list" (append $logs.list (dict "name" $name "from" $logDef.from "sourcetype" $logDef.sourcetype)) | and nil }}
+{{- end }}
+{{- end -}}
+def find_sourcetype(pod; container_name):
+{{- with first $logs.list }}
+container_name + "/" + pod |
+if startswith({{ list (or .from.container .name) .from.pod | join "/" | quote }}) then {{ .sourcetype | quote }}
+{{- end }}
+{{- range rest $logs.list }}
+elif startswith({{ list (or .from.container .name) .from.pod | join "/" | quote }}) then {{ .sourcetype | quote }}
+{{- end }}
+else empty
+end;
 
 def extract_container_info:
-  (.source | ltrimstr("/var/log/containers/") | split("_")) as $parts | ($parts[-1] | split("-")) as $cparts | .pod = $parts[0] | .namespace = $parts[1] | .container_name = ($cparts[:-1] | join("-")) | .container_id = ($cparts[-1] | rtrimstr(".log")) | .sourcetype = (.container_name | container_sourcetype) | .;
+  (.source | ltrimstr("/var/log/containers/") | split("_")) as $parts
+  | ($parts[-1] | split("-")) as $cparts
+  | .pod = $parts[0]
+  | .namespace = $parts[1]
+  | .container_name = ($cparts[:-1] | join("-"))
+  | .container_id = ($cparts[-1] | rtrimstr(".log"))
+  | .;
   
-if (.tag | startswith("tail.containers.")) then (.record | extract_container_info) else (.record.sourcetype = (.tag | fs_sourcetype) | .record) end
+.record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container-log:\(.container_name)")
 {{- end -}}

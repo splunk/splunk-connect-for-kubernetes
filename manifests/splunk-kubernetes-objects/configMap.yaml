@@ -1,0 +1,57 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-kubernetes-objects
+  labels:
+    app: splunk-kubernetes-objects
+    version: 1.0.0
+data:
+  fluent.conf: |
+    <system>
+      log_level info
+    </system>
+    <source>
+      @type kubernetes_objects
+      tag kube.objects.*
+      api_version "v1"
+      insecure_ssl true
+      <pull>
+        resource_name pods
+      </pull>
+      <pull>
+        resource_name namespaces
+      </pull>
+      <pull>
+        resource_name nodes
+      </pull>
+      <watch>
+        resource_name events
+      </watch>
+    </source>
+
+    <filter kube.**>
+      @type jq_transformer
+      # in ruby '\\' will escape and become just '\', since we need two '\' in the `gsub` jq filter, it becomes '\\\\'.
+      jq '.record.source = "namespace:\(env.MY_NAMESPACE)/pod:\(env.MY_POD_NAME)" | .record.sourcetype = (.tag | gsub("\\\\."; ":")) | .record'
+    </filter>
+
+    <match kube.**>
+      @type splunk_hec
+      protocol https
+      hec_host my.splunk.indexer
+      hec_port 8088
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      host "#{ENV['SPLUNK_HEC_HOST']}"
+      source_key source
+      sourcetype_key sourcetype
+      index my-events-index
+      insecure_ssl true
+      <buffer>
+        @type memory
+        chunk_limit_size 200m
+        chunk_limit_records 10000
+        flush_interval 3s
+        retry_max_times 3
+      </buffer>
+    </match>

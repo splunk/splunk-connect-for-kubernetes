@@ -75,7 +75,7 @@ global:
 
 image:
   heapsterTag: v1.5.1
-  sidecarTag: 0.1.2
+  sidecarTag: 0.2.1
   pullPolicy: IfNotPresent
 
 

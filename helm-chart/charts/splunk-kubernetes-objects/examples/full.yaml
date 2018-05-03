@@ -23,17 +23,21 @@ kubernetes:
   secretDir: /secret/dir/in/pod
 
 
-pullObjects:
-  - name: nodes
-    namespace: default
-    labelSelector: environment=production,app=nginx
-    fieldSelector: metadata.name=redis-master
-    interval: 1h
-  - name: namespaces
-
-
-watchObjects:
-  - name: events
-    namespace: default
-    labelSelector: environment=production,app=nginx
-    fieldSelector: involvedObject.name=redis-master
+objects:
+  core:
+    v1:
+      - name: pods
+        namespace: default
+        labelSelector: environment=production,app=nginx
+        fieldSelector: metadata.name=redis-master
+        interval: 1h
+      - name: namespaces
+      - name: events
+        mode: watch
+        namespace: default
+        labelSelector: environment=production,app=nginx
+        fieldSelector: involvedObject.name=redis-master
+  apps:
+    v1:
+      - name: daemon_sets
+      - name: deployments

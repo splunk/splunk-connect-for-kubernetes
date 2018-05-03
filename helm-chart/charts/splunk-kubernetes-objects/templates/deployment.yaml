@@ -22,7 +22,6 @@ spec:
         engine: fluentd
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
-        checksum/helpers: {{ include (print $.Template.BasePath "/_helpers.tpl") . | sha256sum }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-objects.serviceAccountName" . }}
       terminationGracePeriodSeconds: 30
@@ -42,6 +41,9 @@ spec:
       - name: splunk-fluentd-k8s-objects
         image: gimil/k8s-o:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+          - -c
+          - /fluentd/etc/fluent.conf
         env:
           - name: MY_NAMESPACE
             valueFrom:
