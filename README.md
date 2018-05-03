@@ -113,7 +113,7 @@ Some parameters used with Splunk Connect for Kubernetes can have an impact on ov
 
 By default, HEC can support up to 10K events per second with HTTP Keep-Alive disabled on clients. There are other use cases where HTTP Keep-Alive can be enabled for higher event rate, but cannot be enabled when connected to Splunk Connect for Kubernetes.
 
-Splunk Connect for Kubernetes can support an indexing rate of over 12 MB/s indexing with over 10K events/sec and a 1 KiB message size, assuming no filters and a consistent stream of events. This means that Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best address capacity needs, Splunk recommends that you monitor the HEC throughput and back pressure on Splunk Connect for Kubernetes deployments and be prepared to add additional nodes as needed.
+Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best address capacity needs, Splunk recommends that you monitor the HEC throughput and back pressure on Splunk Connect for Kubernetes deployments and be prepared to add additional nodes as needed.
 
 # Processing Multi-Line Logs
 
