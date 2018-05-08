@@ -34,31 +34,30 @@ To install and configure defaults with Helm:
 
 ```$ helm install --name my-release -f my_values.yaml stable/splunk-connect-for-kubernetes```
 
-To learn more about using and modifying charts, see: 
-* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging)
-* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-metrics/values.yaml)
-* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-objects/values.yaml)
-* [The Helm documentation](https://docs.helm.sh/using_helm/#using-helm)
+-To learn more about using and modifying charts, see: 
+* https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart
+* https://docs.helm.sh/using_helm/#using-helm.
 
 ## Confiuration variables for Helm
 
-For a full list of configuration variables see the following file:
-
-https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-logging/values.yaml
++To learn more about using and modifying charts, see: 
++* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging)
++* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-metrics/values.yaml)
++* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-objects/values.yaml)
 
 ## Deploy using YAML
 
-You can grab the manifest YAML files and use them to deploy the connector to your Kubernetes cluster. Please note that installation and debugging for Splunk Connect for Kubernetes through YAML is community-supported only.
+You can grab the manifest YAML files and use them to create the Kubernetes objects needed to deploy Splunk Connect for Kubernetes. Please note that installation and debugging for Splunk Connect for Kubernetes through YAML is community-supported only.
 
-When you use YAML to install Splunk Connect for Kubernetes, the installation does not create the default configuration that is created when you install using Helm. To deploy the connector using YAML, you must know how to configure your Kubernetes variables to work with the connector. If you are not familiar with this process, we recommend that you use the Helm installation method. 
+When you use YAML to deploy Splunk Connect for Kubernetes, the installation does not create the default configuration that is created when you install using Helm. To deploy the connector using YAML, you must know how to configure your Kubernetes variables to work with the connector. If you are not familiar with this process, we recommend that you use the Helm installation method. 
 
-To create YAML files in your Kubernetes cluster:
+To configure the Splunk Connector for Kubernetes using YAML files:
 
 1. Grab the Charts and Manifest files from https://github.com/splunk/splunk-connect-for-kubernetes
 
-2. Read through all YAML files in the Manifests folder and make any necessary changes. Note that the YAML files in the Manifests folder are examples and are not expected to be used as is.
+2. Read through all YAML files in the Manifests folder and make any necessary changes. Note that the YAML files in the Manifests folder are examples and are not expected to be used as provided.
 
-Note that you may need to verify that your Kubernetes logs are recognized by the Splunk Connect for Kubernetes.
+3. Verify that your Kubernetes logs are recognized by the Splunk Connect for Kubernetes.
 
 # Architecture
 
