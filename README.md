@@ -34,7 +34,11 @@ To install and configure defaults with Helm:
 
 ```$ helm install --name my-release -f my_values.yaml stable/splunk-connect-for-kubernetes```
 
-To learn more about using and modifying charts, see: https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart and https://docs.helm.sh/using_helm/#using-helm.
+To learn more about using and modifying charts, see: 
+* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging)
+* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-metrics/values.yaml)
+* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-objects/values.yaml)
+* [The Helm documentation](https://docs.helm.sh/using_helm/#using-helm)
 
 ## Confiuration variables for Helm
 
@@ -53,10 +57,6 @@ To create YAML files in your Kubernetes cluster:
 1. Grab the Charts and Manifest files from https://github.com/splunk/splunk-connect-for-kubernetes
 
 2. Read through all YAML files in the Manifests folder and make any necessary changes. Note that the YAML files in the Manifests folder are examples and are not expected to be used as is.
-
-3. Apply the Manifest file:
-
-    ```kubectl apply -f manifests```
 
 Note that you may need to verify that your Kubernetes logs are recognized by the Splunk Connect for Kubernetes.
 
@@ -110,8 +110,6 @@ If you want to learn more about how metrics are monitored in a Kubernetes cluste
 # Performance
 
 Some parameters used with Splunk Connect for Kubernetes can have an impact on overall performance of log ingestion, objects, or metrics. In general, the more filters that are added to one of the streams, the greater the preformance impact. 
-
-By default, HEC can support up to 10K events per second with HTTP Keep-Alive disabled on clients. There are other use cases where HTTP Keep-Alive can be enabled for higher event rate, but cannot be enabled when connected to Splunk Connect for Kubernetes.
 
 Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best address capacity needs, Splunk recommends that you monitor the HEC throughput and back pressure on Splunk Connect for Kubernetes deployments and be prepared to add additional nodes as needed.
 
