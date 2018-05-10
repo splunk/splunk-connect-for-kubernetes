@@ -3,6 +3,19 @@
 # Declare variables to be passed into your templates.
 
 
+# = Global Configs =
+# Allow to pass config values from parent chart using `global.*`.
+# Global values have lower priority.
+# Values defined here are the default values.
+global:
+  logLevel: info
+  splunk:
+    hec:
+      port: 8088
+      protocol: https
+      insecureSSL: false
+
+
 # = Log Level =
 # logLevel is to set log level of the Splunk kubernetes metrics collector. Avaiable values are:
 # * debug
@@ -58,19 +71,6 @@ splunk:
     # NOTE: The content of the file itself should be used here, not the file path.
     #       The file will be stored as a secret in kubernetes.
     caFile:
-
-
-# = Global Configs =
-# Allow to pass config values from parent chart using `global.*`.
-# Global values have lower priority.
-# Values defined here are the default values.
-global:
-  logLevel: info
-  splunk:
-    hec:
-      port: 8088
-      protocol: https
-      insecureSSL: false
 
 
 image:

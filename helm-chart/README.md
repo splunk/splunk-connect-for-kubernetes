@@ -1,8 +1,8 @@
-# Splunk Connector for Kubernetes #
+# Splunk Connect for Kubernetes #
 
-Splunk Connector for Kubernetes, `splunk-connector`, is a [Helm](https://github.com/kubernetes/helm) chart that once installed, will create Kubernetes objects in a Kubernetes cluster to collect the cluster's data and send them to [splunk](https://www.splunk.com/) so that you can get insights from your cluster.
+Splunk Connect for Kubernetes (the connector), is a [Helm](https://github.com/kubernetes/helm) chart that once installed, will create Kubernetes objects in a Kubernetes cluster to collect the cluster's data and send them to [splunk](https://www.splunk.com/) so that you can get insights from your cluster.
 
-`splunk-connector` contains three Helm Charts to manage Splunk Connect for Kubernetes:
+The connector contains three Helm Charts to manage Splunk Connect for Kubernetes:
 
 * splunk-kubernetes-logging: Daemonset that runs [fluentd](https://www.fluentd.org/) to collect logs for both Kubernetes system components (e.g. kubelet, apiserver, etc.), and applications which are running in the cluster. See [README](charts/splunk-kubernetes-logging/README.md) for details.
 * splunk-kubernetes-objects: Deployment that runs Fluentd to collect data of Kubernetes objects, e.g. namespaces, nodes, pods, etc. See [README](charts/splunk-kubernetes-objects/README.md) for details.
@@ -14,21 +14,26 @@ See also [Using Helm](https://docs.helm.sh/using_helm/#using-helm).
 
 First, prepare a Values file. Check the Values files in each sub-chart for details. You can also check the [examples](examples) for quick start.
 
-Once you have a Values file, you can simply install the chart with the release name `my-release` (optional) by running
+Once you have a Values file, you can simply install the chart with a release name (optional) by running
 
 ```bash
-$ helm install --name my-release -f my_values.yaml stable/splunk-connector
+$ helm install --name my-splunk-connect -f my_values.yaml stable/splunk-connector
 ```
 
 ## Uninstall ##
 
-To uninstall/delete the my-release deployment:
+To uninstall/delete deployment with name `my-splunk-connect`:
 
 ```bash
-$ helm delete --purge my-release
+$ helm delete --purge my-splunk-connect
 ```
 
 The command removes all the Kubernetes components associated with the Chart and deletes the release.
+
+### About RBAC ###
+
+If this is the first time you use Helm, and you have RBAC (Role Based Access Control) enabled in your Kubernetes cluster, before you install Helm, you should read [this doc](https://docs.helm.sh/using_helm/#role-based-access-control) carefully, otherwise you will encounter RBAC related issue when you try to install the chart.
+
 
 ## Configuration ##
 
