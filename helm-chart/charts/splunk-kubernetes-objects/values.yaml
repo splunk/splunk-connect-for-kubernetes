@@ -3,6 +3,20 @@
 # Declare variables to be passed into your templates.
 
 
+# = Global Configs =
+# Global configs allow parent chart to set values with `global.*`.
+# The purpose for using global configs is to share the same configs with sibling/sub charts.
+#
+# Values defined here are the default values.
+global:
+  logLevel: info
+  splunk:
+    hec:
+      protocol: https
+      port: 8088
+      insecureSSL: false
+
+
 # = Log Level =
 # logLevel is to set log level of the object collector. Avaiable values are:
 # * trace
@@ -105,6 +119,7 @@ objects:
       - name: events
         mode: watch
 
+
 # = Checkpoint Configs =
 # defines the checkpoint file used for saving the resourceVersion of watched objects,
 # so that when the fluentd pod restarts, it will continue from where it stopped.
@@ -157,7 +172,7 @@ image:
 resources:
   # limits:
   #  cpu: 100m
-  #  memory: 128Mi
+  #  memory: 200Mi
   requests:
    cpu: 100m
    memory: 200Mi
@@ -170,17 +185,3 @@ tolerations: []
 
 
 affinity: {}
-
-
-# = Global Configs =
-# Global configs allow parent chart to set values with `global.*`.
-# The purpose for using global configs is to share the same configs with sibling/sub charts.
-#
-# Values defined here are the default values.
-global:
-  logLevel: info
-  splunk:
-    hec:
-      protocol: https
-      port: 8088
-      insecureSSL: false
