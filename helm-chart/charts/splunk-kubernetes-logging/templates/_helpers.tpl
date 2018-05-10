@@ -94,5 +94,5 @@ def extract_container_info:
   | .container_id = ($cparts[-1] | rtrimstr(".log"))
   | .;
   
-.record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container-log:\(.container_name)")
+.record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
 {{- end -}}

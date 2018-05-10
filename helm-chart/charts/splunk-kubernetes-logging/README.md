@@ -40,7 +40,7 @@ With the default settings, it assumes that logs for `kubelet` and `docker` are a
 
 The default journald directory is `/run/log/journal`, if that's not your case, you need to set `journalLogPath` in your Values file.
 
-Container logs (except the Kubernetes system components) will be indexed in Splunk with `sourcetype` set to `kube:container-log:<container_name>`, you can define `sourcetype` for each container in `logs` too.
+Container logs (except the Kubernetes system components) will be indexed in Splunk with `sourcetype` set to `kube:container:<container_name>`, you can define `sourcetype` for each container in `logs` too.
 
 
 ## Components ##
