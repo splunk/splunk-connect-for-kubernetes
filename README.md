@@ -41,7 +41,7 @@ To install and configure defaults with Helm:
 ## Confiuration variables for Helm
 
 +To learn more about using and modifying charts, see: 
-+* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging)
++* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging/values.yaml)
 +* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-metrics/values.yaml)
 +* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-objects/values.yaml)
 
