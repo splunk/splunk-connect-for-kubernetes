@@ -1,3 +1,14 @@
+{{- $lHec := "hec" | index ("splunk" | index ("splunk-kubernetes-logging" | index .Values) | default dict) | default dict }}
+{{- $oHec := "hec" | index ("splunk" | index ("splunk-kubernetes-objects" | index .Values) | default dict) | default dict }}
+{{- $mHec := "hec" | index ("splunk" | index ("splunk-kubernetes-metrics" | index .Values) | default dict) | default dict }}
+{{- $gHec := "hec" | index ("splunk" | index ("global" | index .Values | default dict) | default dict) | default dict }}
+{{- $lToken := or $lHec.token $gHec.token }}
+{{- $lHost  := or $lHec.host  $gHec.host }}
+{{- $oToken := or $oHec.token $gHec.token }}
+{{- $oHost  := or $oHec.host  $gHec.host }}
+{{- $mToken := or $mHec.token $gHec.token }}
+{{- $mHost  := or $mHec.host  $gHec.host }}
+{{- if and $lToken $lHost $oToken $oHost $mToken $mHost }}
 
 ███████╗██████╗ ██╗     ██╗   ██╗███╗   ██╗██╗  ██╗██╗    
 ██╔════╝██╔══██╗██║     ██║   ██║████╗  ██║██║ ██╔╝╚██╗   
@@ -8,5 +19,80 @@
 
 Listen to your data.
 
+Splunk Connect for Kubernetes is spinning up in your cluster.
+After a few minutes, you should see data being indexed in your Splunk.
+
 If you get stuck, we're here to help.
 Look for answers here: http://docs.splunk.com
+{{- else }}
+#########################################################
+####   ERROR: You did not set splunk.hec correctly   ####
+#########################################################
+
+This deployment will be incomplete until you correctly configure Splunk
+HEC connection. You must set splunk.hec.host and splunk.hec.token for each
+sub-chart, or use global.splunk.hec.host and gloabl.splunk.hec.token.
+
+{{- if not (and $lHost $oHost $mHost) }}
+
+splunk.hec.host is missing for the following charts:
+{{- if not $lHost }}
+  * splunk-kubernetes-logging
+{{- end }}
+{{- if not $oHost }}
+  * splunk-kubernetes-objects
+{{- end }}
+{{- if not $mHost }}
+  * splunk-kubernetes-metrics
+{{- end }}
+{{- end }}
+
+{{- if not (and $lToken $oToken $mToken) }}
+
+splunk.hec.token is missing for the following charts:
+{{- if not $lToken }}
+  * splunk-kubernetes-logging
+{{- end }}
+{{- if not $oToken }}
+  * splunk-kubernetes-objects
+{{- end }}
+{{- if not $mToken }}
+  * splunk-kubernetes-metrics
+{{- end }}
+{{- end }}
+
+Follow
+http://docs.splunk.com/Documentation/Splunk/latest/Data/AboutHEC
+to set up HTTP Event Collector on your Splunk.
+
+Once set up run:
+
+    helm upgrade {{ .Release.Name }} \
+        --set global.splunk.hec.host=YOUR-HEC-HOST \
+        --set global.splunk.hec.token=YOUR-HEC-TOKEN \
+        stable/splunk-kubernetes-logging
+{{- end }}
+{{- $lInd := or $lHec.indexName $gHec.indexName | default "<default-index>" }}
+{{- $oInd := or $oHec.indexName $gHec.indexName | default "<default-index>" }}
+{{- $mInd := or $mHec.indexName $gHec.indexName | default "<default-index>" }}
+{{- if or (eq $oInd $mInd) (eq $lInd $mInd) }}
+
+##################################################################
+####   WARN: You did not set splunk.hec.indexName correctly   ####
+##################################################################
+
+Metrics collected by splunk-kubernetes-metrics are supposed to be indexed in
+a Metrics Index. But you are using the same index for metrics as for logs
+and/or objects. You should use splunk-kubernetes-metrics.splunk.hec.indexName
+to set index for metrics.
+
+Follow
+http://docs.splunk.com/Documentation/Splunk/latest/Indexer/Setupmultipleindexes#Create_metrics_indexes
+to create a Metrics Index in your Splunk.
+
+Then run:
+
+    helm upgrade {{ .Release.Name }} \
+        --set splunk-kubernetes-metrics.splunk.hec.indexName=YOUR-METRICS-INDEX \
+        stable/splunk-connect-for-kubernetes
+{{- end -}}

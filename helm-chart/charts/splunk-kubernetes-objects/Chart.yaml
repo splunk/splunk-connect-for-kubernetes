@@ -2,9 +2,12 @@ apiVersion: v1
 version: 1.0.0
 name: splunk-kubernetes-objects
 description: Collect Kubernetes objects with Splunk.
-home: https://github.com/splunk/splunk-connect-for-kubernetes
+home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-objects
 sources:
   - https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-objects
+  - https://github.com/splunk/fluent-plugin-splunk-hec
+  - https://github.com/splunk/fluent-plugin-kubernetes-objects
+  - https://github.com/splunk/docker-kube-objects
 keywords:
   - splunk
   - monitoring
@@ -12,3 +15,4 @@ keywords:
   - metadata
 maintainers:
   - name: Gimi Liang
+    email: zliang@splunk.com
