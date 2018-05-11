@@ -197,8 +197,12 @@ data:
       # = output =
       <match **>
         @type splunk_hec
-        protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
-        hec_host {{ required "splunk.hec.host is required." (or .Values.splunk.hec.host .Values.global.splunk.hec.host) }}
+        {{- with or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
+        protocol {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
+        hec_host {{ . }}
+        {{- end }}
         {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
         hec_port {{ . }}
         {{- end }}
@@ -227,8 +231,9 @@ data:
         </fields>
         <buffer>
           @type memory
-          {{- $limit := .Values.resources.limit }}
-          chunk_limit_size {{ if $limit.memory }}{{ template "splunk-kubernetes-logging.convert-memory" $limit.memory }}{{ else }}{{ "500m" }}{{ end }}
+          {{- with .Values.resources.limit }}
+          chunk_limit_size {{ if .memory }}{{ template "splunk-kubernetes-logging.convert-memory" .memory }}{{ else }}{{ "500m" }}{{ end }}
+          {{- end }}
           chunk_limit_records 100000
           flush_interval 5s
           flush_thread_count 1
