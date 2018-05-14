@@ -1,6 +1,6 @@
-{{- $lHec := "hec" | index ("splunk" | index ("splunk-kubernetes-logging" | index .Values) | default dict) | default dict }}
-{{- $oHec := "hec" | index ("splunk" | index ("splunk-kubernetes-objects" | index .Values) | default dict) | default dict }}
-{{- $mHec := "hec" | index ("splunk" | index ("splunk-kubernetes-metrics" | index .Values) | default dict) | default dict }}
+{{- $lHec := "hec" | index ("splunk" | index ("splunk-kubernetes-logging" | index .Values | default dict) | default dict) | default dict }}
+{{- $oHec := "hec" | index ("splunk" | index ("splunk-kubernetes-objects" | index .Values | default dict) | default dict) | default dict }}
+{{- $mHec := "hec" | index ("splunk" | index ("splunk-kubernetes-metrics" | index .Values | default dict) | default dict) | default dict }}
 {{- $gHec := "hec" | index ("splunk" | index ("global" | index .Values | default dict) | default dict) | default dict }}
 {{- $lToken := or $lHec.token $gHec.token }}
 {{- $lHost  := or $lHec.host  $gHec.host }}

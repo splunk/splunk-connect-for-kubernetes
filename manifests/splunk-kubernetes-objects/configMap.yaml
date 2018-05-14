@@ -39,13 +39,12 @@ data:
     <match kube.**>
       @type splunk_hec
       protocol https
-      hec_host my.splunk.indexer
+      hec_host MY-SPLUNK-HOST
       hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['SPLUNK_HEC_HOST']}"
       source_key source
       sourcetype_key sourcetype
-      index my-events-index
       insecure_ssl true
       <buffer>
         @type memory
