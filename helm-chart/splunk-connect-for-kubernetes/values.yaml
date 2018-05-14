@@ -1,4 +1,4 @@
-# splunk-connector is a umbraller chart which itself does not contain any template,
+# Splunk Connect for Kubernetes is a umbraller chart which itself does not contain any template,
 # so there is no configurable parameters for itself.
 
 # Use global configurations for shared configurations between sub-charts.

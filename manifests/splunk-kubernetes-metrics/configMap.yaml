@@ -36,11 +36,10 @@ data:
       metric_name_key metric
       metric_value_key value
       protocol https
-      hec_host my.splunk.indexer
+      hec_host MY-SPLUNK-HOST
       hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['SPLUNK_HEC_HOST']}"
-      index my-metrics-index
       source ${tag}
       insecure_ssl true
       <buffer>
