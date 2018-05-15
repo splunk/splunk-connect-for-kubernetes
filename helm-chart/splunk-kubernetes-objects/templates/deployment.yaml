@@ -39,7 +39,7 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-objects
-        image: gimil/k8s-o:{{ .Values.image.tag }}
+        image: splunk/kube-objects:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
           - -c
