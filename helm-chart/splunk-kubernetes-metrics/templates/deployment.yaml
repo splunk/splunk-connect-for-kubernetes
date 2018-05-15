@@ -56,7 +56,7 @@ spec:
             timeoutSeconds: 5
           resources:
 {{ toYaml .Values.resources.heapster | indent 12 }}
-        - image: gimil/k8s-l:{{ .Values.image.sidecarTag }}
+        - image: splunk/fluentd-hec:{{ .Values.image.sidecarTag }}
           name: splunk-fluentd-heapster
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
