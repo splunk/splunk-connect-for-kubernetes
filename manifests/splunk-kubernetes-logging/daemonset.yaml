@@ -20,7 +20,7 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-logs
-        image: gimil/k8s-l:0.2.1
+        image: splunk/fluentd-hec:1.0.0
         imagePullPolicy: IfNotPresent
         args:
         - "-c"

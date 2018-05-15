@@ -25,7 +25,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: splunk-fluentd-k8s-objects
-        image: gimil/k8s-o:0.2.2
+        image: splunk/kube-objects:1.0.0
         imagePullPolicy: IfNotPresent
         args:
         - "-c"
