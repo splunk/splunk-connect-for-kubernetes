@@ -17,7 +17,7 @@ Then, prepare a values file. You can also check the [examples](examples) for qui
 Once you have a values file, you can simply install the chart with a release name (optional) by running
 
 ```bash
-$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.0/splunk-kubernetes-metrics-1.0.0.tgz
+$ helm install --name my-splunk-metrics -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.0/splunk-kubernetes-metrics-1.0.0.tgz
 ```
 
 ## Uninstall ##
@@ -25,7 +25,7 @@ $ helm install --name my-release -f my_values.yaml https://github.com/splunk/spl
 To uninstall/delete a deployment with name `my-splunk-metrics`:
 
 ```bash
-$ helm delete --purge my-plunk-metrics
+$ helm delete --purge my-splunk-metrics
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.

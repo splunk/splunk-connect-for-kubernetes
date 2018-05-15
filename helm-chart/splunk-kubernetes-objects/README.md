@@ -17,7 +17,7 @@ First, prepare a values file. You can also check the [examples](examples) for qu
 Once you have a values file, you can simply install the chart with a release name (optional) by running
 
 ```bash
-$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.0/splunk-kubernetes-objects-1.0.0.tgz
+$ helm install --name my-splunk-objects -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.0/splunk-kubernetes-objects-1.0.0.tgz
 ```
 
 ## Uninstall ##
