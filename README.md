@@ -36,16 +36,16 @@ To install and configure defaults with Helm:
 $ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.0/splunk-connect-for-kubernetes-1.0.0.tgz
 ```
 
--To learn more about using and modifying charts, see: 
+To learn more about using and modifying charts, see: 
 * https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart
 * https://docs.helm.sh/using_helm/#using-helm.
 
-## Confiuration variables for Helm
+## Configuration variables for Helm
 
-+To learn more about using and modifying charts, see: 
-+* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging/values.yaml)
-+* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-metrics/values.yaml)
-+* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/charts/splunk-kubernetes-objects/values.yaml)
+To learn more about using and modifying charts, see: 
+* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-logging/values.yaml)
+* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-metrics/values.yaml)
+* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-objects/values.yaml)
 
 ## Deploy using YAML
 
