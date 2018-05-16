@@ -45,6 +45,3 @@ See also:
 * [charts/splunk-kubernetes-objects/values.yaml](charts/splunk-kubernetes-objects/values.yaml) for configurable parameters for `splunk-kubernetes-objects`.
 * [charts/splunk-kubernetes-metrics/values.yaml](charts/splunk-kubernetes-metrics/values.yaml) for configurable parameters for `splunk-kubernetes-metrics`.
 
-## License ##
-
-[SPLUNK PRE-RELEASE SOFTWARE LICENSE AGREEMENT](https://www.splunk.com/en_us/legal/splunk-pre-release-software-license-agreement.html)
