@@ -72,6 +72,10 @@ splunk:
     #       The file will be stored as a secret in kubernetes.
     caFile:
 
+# Create or use existing secret if name is empty default name is used
+secret:
+  create: true
+  name:
 
 image:
   heapsterTag: v1.5.1

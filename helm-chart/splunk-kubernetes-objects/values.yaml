@@ -162,6 +162,10 @@ splunk:
     # The path to a directory containing CA certificates which are in PEM format.
     caPath:
 
+# Create or use existing secret if name is empty default name is used
+secret:
+  create: true
+  name:
 
 image:
   tag: 1.0.0

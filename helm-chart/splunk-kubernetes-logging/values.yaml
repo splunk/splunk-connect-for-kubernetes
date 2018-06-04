@@ -54,6 +54,8 @@ splunk:
     #       The file will be stored as a secret in kubernetes.
     caFile:
 
+#use existing K8s Secret
+existingSecret:
 
 # Directory where to read journald logs.
 journalLogPath: /run/log/journal
