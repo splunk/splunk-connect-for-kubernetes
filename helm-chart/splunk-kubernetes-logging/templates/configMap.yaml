@@ -184,7 +184,7 @@ data:
       # extract sourcetype
       <filter tail.file.**>
         @type jq_transformer
-        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.") | .record'
+        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record'
       </filter>
       {{- end }}
 
