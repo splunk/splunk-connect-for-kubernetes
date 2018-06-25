@@ -54,10 +54,18 @@ data:
       <watch>
       {{- end }}
         resource_name {{ required "object name is required" .name }}
-        {{- with .namespace }}namespace {{ . }}{{ end }}
-        {{- with .labelSelector }}label_selector {{ . }}{{ end }}
-        {{- with .fieldSelector }}field_selector {{ . }}{{ end }}
-        {{- with .interval }}interval {{ . }}{{ end }}
+        {{- with .namespace }}
+        namespace {{ . }}
+        {{- end }}
+        {{- with .labelSelector }}
+        label_selector {{ . }}
+        {{- end }}
+        {{- with .fieldSelector }}
+        field_selector {{ . }}
+        {{- end }}
+        {{- with .interval }}
+        interval {{ . }}
+        {{- end }}
       {{- if eq (.mode | default "pull" | lower) "pull" }}
       </pull>
       {{- else }}
