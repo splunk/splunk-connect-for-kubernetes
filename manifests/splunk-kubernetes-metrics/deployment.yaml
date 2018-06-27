@@ -46,7 +46,7 @@ spec:
           requests:
             cpu: 100m
             memory: 300Mi
-      - image: splunk/fluentd-hec:1.0.0
+      - image: splunk/fluentd-hec:1.0.1
         name: splunk-fluentd-heapster
         imagePullPolicy: IfNotPresent
         args:
