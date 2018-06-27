@@ -75,7 +75,7 @@ splunk:
 
 image:
   heapsterTag: v1.5.1
-  sidecarTag: 1.0.0
+  sidecarTag: 1.0.1
   pullPolicy: IfNotPresent
 
 

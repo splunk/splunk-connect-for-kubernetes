@@ -213,7 +213,7 @@ logs:
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  tag: 1.0.0
+  tag: 1.0.1
   pullPolicy: IfNotPresent
 
 
