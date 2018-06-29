@@ -50,4 +50,4 @@ Note: when `rbac.create` is set to `false` (it should be when RBAC is not enable
 
 ## License ##
 
-[SPLUNK PRE-RELEASE SOFTWARE LICENSE AGREEMENT](https://www.splunk.com/en_us/legal/splunk-pre-release-software-license-agreement.html)
+See [LICENSE.md](LICENSE.md).

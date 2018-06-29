@@ -118,3 +118,7 @@ Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best 
 # Processing Multi-Line Logs
 
 One possible filter option is to enable the processing of multi-line events. This feature is currently experimental and considered to be community supported. 
+
+# License
+
+See [LICENSE](LICENSE).
