@@ -45,3 +45,6 @@ See also:
 * [charts/splunk-kubernetes-objects/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-objects/values.yaml) for configurable parameters for `splunk-kubernetes-objects`.
 * [charts/splunk-kubernetes-metrics/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-metrics/values.yaml) for configurable parameters for `splunk-kubernetes-metrics`.
 
+## License ##
+
+See [LICENSE.md](LICENSE.md).
