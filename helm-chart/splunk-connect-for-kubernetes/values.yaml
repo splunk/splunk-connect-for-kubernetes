@@ -11,3 +11,18 @@
 #     hec:
 #
 # For other configurations for sub-charts, please check their values.yaml for details.
+
+## Enabling logging will install the `splunk-kubernetes-logging` chart to a kubernetes
+## cluster to collect logs generated in the cluster to a Splunk indexer/indexer cluster.
+logging:
+  enabled: true
+
+## Enabling objects will install the `splunk-kubernetes-objects` chart to a kubernetes
+## cluster to collect kubernetes objects in the cluster to a Splunk indexer/indexer cluster.
+objects:
+  enabled: true
+
+## Enabling metrics will install the `splunk-kubernetes-metrics` chart to a kubernetes
+## cluster to collect metrics of the cluster to a Splunk indexer/indexer cluster.
+metrics:
+  enabled: true
