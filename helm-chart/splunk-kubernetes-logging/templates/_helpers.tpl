@@ -32,36 +32,6 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Convert memory value from resources.limit to fluentd buffer.
-Rules:
-* fluentd does not support *i units
-* fluentd does not support E and P
-*/}}
-{{- define "splunk-kubernetes-logging.convert-memory" -}}
-{{- $mem := lower . -}}
-{{- if hasSuffix "p" $mem -}}
-{{- printf "%sT" (trimSuffix "p" $mem | atoi | mul 1000 | toString) -}}
-{{- else if hasSuffix "pi" $mem -}}
-{{- printf "%sT" (trimSuffix "pi" $mem | atoi | mul 1024 | toString) -}}
-{{- else if hasSuffix "e" $mem -}}
-{{- printf "%sT" (trimSuffix "e" $mem | atoi | mul 1000 1000 | toString) -}}
-{{- else if hasSuffix "ei" $mem -}}
-{{- printf "%sT" (trimSuffix "ei" $mem | atoi | mul 1024 1024 | toString) -}}
-{{- else if hasSuffix "ti" $mem -}}
-{{- printf "%sT" (1000 | div (trimSuffix "ti" $mem | atoi | mul 1024) | toString) -}}
-{{- else if hasSuffix "gi" $mem -}}
-{{- printf "%sG" (1000 | div (trimSuffix "gi" $mem | atoi | mul 1024) | toString) -}}
-{{- else if hasSuffix "mi" $mem -}}
-{{- printf "%sM" (1000 | div (trimSuffix "mi" $mem | atoi | mul 1024) | toString) -}}
-{{- else if hasSuffix "ki" $mem -}}
-{{- printf "%sK" (1000 | div (trimSuffix "ki" $mem | atoi | mul 1024) | toString) -}}
-{{- else -}}
-{{- $mem -}}
-{{- end -}}
-{{- end -}}
-
-
-{{/*
 The jq filter used to generate source and sourcetype for container logs.
 Define it as a template here so there we don't need to escape the double quotes `` " ''.
 To find the sourcetype, it cannot use map here, because the `pod` extracted from source

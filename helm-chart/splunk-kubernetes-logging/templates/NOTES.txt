@@ -31,5 +31,5 @@ Once set up run:
     helm upgrade {{ .Release.Name }} \
         --set splunk.hec.host=YOUR-HEC-HOST \
         --set splunk.hec.token=YOUR-HEC-TOKEN \
-        stable/splunk-kubernetes-logging
+        https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.1/splunk-kubernetes-logging-1.0.1.tgz
 {{- end }}

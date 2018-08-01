@@ -59,14 +59,11 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
+      {{- with .Values.buffer }}
       <buffer>
-        @type memory
-        {{- $limit := .Values.resources.sidecar.limit }}
-        chunk_limit_size {{ if $limit.memory }}{{ template "splunk-kubernetes-logging.convert-memory" $limit.memory }}{{ else }}{{ "500m" }}{{ end }}
-        chunk_limit_records 100000
-        flush_interval 5s
-        flush_thread_count 1
-        overflow_action block
-        retry_max_times 3
+      {{- range $parameter, $value := . }}
+        {{ $parameter }} {{ $value }}
+      {{- end }}
       </buffer>
+      {{- end }}
     </match>
