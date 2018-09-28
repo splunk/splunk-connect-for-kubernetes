@@ -11,7 +11,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: "system:heapster"
+  name: "kubelet-summary-api-read"
 subjects:
 - kind: ServiceAccount
   name: {{ template "splunk-kubernetes-metrics.serviceAccountName" . }}
