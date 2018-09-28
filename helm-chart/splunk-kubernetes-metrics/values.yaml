@@ -74,25 +74,17 @@ splunk:
 
 
 image:
-  heapsterTag: v1.5.1
-  sidecarTag: 1.0.1
+  name: chaitanyaphalak/k8s-new-metrics:beta
   pullPolicy: IfNotPresent
 
 
 resources:
-  heapster:
+  fluent:
     limits:
-      cpu: 100m
+      cpu: 200m
       memory: 300Mi
     requests:
-      cpu: 100m
-      memory: 300Mi
-  sidecar:
-    limits:
-      cpu: 100m
-      memory: 300Mi
-    requests:
-      cpu: 100m
+      cpu: 200m
       memory: 300Mi
 
 
