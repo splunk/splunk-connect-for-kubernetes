@@ -194,13 +194,6 @@ data:
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
       </filter>
 
-      {{- if .Values.global.clusterName }}
-      <filter tail.**>
-        @type jq_transformer
-        jq '.record.clusterName = "{{ .Values.global.clusterName }}"'
-      </filter>
-      {{- end }}
-
       # = output =
       <match **>
         @type splunk_hec
@@ -235,6 +228,9 @@ data:
           namespace
           container_name
           container_id
+          {{- if .Values.clusterName }}
+          cluser_name
+          {{- end }}
         </fields>
         <buffer>
           @type memory
