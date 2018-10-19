@@ -93,7 +93,7 @@ def extract_container_info:
   | .container_name = ($cparts[:-1] | join("-"))
   | .container_id = ($cparts[-1] | rtrimstr(".log"))
   {{- if .Values.clusterName }}
-  | .cluser_name = "{{ .Values.clusterName }}"
+  | .cluster_name = "{{ .Values.clusterName }}"
   {{- end }}
   | .;
   
