@@ -3,6 +3,8 @@ splunk:
     token: 11111111-2222-3333-4444-555555555555
     host: 12.34.56.78
 
+clusterName: "MY_CLUSTER"
+
 logs:
   # we want to read logs for `kube-apiserver` from a log file other then from the container logs
   kube-apiserver:

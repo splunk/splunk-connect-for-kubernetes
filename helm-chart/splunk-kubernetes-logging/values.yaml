@@ -16,6 +16,10 @@ global:
       insecureSSL: false
 
 
+# If clusterName is set, a cluster_name field will be added to the log output
+clusterName:
+
+
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
 # * debug

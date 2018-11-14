@@ -15,14 +15,12 @@ data:
     @include source.journald.conf
     @include monit.conf
     @include output.conf
-
   system.conf: |-
     # system wide configurations
     <system>
       log_level {{ or .Values.logLevel .Values.global.logLevel }}
       root_dir /tmp/fluentd
     </system>
-
   source.containers.conf: |-
     # This configuration file for Fluentd / td-agent is used
     # to watch changes to Docker log files. The kubelet creates symlinks that
@@ -56,7 +54,6 @@ data:
         localtime false
       </parse>
     </source>
-
   source.files.conf: |-
     # This fluentd conf file contains sources for log files other than container logs.
     {{- $checks := dict "hasFileLog" false }}
@@ -99,8 +96,6 @@ data:
     </source>
     {{- end }}
     {{- end }}
-
-
   source.journald.conf: |-
     # This fluentd conf file contains configurations for reading logs from systemd journal.
     {{- range $name, $logDef := .Values.logs }}
@@ -125,8 +120,6 @@ data:
     </source>
     {{- end }}
     {{- end }}
-
-
   monit.conf: |-
     <source>
       @id fluentd-monitor-agent
@@ -134,8 +127,6 @@ data:
       @label @SPLUNK
       tag monitor_agent
     </source>
-
-
   output.conf: |-
     <label @SPLUNK>
       # = filters for container logs =
@@ -151,13 +142,11 @@ data:
       </filter>
       {{- end }}
       {{- end }}
-
       # extract index fields and sourcetype for container logs
       <filter tail.containers.**>
         @type jq_transformer
         jq {{ include "splunk-kubernetes-logging.container_jq_filter" . | replace "\n" " " | quote }}
       </filter>
-
       # = filters for journald logs =
       {{- range $name, $logDef := .Values.logs }}
       {{- if and $logDef.from.journald $logDef.multiline }}
@@ -170,7 +159,6 @@ data:
       </filter>
       {{- end }}
       {{- end }}
-
       # create source and sourcetype
       {{- if $checks.hasJournald }}
       <filter journald.**>
@@ -178,7 +166,6 @@ data:
         jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record'
       </filter>
       {{- end }}
-
       # = filters for non-container log files =
       {{- if $checks.hasFileLog }}
       # extract sourcetype
@@ -187,13 +174,11 @@ data:
         jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record'
       </filter>
       {{- end }}
-
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
       </filter>
-
       # = output =
       <match **>
         @type splunk_hec
@@ -228,6 +213,9 @@ data:
           namespace
           container_name
           container_id
+          {{- if .Values.clusterName }}
+          cluster_name
+          {{- end }}
         </fields>
         <buffer>
           @type memory
