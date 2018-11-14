@@ -228,9 +228,6 @@ data:
           namespace
           container_name
           container_id
-          {{- if .Values.clusterName }}
-          cluster_name
-          {{- end }}
         </fields>
         <buffer>
           @type memory
