@@ -219,6 +219,7 @@ data:
           namespace
           container_name
           container_id
+          cluster_name
         </fields>
         <buffer>
           @type memory
