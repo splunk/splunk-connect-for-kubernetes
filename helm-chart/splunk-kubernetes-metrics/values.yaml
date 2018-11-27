@@ -8,7 +8,7 @@
 # Global values have lower priority.
 # Values defined here are the default values.
 global:
-  logLevel: info
+  logLevel: debug
   splunk:
     hec:
       port: 8088
@@ -76,6 +76,11 @@ splunk:
 image:
   name: chaitanyaphalak/k8s-new-metrics:beta
   pullPolicy: IfNotPresent
+
+
+imageAgg:
+  name: chaitanyaphalak/k8s-metrics-agg:beta-test-5
+  pullPolicy: Always
 
 
 resources:
