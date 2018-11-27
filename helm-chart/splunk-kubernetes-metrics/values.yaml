@@ -8,7 +8,7 @@
 # Global values have lower priority.
 # Values defined here are the default values.
 global:
-  logLevel: info
+  logLevel: debug
   splunk:
     hec:
       port: 8088
@@ -74,8 +74,13 @@ splunk:
 
 
 image:
-  name: chaitanyaphalak/k8s-new-metrics:beta
-  pullPolicy: IfNotPresent
+  name: dummy-user/dummy-repo:dummy-tag
+  pullPolicy: Always
+
+
+imageAgg:
+  name: dummy-user/dummy-repo:dummy-tag
+  pullPolicy: Always
 
 
 resources:
@@ -92,10 +97,11 @@ nodeSelector: {}
   # kubernetes.io/role: master
 
 
-tolerations: []
-  # - key: "node-role.kubernetes.io/master"
-  #   operator: "Exists"
-  #   effect: "NoSchedule"
+# This default tolerations allow the daemonset to be deployed on master nodes,
+# so that we can also collect metrics from those nodes.
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
 
 
 affinity: {}

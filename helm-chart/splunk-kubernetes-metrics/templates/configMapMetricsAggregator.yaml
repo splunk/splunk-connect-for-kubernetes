@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+  name: {{ template "splunk-kubernetes-metrics.fullname" . }}-aggregator
   labels:
     app: {{ template "splunk-kubernetes-metrics.name" . }}
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}
@@ -14,14 +14,25 @@ data:
       log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
     </system>
     <source>
-      @type kubernetes_metrics
+      @type kubernetes_metrics_aggregator
       tag kube.*
-      node_name "#{ENV['SPLUNK_HEC_HOST']}"
     </source>
     <filter kube.**>
       @type record_modifier
       <record>
         metric_name ${tag}
+      </record>
+    </filter>
+    <filter kube.cluster.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
+      </record>
+    </filter>
+    <filter kube.namespace.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
       </record>
     </filter>
     <filter kube.node.**>
@@ -61,11 +72,8 @@ data:
       hec_port {{ . }}
       {{- end }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      host "#{ENV['SPLUNK_HEC_HOST']}"
-      {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
-      index {{ . }}
-      {{- end }}
-      source ${tag}
+      host "#{ENV['MY_NODE_NAME']}"
+      source source
       insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
       {{- if or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
       client_cert /fluentd/etc/splunk/hec_client_cert

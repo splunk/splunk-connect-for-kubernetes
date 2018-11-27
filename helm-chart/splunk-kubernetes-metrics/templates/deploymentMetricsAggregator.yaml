@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: DaemonSet
+apiVersion: apps/v1beta1
+kind: Deployment
 metadata:
   name: {{ template "splunk-kubernetes-metrics.fullname" . }}
   labels:
@@ -7,24 +7,20 @@ metadata:
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    engine: fluentd
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+      app: {{ template "splunk-kubernetes-metrics.name" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "splunk-kubernetes-metrics.fullname" . }}
       labels:
-        name: {{ template "splunk-kubernetes-metrics.fullname" . }}
         app: {{ template "splunk-kubernetes-metrics.name" . }}
-        chart: {{ template "splunk-kubernetes-metrics.chart" . }}
         release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
-        engine: fluentd
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
-        checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configMapMetricsAggregator.yaml") . | sha256sum }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-metrics.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
@@ -41,13 +37,9 @@ spec:
       {{- end }}
       containers:
       - name: fluentd
-        image: {{ .Values.image.name }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ .Values.imageAgg.name }}
+        imagePullPolicy: {{ .Values.imageAgg.pullPolicy }}
         env:
-          - name: SPLUNK_HEC_HOST
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
@@ -64,7 +56,7 @@ spec:
       volumes:
       - name: conf-configmap
         configMap:
-          name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+          name: {{ template "splunk-kubernetes-metrics.fullname" . }}-aggregator
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-metrics.fullname" . }}
