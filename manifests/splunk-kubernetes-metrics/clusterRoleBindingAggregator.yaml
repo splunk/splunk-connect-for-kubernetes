@@ -1,18 +1,18 @@
 ##---
-# Source: splunk-kubernetes-metrics/templates/clusterRoleBinding.yaml
+# Source: splunk-kubernetes-metrics/templates/clusterRoleBindingAggregator.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: splunk-kubernetes-metrics
+  name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
     chart: splunk-kubernetes-metrics-1.0.1
-    release: RELEASE-NAME
+    release: splunk-kubernetes-metrics
     heritage: Tiller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: "kubelet-summary-api-read"
+  name: "kube-api-aggregator"
 subjects:
 - kind: ServiceAccount
   name: splunk-kubernetes-metrics

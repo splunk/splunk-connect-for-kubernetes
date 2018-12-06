@@ -1,39 +1,39 @@
 ##---
-# Source: splunk-kubernetes-metrics/templates/deployment.yaml
-apiVersion: extensions/v1beta1
-kind: DaemonSet
+# Source: splunk-kubernetes-metrics/templates/deploymentMetricsAggregator.yaml
+apiVersion: apps/v1beta1
+kind: Deployment
 metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    engine: fluentd
+    chart: splunk-kubernetes-metrics-1.0.1
+    release: splunk-kubernetes-metrics
+    heritage: Tiller
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: splunk-kubernetes-metrics
+      release: splunk-kubernetes-metrics
   template:
     metadata:
       labels:
         app: splunk-kubernetes-metrics
-        chart: splunk-kubernetes-metrics-1.0.1
         release: splunk-kubernetes-metrics
-        heritage: Tiller
-        engine: fluentd
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
-        checksum/config: e55405c435c9131ada708c80bd1dd80378db1b8090f251f6aa103298c74163d9
+        checksum/config: 30fee7b2bae3574f71136f872cc8305d2cc0086aec00b30dab03913acf2f3830
     spec:
       serviceAccountName: splunk-kubernetes-metrics
       containers:
       - name: fluentd
-        image: chaitanyaphalak/k8s-new-metrics:beta
-        imagePullPolicy: IfNotPresent
+        image: chaitanyaphalak/k8s-metrics-agg:beta-test-5
+        imagePullPolicy: Always
         env:
-          - name: SPLUNK_HEC_HOST
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
-                name: RELEASE-NAME-splunk-kubernetes-metrics
+                name: splunk-kubernetes-metrics
                 key: splunk_hec_token
         resources:
             limits:
@@ -52,7 +52,7 @@ spec:
       volumes:
       - name: conf-configmap
         configMap:
-          name: splunk-kubernetes-metrics
+          name: splunk-kubernetes-metrics-aggregator
       - name: secrets
         secret:
           secretName: splunk-kubernetes-metrics

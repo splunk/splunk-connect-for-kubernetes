@@ -1,9 +1,9 @@
 ##---
-# Source: splunk-kubernetes-metrics/templates/configMap.yaml
+# Source: splunk-kubernetes-metrics/templates/configMapMetricsAggregator.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: splunk-kubernetes-metrics
+  name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
     chart: splunk-kubernetes-metrics-1.0.1
@@ -13,17 +13,28 @@ data:
   fluent.conf: |
     # system wide configurations
     <system>
-      log_level info
+      log_level debug
     </system>
     <source>
-      @type kubernetes_metrics
+      @type kubernetes_metrics_aggregator
       tag kube.*
-      node_name "#{ENV['SPLUNK_HEC_HOST']}"
     </source>
     <filter kube.**>
       @type record_modifier
       <record>
         metric_name ${tag}
+      </record>
+    </filter>
+    <filter kube.cluster.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
+      </record>
+    </filter>
+    <filter kube.namespace.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
       </record>
     </filter>
     <filter kube.node.**>
@@ -58,8 +69,8 @@ data:
       protocol https
       hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      host "#{ENV['SPLUNK_HEC_HOST']}"
-      source ${tag}
+      host "#{ENV['MY_NODE_NAME']}"
+      source source
       insecure_ssl false
       interval 15s
       <buffer>

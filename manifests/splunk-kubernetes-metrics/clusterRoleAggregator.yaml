@@ -1,0 +1,23 @@
+##---
+# Source: splunk-kubernetes-metrics/templates/clusterRoleAggregator.yaml
+# This role allows read access to the kubelet summary API
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kube-api-aggregator
+  labels:
+    app: splunk-kubernetes-metrics
+    chart: splunk-kubernetes-metrics-1.0.1
+    release: splunk-kubernetes-metrics
+    heritage: Tiller
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/stats
+  - nodes/proxy
+  - pods
+  verbs:
+  - get
+  - list
