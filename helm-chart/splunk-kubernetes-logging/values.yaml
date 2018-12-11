@@ -120,6 +120,7 @@ journalLogPath: /run/log/journal
 #     firstline: "<regexp_to_detect_firstline_of_multiline>"
 #     flushInterval 5s
 #   sourcetype: "<sourcetype_of_logs>"
+#   index: "<splunk_index_name>"
 # ```
 #
 # = <source> =
@@ -169,6 +170,10 @@ journalLogPath: /run/log/journal
 # = sourcetype =
 # sourcetype of each kind of log can be defined using the `sourcetype` field.
 # If `sourcetype` is not defined, `name` will be used.
+#
+# = splunk_index_name =
+# index within splunk to send the data can be defined using the `index` field.
+# If `index` is not defined, the `splunk.hec.indexName` or `global.splunk.hec.indexName` will be used.
 #
 # ---
 # Here we have some default timestampExtraction and multiline settings for kubernetes components.

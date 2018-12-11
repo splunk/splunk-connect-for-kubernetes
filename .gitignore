@@ -1,3 +1,4 @@
 build/
+.idea/
 .DS_Store
 helm-chart/splunk-connect-for-kubernetes/charts
