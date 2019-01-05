@@ -99,10 +99,9 @@ Splunk Connect for Kubernetes collects Kubernetes objects that can help users ac
 
 ## Metrics
 
-Splunk Connect for Kubernetes deploys code on the Kubernetes cluster. This deployment has exactly one pod, which runs two containers:
+Splunk Connect for Kubernetes deploys daemonsets on the Kubernetes cluster. These daemonsets have exactly one pod, which runs one container:
 
-* [Heapster](https://github.com/kubernetes/heapster) collects metrics and sends them to the Fluentd sidecar via UDP in `statsd` format. 
-* Fluentd, which receives metrics from Heapster using [in_udp](https://docs.fluentd.org/v1.0/articles/in_udp) and transforms the metrics using filter_jq_transformer. filter_jq_transformer formats the data for Splunk ingestion: It makea sure the metrics have proper metric_name, dimensions, etc., and then sends the metrics to Splunk using out_splunk_hec.
+* [Fluentd metrics plugin](https://github.com/splunk/fluent-plugin-kubernetes-metrics) collects the metrics, formats the metrics for Splunk ingestion by assuring the metrics have proper metric_name, dimensions, etc., and then sends the metrics to Splunk using out_splunk_hec using Fluentd engine.
 
 Make sure your Splunk configuration has a metrics index that is able to receive the data. See [Get started with metrics](http://docs.splunk.com/Documentation/Splunk/7.1.0/Metrics/GetStarted) in the Splunk Enterprise documentaiton.
 
