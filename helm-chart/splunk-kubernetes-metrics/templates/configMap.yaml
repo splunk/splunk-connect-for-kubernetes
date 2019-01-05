@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   fluent.conf: |
-    # system wide configurations
+    # system wide configurations	
     <system>
       log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
     </system>
