@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.4.1-node-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+            helm init -c
+      - run:
+          name: Build SCK artifacts
+          command: |
+            .circleci/build_sck_artifacts.sh
+      - run:
+          name: Push SCK artifacts to s3
+          command: |
+            .circleci/push_sck_artifacts.sh
