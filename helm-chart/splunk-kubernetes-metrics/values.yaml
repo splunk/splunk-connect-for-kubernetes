@@ -93,6 +93,10 @@ resources:
       memory: 300Mi
 
 
+# Configure how often SCK pulls metrics for its kubenetes sources. 15s is the default where 's' is seconds.
+metricsInterval: 15s
+
+
 nodeSelector: {}
   # kubernetes.io/role: master
 

@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   fluent.conf: |
-    # system wide configurations	
+    # system wide configurations
     <system>
       log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
     </system>
@@ -76,7 +76,7 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
-      interval 15s
+      interval {{ or .Values.metricsInterval .Values.global.metricsInterval }}
       <buffer>
         @type memory
         total_limit_size 100m
