@@ -17,7 +17,6 @@ data:
       @type kubernetes_metrics
       tag kube.*
       node_name "#{ENV['SPLUNK_HEC_HOST']}"
-<<<<<<< HEAD
       {{- with .Values.kubernetes.kubeletPort }}
       kubelet_port {{ . }}
       {{- end }}
@@ -32,25 +31,6 @@ data:
       bearer_token_file {{ . }}
       {{- end }}
       {{- with .Values.kubernetes.secretDir }}
-=======
-      {{- with $.Values.kubernetes.url }}
-      kubernetes_url {{ . }}
-      {{- end }}
-      {{- with $.Values.kubernetes.kubeletPort }}
-      kubelet_port {{ . }}
-      {{- end }}
-      use_rest_client_ssl {{ $.Values.kubernetes.useRestClientSSL }}
-      {{- with $.Values.kubernetes.insecureSSL }}
-      insecure_ssl {{ . }}
-      {{- end }}
-      {{- if $.Values.kubernetes.caFile }}
-      ca_file /fluentd/etc/splunk/k8s_ca_file
-      {{- end }}
-      {{- with $.Values.kubernetes.bearerTokenFile }}
-      bearer_token_file {{ . }}
-      {{- end }}
-      {{- with $.Values.kubernetes.secretDir }}
->>>>>>> 64197c0627dec2b4fbabc4726d37ba5834739a67
       secret_dir {{ . }}
       {{- end }}
     </source>
@@ -112,10 +92,7 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
-<<<<<<< HEAD
       interval {{ or .Values.metricsInterval .Values.global.metricsInterval }}
-=======
->>>>>>> 64197c0627dec2b4fbabc4726d37ba5834739a67
       interval 15s
       <buffer>
         @type memory
