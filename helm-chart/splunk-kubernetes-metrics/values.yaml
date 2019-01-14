@@ -112,10 +112,19 @@ affinity: {}
 
 # = Kubernetes Connection Configs =
 kubernetes:
+<<<<<<< HEAD
   # The port that kubelet is listening to. Default is 10250
   kubeletPort:
   # This option is used to get the metrics from summary api on each kubelet using ssl
   useRestClientSSL: true
+=======
+  # the URL for calling kubernetes API, by default it will be read from the environment variables
+  url:
+  # The port that kubelet is listening to. Default is 10250
+  kubeletPort:
+  # This option is used to get the metrics from summary api on each kubelet using ssl
+  useRestClientSSL:
+>>>>>>> 64197c0627dec2b4fbabc4726d37ba5834739a67
   # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
   insecureSSL: false
   # Path to the CA file.
