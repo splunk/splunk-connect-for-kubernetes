@@ -62,7 +62,7 @@ kubernetes:
   # Path of the location where pod's service account's credentials are stored. Usually you don't need to care about this config, the default value should work in most cases.
   secretDir:
   # a list of kubernetes objects to pull periodically
- 
+
 
 # = Object Lists =
 # NOTE: at least one object must be provided.
@@ -164,7 +164,7 @@ splunk:
 
 
 image:
-  tag: 1.0.1
+  name: splunk/kube-objects:1.0.1
   pullPolicy: IfNotPresent
 
 
