@@ -20,7 +20,7 @@ data:
       {{- with .Values.kubernetes.kubeletPort }}
       kubelet_port {{ . }}
       {{- end }}
-      use_rest_client_ssl {{ $.Values.kubernetes.useRestClientSSL }}
+      use_rest_client_ssl {{ .Values.kubernetes.useRestClientSSL }}
       {{- with .Values.kubernetes.insecureSSL }}
       insecure_ssl {{ . }}
       {{- end }}
@@ -93,7 +93,6 @@ data:
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
       interval {{ or .Values.metricsInterval .Values.global.metricsInterval }}
-      interval 15s
       <buffer>
         @type memory
         total_limit_size 100m
