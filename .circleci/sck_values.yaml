@@ -1,0 +1,33 @@
+global:
+  splunk:
+    hec:
+      token:
+      host:
+      port: 8088
+      insecureSSL: true
+      protocol: http
+splunk-kubernetes-objects:
+  splunk:
+    hec:
+      indexName: sck-all-objects
+  kubernetes:
+    insecureSSL: true
+  image:
+    name:
+    pullPolicy: Always
+splunk-kubernetes-metrics:
+  splunk:
+    hec:
+      indexName: sck-all-metrics-index
+  image:
+    name:
+    pullPolicy: Always
+splunk-kubernetes-logging:
+  splunk:
+    hec:
+      indexName: sck-all-logs
+  kubernetes:
+    insecureSSL: true
+  image:
+    name:
+    pullPolicy: Always
