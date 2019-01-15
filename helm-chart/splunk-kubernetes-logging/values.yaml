@@ -85,7 +85,7 @@ journalLogPath: /run/log/journal
 #     journald:
 #       unit: docker.service
 # ```
-#   
+#
 # For `file` logs, `path` is required for specifying where is the log files. Log files are expected in `/var/log`, example:
 # ```
 # docker:
@@ -213,7 +213,7 @@ logs:
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  tag: 1.0.1
+  name: splunk/fluentd-hec:1.0.1
   pullPolicy: IfNotPresent
 
 
