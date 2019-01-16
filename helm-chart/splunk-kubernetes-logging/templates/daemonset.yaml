@@ -56,6 +56,10 @@ spec:
                 key: splunk_hec_token
         resources:
 {{ toYaml .Values.resources | indent 10 }}
+        {{- if .Values.global.openshift }}
+        securityContext:
+          privileged: true
+        {{ end -}}
         volumeMounts:
         - name: varlog
           mountPath: /var/log
@@ -70,6 +74,13 @@ spec:
         - name: secrets
           mountPath: /fluentd/etc/splunk
           readOnly: true
+      {{- if .Values.global.openshift }}
+      securityContext: {}
+      {{ end -}}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccount: {{ .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{ end -}}
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog

@@ -9,6 +9,7 @@
 #   splunk:
 #     # HEC related configurations
 #     hec:
+#   openshift: boolean # trigger a few extra configuration items required to run in OpenShift
 #
 # For other configurations for sub-charts, please check their values.yaml for details.
 

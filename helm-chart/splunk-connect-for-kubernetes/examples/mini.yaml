@@ -1,13 +1,30 @@
 global:
   splunk:
     hec:
-      token: 7fbefa0b-8c06-4a62-a54b-0fa69c016988
-      host: 45.209.241.112
+      token: BF7FBF5F-47A0-457D-A191-7CD6A25DA26C
+      host: hec.splunk.rackspace.com
       port: 8088
-      indexName: main
+      indexName: rax_saac_temp_30
+  openshift: true
+
+resources:
+  limit:
+    memory: 300m
+
+rbac:
+  create: true
 
 
-splunk-kubernetes-metrics:
-  splunk:
-    hec:
-      indexName: my-metrics-index
+logging:
+  enabled: true
+
+splunk-kubernetes-logging:
+  serviceAccount:
+    create: true
+    name: splunk
+
+objects:
+  enabled: false
+
+metrics:
+  enabled: false
