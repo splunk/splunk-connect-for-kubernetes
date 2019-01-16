@@ -40,7 +40,7 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       containers:
-      - name: fluentd
+      - name: splunk-fluentd-k8s-metrics
         image: {{ .Values.image.name }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:

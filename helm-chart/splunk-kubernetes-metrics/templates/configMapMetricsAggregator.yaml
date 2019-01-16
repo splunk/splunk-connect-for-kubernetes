@@ -16,6 +16,9 @@ data:
     <source>
       @type kubernetes_metrics_aggregator
       tag kube.*
+      {{- with .Values.kubernetes.kubeletPort }}
+      kubelet_port {{ . }}
+      {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
