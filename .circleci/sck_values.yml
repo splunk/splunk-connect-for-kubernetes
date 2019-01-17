@@ -1,0 +1,41 @@
+global:
+  logLevel: info
+  splunk:
+    hec:
+      protocol: https
+      insecureSSL: true
+      host: $SPLUNK_HEC_HOST
+      token: $SPLUNK_HEC_TOKEN
+
+
+splunk-kubernetes-logging:
+  kubernetes:
+    insecureSSL: true
+  splunk:
+    hec:
+      indexName: circleci_events
+  image:
+    name:
+    pullPolicy: Always
+
+splunk-kubernetes-metrics:
+  kubernetes:
+    useRestClientSSL: false
+    insecureSSL: true
+    kubeletPort: 10255
+  splunk:
+    hec:
+      indexName: circleci_metrics
+  image:
+    name:
+    pullPolicy: Always
+
+splunk-kubernetes-objects:
+  splunk:
+    hec:
+      indexName: circleci_objects
+  kubernetes:
+    insecureSSL: true
+  image:
+    name:
+    pullPolicy: Always
