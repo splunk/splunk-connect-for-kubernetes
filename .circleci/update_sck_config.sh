@@ -12,10 +12,10 @@ yq w -i .circleci/sck_values.yml global.splunk.hec.token $SPLUNK_HEC_TOKEN
 
 #Pull docker images locally
 aws ecr get-login --region $AWS_REGION --no-include-email | bash
-docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-logging:latest | awk 'END{print}'
-docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-metrics:latest | awk 'END{print}'
-docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-metrics-agg:latest | awk 'END{print}'
-docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-objects:latest | awk 'END{print}'
+docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-logging:latest | awk 'END{print}' | sed -E 's/[0-9]+.dkr/$AWS_ACCOUNT_ID/g'
+docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-metrics:latest | awk 'END{print}' | sed -E 's/[0-9]+.dkr/$AWS_ACCOUNT_ID/g'
+docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-metrics-agg:latest | awk 'END{print}' | sed -E 's/[0-9]+.dkr/$AWS_ACCOUNT_ID/g'
+docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-objects:latest | awk 'END{print}' | sed -E 's/[0-9]+.dkr/$AWS_ACCOUNT_ID/g'
 
 # Modify docker images to be used
 image_name=$(echo "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/k8s-ci-logging:latest")

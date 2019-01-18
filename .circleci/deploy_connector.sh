@@ -9,4 +9,7 @@ sudo mkdir ~/.kube
 echo $GPG_KEY | gpg --output config --passphrase-fd 0 --decrypt .circleci/kubeconfig.gpg
 sudo mv config ~/.kube/config
 helm install --name=ci-$CIRCLE_SHA1 -f .circleci/sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
-#Todo-need to add cleanup process after adding tests.
+#Todo-need to add test cases and run them before cleaning the deployment
+sleep 60
+echo "clean up k8s-connect deployment..."
+helm delete --purge ci-$CIRCLE_SHA1
