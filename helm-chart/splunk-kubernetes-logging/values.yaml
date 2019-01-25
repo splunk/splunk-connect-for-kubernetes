@@ -85,7 +85,7 @@ journalLogPath: /run/log/journal
 #     journald:
 #       unit: docker.service
 # ```
-#   
+#
 # For `file` logs, `path` is required for specifying where is the log files. Log files are expected in `/var/log`, example:
 # ```
 # docker:
@@ -240,3 +240,9 @@ nodeSelector: {}
 
 # Defines node affinity to restrict pod deployment.
 affinity: {}
+
+
+# = Kubernetes Connection Configs =
+kubernetes:
+  # The cluster name used to tag logs. Default is cluster_name
+  clusterName: "cluster_name"
