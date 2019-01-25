@@ -90,7 +90,7 @@ data:
         expression /^(?<log>{{ $logDef.timestampExtraction.regexp }}.*)$/
         time_key time
         time_type string
-        time_format {{ $logDef.timestampExtraction.format }} 
+        time_format {{ $logDef.timestampExtraction.format }}
         {{- else }}
         @type none
         message_key log
@@ -228,6 +228,9 @@ data:
           namespace
           container_name
           container_id
+          {{- if .Values.kubernetes.clusterName }}
+          cluster_name
+          {{- end }}
         </fields>
         <buffer>
           @type memory

@@ -19,14 +19,14 @@ data:
       {{- with .Values.kubernetes.kubeletPort }}
       kubelet_port {{ . }}
       {{- end }}
-      {{- with .Values.kubernetes.clusterName }}
-      cluster_name {{ . }}
-      {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
       <record>
         metric_name ${tag}
+        {{- with .Values.kubernetes.clusterName }}
+        cluster_name {{ . }}
+        {{- end }}
       </record>
     </filter>
     <filter kube.cluster.**>
