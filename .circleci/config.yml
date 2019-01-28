@@ -13,9 +13,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            sudo apt-get update
+            sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
+            sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
+            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
             helm init -c
-            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
             echo "Installing aws cli..."
             sudo pip install awscli > /dev/null 2>&1
 
@@ -38,3 +41,15 @@ jobs:
           name: Deploy k8s connector
           command: |
             .circleci/deploy_connector.sh
+
+      - run:
+          name: Run functional tests
+          command: |
+            .circleci/run_functional_tests.sh
+
+      - run:
+          name:  Teardown deployment
+          command: |
+            helm delete --purge ci-$CIRCLE_SHA1
+
+
