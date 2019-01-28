@@ -91,15 +91,12 @@ data:
       {{- end }}
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
-      {{- end }}
-      interval {{ or .Values.metricsInterval .Values.global.metricsInterval }}
+      {{- end }} 
+      {{- with .Values.buffer }}
       <buffer>
-        @type memory
-        total_limit_size 100m
-        chunk_limit_size 10m
-        flush_interval 15s
-        flush_thread_count 1
-        overflow_action block
-        retry_max_times 3
+      {{- range $parameter, $value := . }}
+        {{ $parameter }} {{ $value }}
+      {{- end }}
       </buffer>
+      {{- end }}
     </match>

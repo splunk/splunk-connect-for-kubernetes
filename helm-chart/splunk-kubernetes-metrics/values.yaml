@@ -8,7 +8,7 @@
 # Global values have lower priority.
 # Values defined here are the default values.
 global:
-  logLevel: info
+  logLevel: debug
   splunk:
     hec:
       port: 8088
@@ -93,6 +93,35 @@ resources:
       memory: 300Mi
 
 
+ # Controls the output buffer for fluentd.
+ # Note that, for memory buffer, if `resources.sidecar.limits.memory` is set,
+ # the total buffer size should not bigger than the memory limit, it should also
+ # consider the basic memory usage by fluentd itself.
+ # All buffer parameters (except Argument) defined in
+ # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
+ # can be configured here.
+buffer:
+  "@type": memory
+  total_limit_size: 400m
+  chunk_limit_size: 100m
+  chunk_limit_records: 1000000
+  flush_interval: 5s
+  flush_thread_count: 1
+  overflow_action: block
+  retry_max_times: 3
+
+
+aggregatorBuffer:
+  "@type": memory
+  total_limit_size: 400m
+  chunk_limit_size: 100m
+  chunk_limit_records: 1000000
+  flush_interval: 5s
+  flush_thread_count: 1
+  overflow_action: block
+  retry_max_times: 3
+  
+  
 # Configure how often SCK pulls metrics for its kubenetes sources. 15s is the default where 's' is seconds.
 metricsInterval: 15s
 
