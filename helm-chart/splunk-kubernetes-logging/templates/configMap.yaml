@@ -232,17 +232,13 @@ data:
           cluster_name
           {{- end }}
         </fields>
+        {{- with .Values.buffer }}
         <buffer>
-          @type memory
-          {{- with .Values.resources.limit }}
-          chunk_limit_size {{ if .memory }}{{ template "splunk-kubernetes-logging.convert-memory" .memory }}{{ else }}{{ "500m" }}{{ end }}
-          {{- end }}
-          chunk_limit_records 100000
-          flush_interval 5s
-          flush_thread_count 1
-          overflow_action block
-          retry_max_times 3
+        {{- range $parameter, $value := . }}
+          {{ $parameter }} {{ $value }}
+        {{- end }}
         </buffer>
+        {{- end }}
         <format monitor_agent>
           @type json
         </format>

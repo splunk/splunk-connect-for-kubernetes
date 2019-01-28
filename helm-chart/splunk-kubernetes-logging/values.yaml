@@ -227,6 +227,24 @@ resources:
    memory: 200Mi
 
 
+ # Controls the output buffer for the fluentd daemonset
+ # Note that, for memory buffer, if `resources.limits.memory` is set,
+ # the total buffer size should not bigger than the memory limit, it should also
+ # consider the basic memory usage by fluentd itself.
+ # All buffer parameters (except Argument) defined in
+ # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
+ # can be configured here.
+buffer:
+  "@type": memory
+  total_limit_size: 600m
+  chunk_limit_size: 200m
+  chunk_limit_records: 100000
+  flush_interval: 5s
+  flush_thread_count: 1
+  overflow_action: block
+  retry_max_times: 3
+
+
 # This default tolerations allow the daemonset to be deployed on master nodes,
 # so that we can also collect logs from those nodes.
 tolerations:
