@@ -16,6 +16,9 @@ data:
     <source>
       @type kubernetes_metrics_aggregator
       tag kube.*
+      {{- with .Values.kubernetes.kubeletPort }}
+      kubelet_port {{ . }}
+      {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
@@ -84,7 +87,6 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
-      interval 15s
       {{- with .Values.aggregatorBuffer }}
       <buffer>
       {{- range $parameter, $value := . }}

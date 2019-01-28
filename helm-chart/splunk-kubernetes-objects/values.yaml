@@ -164,7 +164,7 @@ splunk:
 
 
 image:
-  tag: 1.0.1
+  name: splunk/kube-objects:1.0.1
   pullPolicy: IfNotPresent
 
 

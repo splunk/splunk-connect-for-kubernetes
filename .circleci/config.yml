@@ -1,0 +1,40 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.4.1-node-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+      - run:
+          name: Install dependencies
+          command: |
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+            helm init -c
+            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
+            echo "Installing aws cli..."
+            sudo pip install awscli > /dev/null 2>&1
+
+      - run:
+          name: Update configurables to build artifacts
+          command: |
+            .circleci/update_sck_config.sh
+
+      - run:
+          name: Build SCK artifacts
+          command: |
+            .circleci/build_sck_artifacts.sh
+
+      - run:
+          name: Push SCK artifacts to s3
+          command: |
+            .circleci/push_sck_artifacts.sh
+
+      - run:
+          name: Deploy k8s connector
+          command: |
+            .circleci/deploy_connector.sh

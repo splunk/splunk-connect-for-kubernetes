@@ -12,6 +12,8 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - "nodes"
   - "nodes/stats"
+  - "nodes/metrics"
   verbs:
   - "get"

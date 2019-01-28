@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   fluent.conf: |
-    # system wide configurations
+    # system wide configurations	
     <system>
       log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
     </system>
@@ -17,6 +17,22 @@ data:
       @type kubernetes_metrics
       tag kube.*
       node_name "#{ENV['SPLUNK_HEC_HOST']}"
+      {{- with .Values.kubernetes.kubeletPort }}
+      kubelet_port {{ . }}
+      {{- end }}
+      use_rest_client_ssl {{ .Values.kubernetes.useRestClientSSL }}
+      {{- with .Values.kubernetes.insecureSSL }}
+      insecure_ssl {{ . }}
+      {{- end }}
+      {{- if .Values.kubernetes.caFile }}
+      ca_file /fluentd/etc/splunk/k8s_ca_file
+      {{- end }}
+      {{- with .Values.kubernetes.bearerTokenFile }}
+      bearer_token_file {{ . }}
+      {{- end }}
+      {{- with .Values.kubernetes.secretDir }}
+      secret_dir {{ . }}
+      {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
@@ -75,8 +91,7 @@ data:
       {{- end }}
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
-      {{- end }}
-      interval 15s
+      {{- end }} 
       {{- with .Values.buffer }}
       <buffer>
       {{- range $parameter, $value := . }}
