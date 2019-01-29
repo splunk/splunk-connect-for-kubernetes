@@ -104,4 +104,5 @@ data:
         {{ $parameter }} {{ $value }}
       {{- end }}
       </buffer>
+      {{- end }}
     </match>
