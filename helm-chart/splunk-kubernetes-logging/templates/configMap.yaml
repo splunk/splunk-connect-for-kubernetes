@@ -228,6 +228,9 @@ data:
           namespace
           container_name
           container_id
+          {{- if .Values.kubernetes.clusterName }}
+          cluster_name
+          {{- end }}
         </fields>
         {{- with .Values.buffer }}
         <buffer>

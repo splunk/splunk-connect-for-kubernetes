@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   fluent.conf: |
-    # system wide configurations	
+    # system wide configurations
     <system>
       log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
     </system>
@@ -33,11 +33,17 @@ data:
       {{- with .Values.kubernetes.secretDir }}
       secret_dir {{ . }}
       {{- end }}
+      {{- with .Values.kubernetes.clusterName }}
+      cluster_name {{ . }}
+      {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
       <record>
         metric_name ${tag}
+        {{- with .Values.kubernetes.clusterName }}
+        cluster_name {{ . }}
+        {{- end }}
       </record>
     </filter>
     <filter kube.node.**>
@@ -98,5 +104,4 @@ data:
         {{ $parameter }} {{ $value }}
       {{- end }}
       </buffer>
-      {{- end }}
     </match>
