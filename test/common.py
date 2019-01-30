@@ -1,5 +1,5 @@
 """
-Copyright 2018 Splunk, Inc..
+Copyright 2018-2019 Splunk, Inc..
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -40,20 +40,15 @@ def check_events_from_splunk(index="circleci_events",
                              end_time="now",
                              url="",
                              user="",
+                             query="",
                              password=""):
     '''
     send a search request to splunk and return the events from the result
     '''
-    query = _compose_search_query(index)
     logger.info("search query = " + str(query))
     events = _collect_events(query, start_time, end_time, url, user, password)
 
     return events
-
-
-def _compose_search_query(index="circleci_events"):
-    return "search index={0}".format(index)
-
 
 def _collect_events(query, start_time, end_time, url="", user="", password=""):
     '''
