@@ -50,6 +50,22 @@ def check_events_from_splunk(index="circleci_events",
 
     return events
 
+def check_metrics_from_splunk(index="circleci_metrics",
+                             start_time="-1h@h",
+                             end_time="now",
+                             url="",
+                             user="",
+                             password="",
+                             dimension="",
+                             metric_name=""):
+    '''
+    send a search request to splunk to check for values associated with a given metric and dimension
+    '''
+    logger.debug("Calling _collect_metrics ")
+    events = _collect_metrics(start_time, end_time, url, user, password, index, dimension, metric_name)
+
+    return events
+
 def _collect_events(query, start_time, end_time, url="", user="", password=""):
     '''
     Collect events by running the given search query
@@ -77,6 +93,35 @@ def _collect_events(query, start_time, end_time, url="", user="", password=""):
     json_res = create_job.json()
     job_id = json_res['sid']
     events = _wait_for_job_and__get_events(job_id, url, user, password)
+
+    return events
+
+def _collect_metrics(start_time, end_time, url="", user="", password="", index="", dimension="", metric_name=""):
+    '''
+    Verify metrics by running the given search query
+    @param: dimension (metric dimension)
+    @param: metric_name (metric name)
+    @param: start_time (search start time)
+    @param: end_time (search end time)
+    returns events
+    '''
+    search_url = url + '/services/catalog/metricstore/dimensions/' + dimension + '/values?filter=index%3d' + index + '&metric_name=' + metric_name + '&earliest=' + start_time + '&latest=' + end_time + '&output_mode=json'.format(
+        url)
+
+    logger.debug('requesting: %s', search_url)
+ 
+    create_job = _requests_retry_session().get(
+        search_url,
+        auth=(user, password),
+        verify=False
+    )
+        
+    _check_request_status(create_job)
+
+    json_res = create_job.json()
+
+    events = json_res['entry']
+    logger.info('events: %s', events)
 
     return events
 
