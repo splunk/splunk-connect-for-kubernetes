@@ -21,16 +21,6 @@ from ..common import check_metrics_from_splunk
     ("kube.node.cpu.capacity", "host"),
     ("kube.node.memory.utilization", "host"),
     #Summary Metrics
-    ("kube.container.uptime", "host"),
-    ("kube.container.cpu.usage", "host"),
-    ("kube.container.memory.usage_bytes", "host"),
-    ("kube.container.rootfs.available_bytes", "host"),
-    ("kube.container.logs.used_bytes", "host"),
-    ("kube.container.cpu.usage", "host"),
-    ("kube.container.cpu.usage", "host"),
-    ("kube.container.cpu.usage", "host"),
-    ("kube.container.cpu.usage", "host"),
-    ("kube.container.memory.usage.bytes", "host"),
     ("kube.node.cpu.usage", "host"),
     ("kube.node.memory.usage", "host"),
     ("kube.node.uptime", "host"),
@@ -38,28 +28,30 @@ from ..common import check_metrics_from_splunk
     ("kube.node.fs.available_bytes", "host"),
     ("kube.node.imagefs.available_bytes", "host"),
     ("kube.node.runtime.imagefs.maxpid", "host"),
+    ("kube.sys-container.cpu.usage", "node"),
+    ("kube.sys-container.memory.usage_bytes", "host"),
+    ("kube.sys-container.uptime", "host"),
     ("kube.pod.uptime", "host"),
     ("kube.pod.cpu.usage", "host"),
     ("kube.pod.memory.usage_bytes", "host"),
     ("kube.pod.network.rx_bytes", "host"),
     ("kube.pod.ephemeral-storage.available_bytes", "host"),
     ("kube.pod.volume.available_bytes", "host"),
-    ("kube.sys-container.cpu.usage", "node"),
-    ("kube.sys-container.memory.usage_bytes", "host"),
-    ("kube.sys-container.uptime", "host"),
-    ("kube.container.cpu.usage.seconds.total", "host"),
+    ("kube.container.uptime", "host"),
+    ("kube.container.cpu.usage", "host"),
+    ("kube.container.memory.usage_bytes", "host"),
+    ("kube.container.rootfs.available_bytes", "host"),
+    ("kube.container.logs.used_bytes", "host"),
     #Stats Metrics
     ("kube.node.cpu.cfs.periods", "host"),
     ("kube.node.diskio.io_service_bytes.stats.Read", "host"),
     ("kube.node.filesystem.available", "host"),
     ("kube.node.memory.cache", "host"),
     ("kube.node.tasks_stats.nr_running", "host"),
+    ("kube.node.network.*.rx_bytes", "host"),
     #Cadvisor Metrics
     ("kube.container.cpu.load.average.10s", "host"),
     ("kube.container.fs.inodes.free", "host"),
-    ("kube.container.fs.reads.total", "host"),
-    ("kube.container.fs.usage.bytes", "host"),
-    ("kube.container.fs.writes.total", "host"),
     ("kube.container.last.seen", "host"),
     ("kube.container.memory.usage.bytes", "host"),
     ("kube.container.network.receive.bytes.total", "host"),
@@ -72,7 +64,7 @@ def test_metric_name(setup, metric, dimension):
     '''
     logging.info("testing for presence of metric={0}".format(metric))
 
-    events = check_metrics_from_splunk(start_time="-24h@h",
+    events = check_metrics_from_splunk(start_time="-1@h",
                                   end_time="now",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
@@ -83,5 +75,4 @@ def test_metric_name(setup, metric, dimension):
     logging.info("Splunk received %s events in the last minute",
                          len(events))
     assert len(events) > 0
-
 
