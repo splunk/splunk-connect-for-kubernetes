@@ -64,7 +64,7 @@ def test_metric_name(setup, metric, dimension):
     '''
     logging.info("testing for presence of metric={0}".format(metric))
 
-    events = check_metrics_from_splunk(start_time="-1@h",
+    events = check_metrics_from_splunk(start_time="-24h@h",
                                   end_time="now",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
@@ -75,4 +75,3 @@ def test_metric_name(setup, metric, dimension):
     logging.info("Splunk received %s events in the last minute",
                          len(events))
     assert len(events) > 0
-
