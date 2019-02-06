@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 cd test
+sudo pip3 install --upgrade pip
 sudo pip3 install -r requirements.txt
 #Run pytests
 echo "Running functional tests....."

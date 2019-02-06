@@ -65,6 +65,76 @@ def check_metrics_from_splunk(index="circleci_metrics",
 
     return events
 
+
+def create_index_in_splunk(index="",
+                             url="",
+                             user="",
+                             password=""):
+    '''
+    Send a request to a Splunk instance to create an index
+    @param: index (index to be deleted)
+    @param: url (splunkd rest api url)
+    @param: user (splunk username)
+    @param: password (splunk password)
+    returns True/False
+    '''
+
+    search_url = '{0}/services/data/indexes/{1}?output_mode=json'.format(url, index)
+    logger.debug('requesting: %s', search_url)
+    data = {
+        'name': index
+    }
+
+    create_job = _requests_retry_session().post(
+        search_url,
+        auth=(user, password),
+        verify=False, data=data)
+
+    if create_job.status_code == 201:
+        logger.info('The index: %s successfully created', index)
+    elif create_job.status_code == 409:
+        logger.info('The index: %s already exits', index)
+    else:
+        logger.info('The index: {0} not created, exit code is {1}'.format(index, create_job.status_code))
+        return False
+
+    return True
+
+
+def delete_index_in_splunk(index="",
+                             user="",
+                             url="",
+                             password=""):
+    '''
+    Send a request to a Splunk instance to delete an index
+    @param: index (index to be deleted)
+    @param: url (splunkd rest api url)
+    @param: user (splunk username)
+    @param: password (splunk password)
+    returns True/False
+    '''
+
+    search_url = '{0}/services/data/indexes/{1}?output_mode=json'.format(url, index)
+    logger.debug('requesting: %s', search_url)
+    data = {
+        'name': index
+    }
+
+    create_job = _requests_retry_session().delete(
+        search_url,
+        auth=(user, password),
+        verify=False, data=data)
+
+    if create_job.status_code == 200:
+        logger.info('The index: %s successfully deleted', index)
+    elif create_job.status_code == 409:
+        logger.info('The index: %s already disabled', index)
+    else:
+        return False
+
+    return True
+
+
 def _collect_events(query, start_time, end_time, url="", user="", password=""):
     '''
     Collect events by running the given search query
