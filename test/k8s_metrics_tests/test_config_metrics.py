@@ -70,7 +70,34 @@ def test_metric_name(setup, metric):
                                   user=setup["splunk_user"],
                                   password=setup["splunk_password"],
                                   index="circleci_metrics",
-                                  metric_name=metric)
+                                  metric_name=metric,
+                                  dimension="host")
     logging.info("Splunk received %s events in the last minute",
                          len(events))
     assert len(events) > 0
+
+@pytest.mark.parametrize("metric,dimension", [    
+    ("kube.container.cpu.limit","cluster_name")
+])
+def test_metric_cluster_name(setup, metric, dimension):
+    '''
+    This test verifies the presence of the target cluster name - circleci-k8s-cluster-metrics
+    '''
+    logging.info("testing for presence of cluster name={0}".format(metric))
+
+    events = check_metrics_from_splunk(start_time="-24h@h",
+                                  end_time="now",
+                                  url=setup["splunkd_url"],
+                                  user=setup["splunk_user"],
+                                  password=setup["splunk_password"],
+                                  index="circleci_metrics",
+                                  metric_name=metric,
+                                  dimension=dimension)
+    
+    counter = 0
+
+    for x in events:
+        if x.get('name') == "circleci-k8s-cluster-metrics":
+            counter += 1
+
+    assert counter > 0
