@@ -56,12 +56,13 @@ def check_metrics_from_splunk(index="circleci_metrics",
                              url="",
                              user="",
                              password="",
-                             metric_name=""):
+                             metric_name="",
+                             dimension=""):
     '''
     send a search api request to splunk to check for values associated with a given metric and dimension
     '''
     logger.debug("Calling _collect_metrics ")
-    events = _collect_metrics(start_time, end_time, url, user, password, index, metric_name)
+    events = _collect_metrics(start_time, end_time, url, user, password, index, metric_name, dimension)
 
     return events
 
@@ -95,7 +96,7 @@ def _collect_events(query, start_time, end_time, url="", user="", password=""):
 
     return events
 
-def _collect_metrics(start_time, end_time, url="", user="", password="", index="", metric_name=""):
+def _collect_metrics(start_time, end_time, url="", user="", password="", index="", dimension="", metric_name=""):
     '''
     Verify metrics by running the given api query
     @param: dimension (metric dimension)
@@ -104,7 +105,7 @@ def _collect_metrics(start_time, end_time, url="", user="", password="", index="
     @param: end_time (search end time)
     returns events
     '''
-    api_url = url + '/services/catalog/metricstore/dimensions/host/values?filter=index%3d' + index + '&metric_name=' + metric_name + '&earliest=' + start_time + '&latest=' + end_time + '&output_mode=json'.format(
+    api_url = url + '/services/catalog/metricstore/dimensions/' + dimension + '/values?filter=index%3d' + index + '&metric_name=' + metric_name + '&earliest=' + start_time + '&latest=' + end_time + '&output_mode=json'.format(
         url)
 
     logger.debug('requesting: %s', api_url)

@@ -8,57 +8,57 @@ from ..common import check_events_from_splunk
 from ..common import check_metrics_from_splunk
 
 
-@pytest.mark.parametrize("metric", [
+@pytest.mark.parametrize("metric,dimension", [
     #Aggregator Metrics
-    ("kube.container.cpu.limit"),
-    ("kube.container.memory.request"),
-    ("kube.pod.cpu.limit"),
-    ("kube.pod.memory.request"),
-    ("kube.namespace.cpu.limit"),
-    ("kube.namespace.memory.request"),
-    ("kube.cluster.cpu.limit"),
-    ("kube.cluster.memory.request"),
-    ("kube.node.cpu.capacity"),
-    ("kube.node.memory.utilization"),
+    ("kube.container.cpu.limit", "host"),
+    ("kube.container.memory.request", "host"),
+    ("kube.pod.cpu.limit", "host"),
+    ("kube.pod.memory.request", "host"),
+    ("kube.namespace.cpu.limit", "host"),
+    ("kube.namespace.memory.request", "host"),
+    ("kube.cluster.cpu.limit", "host"),
+    ("kube.cluster.memory.request", "host"),
+    ("kube.node.cpu.capacity", "host"),
+    ("kube.node.memory.utilization", "host"),
     #Summary Metrics
-    ("kube.node.cpu.usage"),
-    ("kube.node.memory.usage"),
-    ("kube.node.uptime"),
-    ("kube.node.network.rx_bytes"),
-    ("kube.node.fs.available_bytes"),
-    ("kube.node.imagefs.available_bytes"),
-    ("kube.node.runtime.imagefs.maxpid"),
-    ("kube.sys-container.cpu.usage"),
-    ("kube.sys-container.memory.usage_bytes"),
-    ("kube.sys-container.uptime"),
-    ("kube.pod.uptime"),
-    ("kube.pod.cpu.usage"),
-    ("kube.pod.memory.usage_bytes"),
-    ("kube.pod.network.rx_bytes"),
-    ("kube.pod.ephemeral-storage.available_bytes"),
-    ("kube.pod.volume.available_bytes"),
-    ("kube.container.uptime"),
-    ("kube.container.cpu.usage"),
-    ("kube.container.memory.usage_bytes"),
-    ("kube.container.rootfs.available_bytes"),
-    ("kube.container.logs.used_bytes"),
+    ("kube.node.cpu.usage", "host"),
+    ("kube.node.memory.usage", "host"),
+    ("kube.node.uptime", "host"),
+    ("kube.node.network.rx_bytes", "host"),
+    ("kube.node.fs.available_bytes", "host"),
+    ("kube.node.imagefs.available_bytes", "host"),
+    ("kube.node.runtime.imagefs.maxpid", "host"),
+    ("kube.sys-container.cpu.usage", "host"),
+    ("kube.sys-container.memory.usage_bytes", "host"),
+    ("kube.sys-container.uptime", "host"),
+    ("kube.pod.uptime", "host"),
+    ("kube.pod.cpu.usage", "host"),
+    ("kube.pod.memory.usage_bytes", "host"),
+    ("kube.pod.network.rx_bytes", "host"),
+    ("kube.pod.ephemeral-storage.available_bytes", "host"),
+    ("kube.pod.volume.available_bytes", "host"),
+    ("kube.container.uptime", "host"),
+    ("kube.container.cpu.usage", "host"),
+    ("kube.container.memory.usage_bytes", "host"),
+    ("kube.container.rootfs.available_bytes", "host"),
+    ("kube.container.logs.used_bytes", "host"),
     #Stats Metrics
-    ("kube.node.cpu.cfs.periods"),
-    ("kube.node.diskio.io_service_bytes.stats.Read"),
-    ("kube.node.filesystem.available"),
-    ("kube.node.memory.cache"),
-    ("kube.node.tasks_stats.nr_running"),
-    ("kube.node.network.*.rx_bytes"),
+    ("kube.node.cpu.cfs.periods", "host"),
+    ("kube.node.diskio.io_service_bytes.stats.Read", "host"),
+    ("kube.node.filesystem.available", "host"),
+    ("kube.node.memory.cache", "host"),
+    ("kube.node.tasks_stats.nr_running", "host"),
+    ("kube.node.network.*.rx_bytes", "host"),
     #Cadvisor Metrics
-    ("kube.container.cpu.load.average.10s"),
-    ("kube.container.fs.inodes.free"),
-    ("kube.container.last.seen"),
-    ("kube.container.memory.usage.bytes"),
-    ("kube.container.network.receive.bytes.total"),
-    ("kube.container.spec.cpu.period"),
-    ("kube.container.tasks.state")
+    ("kube.container.cpu.load.average.10s", "host"),
+    ("kube.container.fs.inodes.free", "host"),
+    ("kube.container.last.seen", "host"),
+    ("kube.container.memory.usage.bytes", "host"),
+    ("kube.container.network.receive.bytes.total", "host"),
+    ("kube.container.spec.cpu.period", "host"),
+    ("kube.container.tasks.state", "host")
 ])
-def test_metric_name(setup, metric):
+def test_metric_name(setup, metric, dimension):
     '''
     This test covers one metric from each endpoint that the metrics plugin covers
     '''
@@ -70,7 +70,38 @@ def test_metric_name(setup, metric):
                                   user=setup["splunk_user"],
                                   password=setup["splunk_password"],
                                   index="circleci_metrics",
-                                  metric_name=metric)
+                                  metric_name=metric,
+                                  dimension=dimension)
     logging.info("Splunk received %s events in the last minute",
                          len(events))
     assert len(events) > 0
+
+
+@pytest.mark.parametrize("metric,dimension", [    
+    ("kube.container.cpu.limit", "cluster_name")
+])
+def test_metric_cluster_name(setup, metric, dimension):
+    '''
+    This test verifies the presence of the target cluster name - circleci-k8s-cluster-metrics
+    '''
+    counter == 0
+
+    logging.info("testing for presence of metric={0}".format(metric))
+
+    events = check_metrics_from_splunk(start_time="-24h@h",
+                                  end_time="now",
+                                  url=setup["splunkd_url"],
+                                  user=setup["splunk_user"],
+                                  password=setup["splunk_password"],
+                                  index="circleci_metrics",
+                                  metric_name=metric,
+                                  dimension=dimension)
+    logging.info("Splunk received %s events in the last minute",
+                         len(events))
+    
+    #for (i=0; i<len(events); i++):
+    for x in events:
+        if x.name == "circleci-k8s-cluster-metrics":
+            counter += 1
+
+    assert counter > 0
