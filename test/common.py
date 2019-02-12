@@ -62,7 +62,7 @@ def check_metrics_from_splunk(index="circleci_metrics",
     send a search api request to splunk to check for values associated with a given metric and dimension
     '''
     logger.debug("Calling _collect_metrics ")
-    events = _collect_metrics(start_time, end_time, url, user, password, index, metric_name)
+    events = _collect_metrics(start_time, end_time, url, user, password, index, metric_name, dimension)
 
     return events
 
