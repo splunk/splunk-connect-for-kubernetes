@@ -96,7 +96,7 @@ def _collect_events(query, start_time, end_time, url="", user="", password=""):
 
     return events
 
-def _collect_metrics(start_time, end_time, url="", user="", password="", index="", dimension="", metric_name=""):
+def _collect_metrics(start_time, end_time, url="", user="", password="", index="", metric_name="", dimension=""):
     '''
     Verify metrics by running the given api query
     @param: dimension (metric dimension)
