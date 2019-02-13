@@ -24,6 +24,7 @@ splunk-kubernetes-metrics:
     useRestClientSSL: false
     insecureSSL: true
     kubeletPort: 10255
+    clusterName: "circleci-k8s-cluster-metrics"
   splunk:
     hec:
       indexName: circleci_metrics
