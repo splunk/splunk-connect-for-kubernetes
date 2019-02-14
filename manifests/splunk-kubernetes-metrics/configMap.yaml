@@ -18,6 +18,7 @@ data:
       node_name "#{ENV['SPLUNK_HEC_HOST']}"
       use_rest_client_ssl true
       cluster_name cluster_name
+      interval 15s
     </source>
     <filter kube.**>
       @type record_modifier
