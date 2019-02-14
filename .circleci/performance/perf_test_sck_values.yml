@@ -1,0 +1,91 @@
+global:
+  logLevel: info
+  splunk:
+    hec:
+      host: $SPLUNK_HEC_HOST_PERF
+      insecureSSL: true
+      protocol: http
+      token: $SPLUNK_HEC_TOKEN_PERF
+splunk-kubernetes-logging:
+  image:
+    pullPolicy: Always
+  kubernetes:
+    insecureSSL: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
+  splunk:
+    hec:
+      indexName: perf_test_events
+  buffer:
+    total_limit_size: 600m
+    chunk_limit_size: 200m
+    chunk_limit_records: 100000
+    flush_interval: 5s
+    flush_thread_count: 1
+    overflow_action: block
+    retry_max_times: 3
+splunk-kubernetes-metrics:
+  kubernetes:
+    insecureSSL: true
+    kubeletPort: 10255
+  image:
+    pullPolicy: Always
+  kubernetes:
+    insecureSSL: true
+    kubeletPort: 10255
+    useRestClientSSL: false
+  splunk:
+    hec:
+      indexName: perf_test_metrics
+  resources:
+    fluent:
+      limits:
+        cpu: 200m
+        memory: 300Mi
+      requests:
+        cpu: 200m
+      memory: 300Mi
+  buffer:
+    total_limit_size: 400m
+    chunk_limit_size: 100m
+    chunk_limit_records: 1000000
+    flush_interval: 5s
+    flush_thread_count: 1
+    overflow_action: block
+    retry_max_times: 3
+  aggregatorBuffer:
+    total_limit_size: 400m
+    chunk_limit_size: 100m
+    chunk_limit_records: 1000000
+    flush_interval: 5s
+    flush_thread_count: 1
+    overflow_action: block
+    retry_max_times: 3
+splunk-kubernetes-objects:
+  image:
+    pullPolicy: Always
+  kubernetes:
+    insecureSSL: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
+  splunk:
+    hec:
+      indexName: perf_test_objects
+  buffer:
+    total_limit_size: 600m
+    chunk_limit_size: 200m
+    chunk_limit_records: 10000
+    flush_interval: 3s
+    flush_thread_count: 1
+    overflow_action: block
+    retry_max_times: 3
