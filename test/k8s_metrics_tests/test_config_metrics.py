@@ -85,7 +85,7 @@ def test_metric_cluster_name(setup, metric, dimension):
     '''
     logging.info("testing for presence of cluster name={0}".format(metric))
 
-    events = check_metrics_from_splunk(start_time="-24h@h",
+    events = check_metrics_from_splunk(start_time="-12h@h",
                                   end_time="now",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
@@ -97,7 +97,11 @@ def test_metric_cluster_name(setup, metric, dimension):
     counter = 0
 
     for x in events:
+    #x = events[0]
         if x.get('name') == "circleci-k8s-cluster-metrics":
             counter += 1
 
-    assert counter > 0
+    #if events.get('name') == "circleci-k8s-cluster-metrics":
+    #    counter += 1
+            
+    assert len(events) == counter
