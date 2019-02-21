@@ -68,7 +68,7 @@ spec:
         - name: conf-configmap
           mountPath: /fluentd/etc
         {{- if .Values.checkpointFile.volume }}
-        - name: conf-configmap
+        - name: checkpoints
           mountPath: /fluentd/var/checkpoints
         {{- end }}
         - name: secrets
