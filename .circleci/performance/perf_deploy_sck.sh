@@ -27,7 +27,7 @@ function setup_kubeclient ()
 function deploy_sck ()
 {
     print_msg "Deploying SCK"
-    setup_kubeclient
+    setup_kubeclient || true
     print_msg "Installing the SCK build artifacts on the kubernetes cluster"
     helm install --name=perf-test -f .circleci/performance/perf_test_sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
 }
