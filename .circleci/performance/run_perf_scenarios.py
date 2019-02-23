@@ -287,7 +287,8 @@ def teardown_connector_and_datagen(test_case_datagen, test_case_connector):
 def wait_for_connector_do_data_collection_injection(test_case_datagen):
     logging.info('Sleeping for data collection')
     for second in range(int(test_case_datagen['sleep_duration']), 0, -1):
-        if(second % 60 == 0) {logging.info('Sleeping ' + str(second) + '........')}
+        if(second % 60 == 0):
+            logging.info('Sleeping ' + str(second) + '........')
         time.sleep(1)
 
 
