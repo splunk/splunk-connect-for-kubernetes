@@ -13,78 +13,78 @@ PERF_YAML_FILE = ".circleci/performance/perf_test_sck_values.yml"
 
 # Lookup configurables for datagen - https://github.com/dtregonning/kafka-data-gen
 DATAGEN_PERF_CASES = [
-    {
-        'deployment_name': 'perf-test-datagen',
-        'namespace': 'default',
-        'number_of_datagen': 10,
-        'message_count': 100000,
-        'message_size': 128,
-        'eps': 100,
-        'sleep_duration': 1800
-    },
-    {
-        'deployment_name': 'perf-test-datagen',
-        'namespace': 'default',
-        'number_of_datagen': 10,
-        'message_count': 100000,
-        'message_size': 256,
-        'eps': 100,
-        'sleep_duration': 1800
-    },
-    {
-        'deployment_name': 'perf-test-datagen',
-        'namespace': 'default',
-        'number_of_datagen': 10,
-        'message_count': 100000,
-        'message_size': 512,
-        'eps': 100,
-        'sleep_duration': 1800
-    },
-    {
-        'deployment_name': 'perf-test-datagen',
-        'namespace': 'default',
-        'number_of_datagen': 10,
-        'message_count': 100000,
-        'message_size': 1024,
-        'eps': 100,
-        'sleep_duration': 1800
-    },
-    # {
-    #     'deployment_name': 'perf-test-datagen',
-    #     'namespace': 'default',
-    #     'number_of_datagen': 50,
-    #     'message_count': 100000,
-    #     'message_size': 128,
-    #     'eps': 100,
-    #     'sleep_duration': 1800
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #    'message_count': 100000,
+    #   'message_size': 128,
+    #    'eps': 100,
+    #    'sleep_duration': 1800
+    #},
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #    'message_count': 100000,
+    #    'message_size': 256,
+    #   'eps': 100,
+    #    'sleep_duration': 1800
+    #},
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #    'message_count': 100000,
+    #    'message_size': 512,
+    #   'eps': 100,
+    #    'sleep_duration': 1800
+    #},
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #   'message_count': 100000,
+    #    'message_size': 1024,
+    #    'eps': 100,
+    #    'sleep_duration': 1800
     # },
-    # {
-    #     'deployment_name': 'perf-test-datagen',
-    #     'namespace': 'default',
-    #     'number_of_datagen': 50,
-    #     'message_count': 100000,
-    #     'message_size': 256,
-    #     'eps': 100,
-    #     'sleep_duration': 1800
-    # },
-    # {
-    #     'deployment_name': 'perf-test-datagen',
-    #     'namespace': 'default',
-    #     'number_of_datagen': 50,
-    #     'message_count': 100000,
-    #     'message_size': 512,
-    #     'eps': 100,
-    #     'sleep_duration': 1800
-    # },
-    # {
-    #     'deployment_name': 'perf-test-datagen',
-    #     'namespace': 'default',
-    #     'number_of_datagen': 50,
-    #     'message_count': 100000,
-    #     'message_size': 1024,
-    #     'eps': 100,
-    #     'sleep_duration': 1800
-    # },
+    {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 50,
+         'message_count': 100000,
+         'message_size': 128,
+         'eps': 100,
+         'sleep_duration': 1800
+     },
+     {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 50,
+         'message_count': 100000,
+         'message_size': 256,
+         'eps': 100,
+         'sleep_duration': 1800
+     },
+     {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 50,
+         'message_count': 100000,
+         'message_size': 512,
+         'eps': 100,
+         'sleep_duration': 1800
+     },
+     {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 50,
+         'message_count': 100000,
+         'message_size': 1024,
+         'eps': 100,
+         'sleep_duration': 1800
+     }
     # {
     #     'deployment_name': 'perf-test-datagen',
     #     'namespace': 'default',
@@ -287,7 +287,7 @@ def teardown_connector_and_datagen(test_case_datagen, test_case_connector):
 def wait_for_connector_do_data_collection_injection(test_case_datagen):
     logging.info('Sleeping for data collection')
     for second in range(int(test_case_datagen['sleep_duration']), 0, -1):
-        logging.info('Sleeping ' + str(second) + '........')
+        if(second % 60 == 0) {logging.info('Sleeping ' + str(second) + '........')}
         time.sleep(1)
 
 
