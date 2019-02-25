@@ -92,7 +92,7 @@ DATAGEN_PERF_CASES = [
          'message_count': 100000,
          'message_size': 128,
          'eps': 100,
-         'sleep_duration': 1800
+         'sleep_duration': 3600
      },
      {
          'deployment_name': 'perf-test-datagen',
@@ -101,7 +101,7 @@ DATAGEN_PERF_CASES = [
          'message_count': 100000,
          'message_size': 256,
          'eps': 100,
-         'sleep_duration': 1800
+         'sleep_duration': 3600
      },
      {
          'deployment_name': 'perf-test-datagen',
@@ -110,7 +110,7 @@ DATAGEN_PERF_CASES = [
          'message_count': 100000,
          'message_size': 512,
          'eps': 100,
-         'sleep_duration': 1800
+         'sleep_duration': 3600
      },
      {
          'deployment_name': 'perf-test-datagen',
@@ -119,7 +119,7 @@ DATAGEN_PERF_CASES = [
          'message_count': 100000,
          'message_size': 1024,
          'eps': 100,
-         'sleep_duration': 1800
+         'sleep_duration': 3600
      }
 ]
 
