@@ -85,10 +85,46 @@ DATAGEN_PERF_CASES = [
     #     'eps': 100,
     #     'sleep_duration': 1800
     # }
-     {
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 128,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 256,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 512,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 1024,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    # }
+    {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 100,
+         'number_of_datagen': 200,
          'message_count': 100000,
          'message_size': 128,
          'eps': 100,
@@ -97,7 +133,7 @@ DATAGEN_PERF_CASES = [
      {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 100,
+         'number_of_datagen': 200,
          'message_count': 100000,
          'message_size': 256,
          'eps': 100,
@@ -106,7 +142,7 @@ DATAGEN_PERF_CASES = [
      {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 100,
+         'number_of_datagen': 200,
          'message_count': 100000,
          'message_size': 512,
          'eps': 100,
@@ -115,7 +151,7 @@ DATAGEN_PERF_CASES = [
      {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 100,
+         'number_of_datagen': 200,
          'message_count': 100000,
          'message_size': 1024,
          'eps': 100,
