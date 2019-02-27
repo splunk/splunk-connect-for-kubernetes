@@ -12,7 +12,7 @@ yq w -i .circleci/sck_values.yml global.splunk.hec.token $SPLUNK_HEC_TOKEN
 yq w -i .circleci/performance/perf_test_sck_values.yml global.splunk.hec.host $SPLUNK_HEC_HOST_PERF
 yq w -i .circleci/performance/perf_test_sck_values.yml global.splunk.hec.token $SPLUNK_HEC_TOKEN_PERF
 
-#Pull docker images locally
+# Pull docker images locally
 aws ecr get-login --region $AWS_REGION --no-include-email | bash
 docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-logging:latest | awk 'END{print}' | sed -E 's/[0-9]+.dkr/$AWS_ACCOUNT_ID/g'
 docker pull $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/k8s-ci-metrics:latest | awk 'END{print}' | sed -E 's/[0-9]+.dkr/$AWS_ACCOUNT_ID/g'

@@ -1,17 +1,15 @@
 apiVersion: v1
-version: 1.0.1
+version: 1.1.0
 name: splunk-kubernetes-metrics
 description: Collect metrics with Splunk.
 home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-metrics
 sources:
   - https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-metrics
   - https://github.com/splunk/fluent-plugin-splunk-hec
-  - https://github.com/splunk/docker-fluentd-hec
-  - https://github.com/kubernetes/heapster
 keywords:
   - splunk
   - monitoring
   - metric
 maintainers:
-  - name: Gimi Liang
-    email: zliang@splunk.com
+  - name: Splunk Inc.
+    email: DataEdge@splunk.com

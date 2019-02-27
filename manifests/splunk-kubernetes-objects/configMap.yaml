@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.0.0
+    version: 1.1.0
 data:
   fluent.conf: |
     <system>
@@ -36,6 +36,11 @@ data:
       jq '.record.source = "namespace:\(env.MY_NAMESPACE)/pod:\(env.MY_POD_NAME)" | .record.sourcetype = (.tag | gsub("\\\\."; ":")) | .record'
     </filter>
 
+    <filter kube.**>
+      @type jq_transformer
+      jq '.record.cluster_name = "cluster_name" | .record'
+    </filter>
+
     <match kube.**>
       @type splunk_hec
       protocol https
@@ -46,11 +51,17 @@ data:
       source_key source
       sourcetype_key sourcetype
       insecure_ssl true
+      <fields>
+        cluster_name
+      </fields>
       <buffer>
         @type memory
-        chunk_limit_size 200m
         chunk_limit_records 10000
+        chunk_limit_size 200m
         flush_interval 3s
+        flush_thread_count 1
+        overflow_action block
         retry_max_times 3
+        total_limit_size 600m
       </buffer>
     </match>

@@ -2,7 +2,7 @@ require 'fileutils'
 require 'yaml'
 
 release_name = 'RELEASE-NAME'
-@version = '1.0.0'
+@version = File.read('VERSION').strip
 name_prefix = "#{release_name}-splunk-kubernetes-"
 
 def sanitize_yaml(yaml)

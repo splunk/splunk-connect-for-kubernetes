@@ -1,13 +1,13 @@
 dependencies:
   - name: splunk-kubernetes-logging
-    version: 1.0.0
+    version: 1.1.0
     repository: stable
     condition: logging.enabled
   - name: splunk-kubernetes-objects
-    version: 1.0.0
+    version: 1.1.0
     repository: stable
     condition: objects.enabled
   - name: splunk-kubernetes-metrics
-    version: 1.0.0
+    version: 1.1.0
     repository: stable
     condition: metrics.enabled
