@@ -8,6 +8,8 @@ sudo apt-get -y install gnupg
 sudo mkdir ~/.kube
 echo $GPG_KEY | gpg --output config --passphrase-fd 0 --decrypt --batch .circleci/kubeconfig.gpg
 sudo mv config ~/.kube/config
+#Update helm server version
+helm init --upgrade
 #Make sure to check and clean previously failed deployment
 echo "Checking if previous deployment exist..."
 if [ "`helm ls`" == "" ]; then
