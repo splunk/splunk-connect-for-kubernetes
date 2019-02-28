@@ -19,7 +19,7 @@ def test_splunk_index(setup, test_input, expected):
     '''
     logging.getLogger().info("testing test_splunk_index input={0} \
                  expected={1} event(s)".format(test_input, expected))
-    search_query = "index=circleci_events"
+    search_query = "index=circleci_events OR index=kube-system"
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
                                       user=setup["splunk_user"],
@@ -39,7 +39,7 @@ def test_cluster_name(setup, test_input, expected):
     '''
     logging.getLogger().info("testing test_clusterName input={0} \
                 expected={1} event(s)".format(test_input, expected))
-    search_query = "index=circleci_events cluster_name=circleci-k8s-cluster | head 1"
+    search_query = "index=circleci_events OR index=kube-system cluster_name=circleci-k8s-cluster | head 1"
     events = check_events_from_splunk(start_time="-1h@h",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
@@ -160,7 +160,7 @@ def test_sourcetype(setup, test_input, expected):
     events = check_events_from_splunk(start_time="-24h@h",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
-                                  query=["search index=circleci_events sourcetype={0}".format(test_input)],
+                                  query=["search index=circleci_events OR index=kube-system sourcetype={0}".format(test_input)],
                                   password=setup["splunk_password"])
     logging.getLogger().info("Splunk received %s events in the last minute",
                          len(events))
@@ -182,7 +182,7 @@ def test_source(setup, test_input, expected):
     events = check_events_from_splunk(start_time="-24h@h",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
-                                  query=["search index=circleci_events source={0}".format(test_input)],
+                                  query=["search index=circleci_events OR index=kube-system source={0}".format(test_input)],
                                   password=setup["splunk_password"])
     logging.getLogger().info("Splunk received %s events in the last minute",
                          len(events))
