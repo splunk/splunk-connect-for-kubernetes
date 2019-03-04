@@ -173,7 +173,7 @@ CONNECTOR_PERF_CASES = [
         'overflow_action': 'block',
         'retry_max_times': 3,
         'limits_cpu': '10000m',
-        'limits_memory': '10000m',
+        'limits_memory': '10000Mi',
         'requests_cpu': '2500m',
         'requests_memory': '2500Mi',
     },
