@@ -125,37 +125,37 @@ DATAGEN_PERF_CASES = [
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
          'number_of_datagen': 30,
-         'message_count': 100000,
-         'message_size': 128,
-         'eps': 1000,
-         'sleep_duration': 2700
-     },
-     {
-         'deployment_name': 'perf-test-datagen',
-         'namespace': 'default',
-         'number_of_datagen': 30,
-         'message_count': 100000,
-         'message_size': 256,
-         'eps': 1000,
-         'sleep_duration': 2700
-     },
-     {
-         'deployment_name': 'perf-test-datagen',
-         'namespace': 'default',
-         'number_of_datagen': 30,
-         'message_count': 100000,
-         'message_size': 512,
-         'eps': 200,
-         'sleep_duration': 2700
-     },
-     {
-         'deployment_name': 'perf-test-datagen',
-         'namespace': 'default',
-         'number_of_datagen': 30,
-         'message_count': 100000,
+         'message_count': 120000,
          'message_size': 1024,
          'eps': 1000,
-         'sleep_duration': 2700
+         'sleep_duration': 60
+     },
+     {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 30,
+         'message_count': 120000,
+         'message_size': 1024,
+         'eps': 1000,
+         'sleep_duration': 60
+     },
+     {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 30,
+         'message_count': 120000,
+         'message_size': 1024,
+         'eps': 1000,
+         'sleep_duration': 60
+     },
+     {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 30,
+         'message_count': 120000,
+         'message_size': 1024,
+         'eps': 1000,
+         'sleep_duration': 60
      }
 ]
 
