@@ -124,25 +124,25 @@ DATAGEN_PERF_CASES = [
     {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 200,
+         'number_of_datagen': 30,
          'message_count': 100000,
          'message_size': 128,
-         'eps': 200,
+         'eps': 1000,
          'sleep_duration': 2700
      },
      {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 200,
+         'number_of_datagen': 30,
          'message_count': 100000,
          'message_size': 256,
-         'eps': 200,
+         'eps': 1000,
          'sleep_duration': 2700
      },
      {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 200,
+         'number_of_datagen': 30,
          'message_count': 100000,
          'message_size': 512,
          'eps': 200,
@@ -151,10 +151,10 @@ DATAGEN_PERF_CASES = [
      {
          'deployment_name': 'perf-test-datagen',
          'namespace': 'default',
-         'number_of_datagen': 200,
+         'number_of_datagen': 30,
          'message_count': 100000,
          'message_size': 1024,
-         'eps': 200,
+         'eps': 1000,
          'sleep_duration': 2700
      }
 ]
@@ -167,8 +167,8 @@ CONNECTOR_PERF_CASES = [
         'buffer_type': 'memory',
         'total_limit_size': '600m',
         'chunk_limit_size': '200m',
-        'chunk_limit_records': 10000,
-        'flush_interval': '5s',
+        'chunk_limit_records': 512000,
+        'flush_interval': '10s',
         'flush_thread_count': 1,
         'overflow_action': 'block',
         'retry_max_times': 3,
