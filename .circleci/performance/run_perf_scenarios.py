@@ -155,7 +155,7 @@ DATAGEN_PERF_CASES = [
          'message_count': 120000,
          'message_size': 1024,
          'eps': 1000,
-         'sleep_duration': 60
+         'sleep_duration': 600
      }
 ]
 
@@ -172,10 +172,10 @@ CONNECTOR_PERF_CASES = [
         'flush_thread_count': 1,
         'overflow_action': 'block',
         'retry_max_times': 3,
-        'limits_cpu': '2000m',
-        'limits_memory': '2000Mi',
-        'requests_cpu': '500m',
-        'requests_memory': '500Mi',
+        'limits_cpu': '10000m',
+        'limits_memory': '10000m',
+        'requests_cpu': '2500m',
+        'requests_memory': '2500Mi',
     },
     # {
     #     'buffer_type': 'memory',
