@@ -221,8 +221,8 @@ logs:
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  tag: 1.0.1
-  pullPolicy: IfNotPresent
+  name: splunk/fluentd-hec:1.1.0.Alpha
+  pullPolicy: Always
 
 
 # Controls the resources used by the fluentd daemonset
