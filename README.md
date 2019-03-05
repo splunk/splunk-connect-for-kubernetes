@@ -67,11 +67,11 @@ To configure the Splunk Connector for Kubernetes using YAML files:
 
 Splunk Connect for Kubernetes deploys a daemonset on each node. And in the daemonset, a Fluentd container runs and does the collecting job. Splunk Connector for Kubernetes collects three types of data:
 
-* logs: Splunk Connectr for Kubernetes collects two types of logs:
-  * logs from Kubernetes system components (https://kubernetes.io/docs/concepts/overview/components/)
-  * applications (container) logs
-* [objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)
-* metrics
+* Logs: Splunk Connect for Kubernetes collects two types of logs:
+  * Logs from Kubernetes system components (https://kubernetes.io/docs/concepts/overview/components/)
+  * Applications (container) logs
+* [Objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)
+* Metrics
 
 To collect the data, Splunk leverages:
 
@@ -113,7 +113,7 @@ If you want to learn more about which metrics are collected and labels used with
 
 # Performance
 
-Some parameters used with Splunk Connect for Kubernetes can have an impact on overall performance of log ingestion, objects, or metrics. In general, the more filters that are added to one of the streams, the greater the preformance impact.
+Some parameters used with Splunk Connect for Kubernetes can have an impact on overall performance of log ingestion, objects, or metrics. In general, the more filters that are added to one of the streams, the greater the performance impact.
 
 Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best address capacity needs, Splunk recommends that you monitor the HEC throughput and back pressure on Splunk Connect for Kubernetes deployments and be prepared to add additional nodes as needed.
 
