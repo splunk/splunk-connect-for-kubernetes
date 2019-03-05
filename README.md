@@ -109,7 +109,7 @@ Make sure your Splunk configuration has a metrics index that is able to receive 
 
 If you want to learn more about how metrics are monitored in a Kubernetes cluster, see Tools for [Monitoring Compute, Storage, and Network Resources](https://kubernetes.io/docs/tasks/debug-application-cluster/resource-usage-monitoring/).
 
-If you want to learn more about which metrics are collected and labels used with Splunk Connect for Kubernetes, view the metrics [schema](https://github.com/kubernetes/heapster/blob/master/docs/storage-schema.md#metrics) within the Heapster docs.
+If you want to learn more about which metrics are collected and labels used with Splunk Connect for Kubernetes, view the metrics [schema](https://github.com/splunk/fluent-plugin-kubernetes-metrics).
 
 # Performance
 
