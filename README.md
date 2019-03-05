@@ -22,8 +22,8 @@ Splunk Connect for Kubernetes supports installation using Helm. Ensure that you 
 Make sure you do the following before you install:
 
 1. Create a minimum of two Splunk indexes:
-* one events index, which will handle logs and objects (you may also create two separate indexes for logs and objects).
-* one metrics index.
+* One events index, which will handle logs and objects (you may also create two separate indexes for logs and objects).
+* One metrics index.
 If you do not configure these indexes, Kubernetes Connect for Splunk uses the defaults created in your HEC token.
 
 2. Create a HEC token if you do not already have one. If you are installing the connector on Splunk Cloud, file a ticket with Splunk Customer Service and they will deploy the indexes for your environment and generate your HEC token.
