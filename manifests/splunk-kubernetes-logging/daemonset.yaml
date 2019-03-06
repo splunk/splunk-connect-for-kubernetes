@@ -6,13 +6,13 @@ metadata:
   labels:
     app: splunk-kubernetes-logging
     engine: fluentd
-    version: 1.0.0
+    version: 1.1.0
 spec:
   template:
     metadata:
       labels:
         app: splunk-kubernetes-logging
-        version: 1.0.0
+        version: 1.1.0
       annotations: {}
     spec:
       tolerations:
@@ -20,8 +20,8 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-logs
-        image: splunk/fluentd-hec:1.0.1
-        imagePullPolicy: IfNotPresent
+        image: splunk/fluentd-hec:1.1.0
+        imagePullPolicy: Always
         args:
         - "-c"
         - "/fluentd/etc/fluent.conf"

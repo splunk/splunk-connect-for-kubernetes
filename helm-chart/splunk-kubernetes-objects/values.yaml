@@ -165,7 +165,7 @@ splunk:
 
 
 image:
-  name: splunk/kube-objects:1.0.1
+  name: splunk/kube-objects:1.1.0
   pullPolicy: IfNotPresent
 
 

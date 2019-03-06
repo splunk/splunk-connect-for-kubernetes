@@ -122,6 +122,11 @@ Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best 
 
 One possible filter option is to enable the processing of multi-line events. This feature is currently experimental and considered to be community supported.
 
+# Maintenance And Support
+
+The current maintainers of this project are the DataEdge team at Splunk. You can reach us at [DataEdge@splunk.com](mailto:DataEdge@splunk.com).
+If you have any issues with the software, please file an issue at [Create a new issue in splunk connect for kubernetes project](https://github.com/splunk/splunk-connect-for-kubernetes/issues/new)
+
 # License
 
-See [LICENSE](LICENSE).
+See [LICENSE](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/LICENSE).
