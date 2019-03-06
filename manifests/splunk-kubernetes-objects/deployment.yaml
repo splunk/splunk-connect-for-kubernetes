@@ -5,27 +5,27 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.0.0
+    version: 1.1.0
 spec:
   selector:
     matchLabels:
       app: splunk-kubernetes-objects
       engine: fluentd
-      version: 1.0.0
+      version: 1.1.0
   replicas: 1
   template:
     metadata:
       labels:
         app: splunk-kubernetes-objects
         engine: fluentd
-        version: 1.0.0
+        version: 1.1.0
       annotations: {}
     spec:
       serviceAccountName: splunk-kubernetes-objects
       terminationGracePeriodSeconds: 30
       containers:
       - name: splunk-fluentd-k8s-objects
-        image: splunk/kube-objects:1.0.1
+        image: splunk/kube-objects:1.1.0
         imagePullPolicy: IfNotPresent
         args:
         - "-c"

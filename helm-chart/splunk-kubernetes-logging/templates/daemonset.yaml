@@ -31,7 +31,7 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-logs
-        image: splunk/fluentd-hec:{{ .Values.image.tag }}
+        image: {{ .Values.image.name }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
           - -c
