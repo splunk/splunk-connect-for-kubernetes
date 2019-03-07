@@ -9,8 +9,8 @@ Splunk Connect for Kubernetes provides a way to import and search your Kubernete
 
 * Splunk Enterprise 7.0 or later
 * An HEC token. See the following topics for more information:
-  * http://docs.splunk.com/Documentation/Splunk/7.0.3/Data/UsetheHTTPEventCollector
-  * http://docs.splunk.com/Documentation/Splunk/7.0.3/Data/ScaleHTTPEventCollector
+  * http://docs.splunk.com/Documentation/Splunk/7.2.4/Data/UsetheHTTPEventCollector
+  * http://docs.splunk.com/Documentation/Splunk/7.2.4/Data/ScaleHTTPEventCollector
 * You should be familiar with your Kubernetes configuration and know where your log info is collected in Kubernetes.
 * You must have administrator access to your Kubernetes cluster.
 * To install using Helm (recommended), make sure you are running Helm in your Kubernetes configuration. See https://github.com/kubernetes/helm
@@ -35,7 +35,7 @@ Helm, maintained by the CNCF, allows the Kubernetes administrator to install, up
 To install and configure defaults with Helm:
 
 ```
-$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.1/splunk-connect-for-kubernetes-1.0.1.tgz
+$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.1.0/splunk-connect-for-kubernetes-1.1.0.tgz
 ```
 
 To learn more about using and modifying charts, see:
@@ -105,11 +105,11 @@ Splunk Connect for Kubernetes deploys daemonsets on the Kubernetes cluster. Thes
 
 * [Fluentd metrics plugin](https://github.com/splunk/fluent-plugin-kubernetes-metrics) collects the metrics, formats the metrics for Splunk ingestion by assuring the metrics have proper metric_name, dimensions, etc., and then sends the metrics to Splunk using out_splunk_hec using Fluentd engine.
 
-Make sure your Splunk configuration has a metrics index that is able to receive the data. See [Get started with metrics](http://docs.splunk.com/Documentation/Splunk/7.1.0/Metrics/GetStarted) in the Splunk Enterprise documentaiton.
+Make sure your Splunk configuration has a metrics index that is able to receive the data. See [Get started with metrics](http://docs.splunk.com/Documentation/Splunk/7.2.4/Metrics/GetStarted) in the Splunk Enterprise documentaiton.
 
 If you want to learn more about how metrics are monitored in a Kubernetes cluster, see Tools for [Monitoring Compute, Storage, and Network Resources](https://kubernetes.io/docs/tasks/debug-application-cluster/resource-usage-monitoring/).
 
-If you want to learn more about which metrics are collected and labels used with Splunk Connect for Kubernetes, view the metrics [schema](https://github.com/splunk/fluent-plugin-kubernetes-metrics).
+If you want to learn more about which metrics tha are collected and metric names used with Splunk Connect for Kubernetes, view the metrics [schema](https://github.com/splunk/fluent-plugin-kubernetes-metrics).
 
 # Performance
 
@@ -117,10 +117,25 @@ Some parameters used with Splunk Connect for Kubernetes can have an impact on ov
 
 Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best address capacity needs, Splunk recommends that you monitor the HEC throughput and back pressure on Splunk Connect for Kubernetes deployments and be prepared to add additional nodes as needed.
 
-
 # Processing Multi-Line Logs
 
 One possible filter option is to enable the processing of multi-line events. This feature is currently experimental and considered to be community supported.
+
+# Namespace to Index Routing
+
+Splunk Connect for Kubernetes has the functionality to route logs and metrics from different namespaces to Splunk indexers of the same name. This can be configured by
+using the two configurable parameters `indexRouting` and `indexRoutingDefaultIndex`
+
+`indexRouting` is a boolean configurable that enables the feature
+`indexRoutingDefaultIndex` is the Splunk index used for the events from the default Kubernetes namespace
+
+Warning: Before enabling this feature it is essential to have Splunk indexes created which map to your Kubernetes namespaces.
+Example:
+
+* (Namespace) -> (Splunk Index)
+* kube-system -> kube-system
+* kube-public -> kube-public
+* default -> indexRoutingDefaultIndex 
 
 # Maintenance And Support
 

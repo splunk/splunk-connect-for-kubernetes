@@ -218,7 +218,6 @@ The following components are provided under the Apache License 2.0. See project 
     (Apache License 2.0) fluentd-plugin-splunk-hec (https://github.com/splunk/fluent-plugin-splunk-hec/blob/master/LICENSE)
     (Apache License 2.0) fluentd-plugin-kubernetes-objects (https://github.com/splunk/fluent-plugin-kubernetes-objects/blob/master/LICENSE)
     (Apache License 2.0) fluent-plugin-prometheus (https://github.com/fluent/fluent-plugin-prometheus/blob/master/LICENSE)
-    (Apache License 2.0) heapster (https://github.com/kubernetes/heapster/blob/master/LICENSE)
 
 ========================================================================
 MIT licenses

@@ -6,7 +6,7 @@ The connector contains three Helm Charts to manage Splunk Connect for Kubernetes
 
 * splunk-kubernetes-logging: Daemonset that runs [fluentd](https://www.fluentd.org/) to collect logs for both Kubernetes system components (e.g. kubelet, apiserver, etc.), and applications which are running in the cluster. See [README](charts/splunk-kubernetes-logging/README.md) for details.
 * splunk-kubernetes-objects: Deployment that runs Fluentd to collect data of Kubernetes objects, e.g. namespaces, nodes, pods, etc. See [README](charts/splunk-kubernetes-objects/README.md) for details.
-* splunk-kubernetes-metrics: Deployment that runs [heapster](https://github.com/kubernetes/heapster) and Fluentd together to collect metrics. See [README](charts/splunk-kubernetes-metrics/README.md) for details.
+* splunk-kubernetes-metrics: Deployment and Daemonset that runs Fluentd to collect metrics from Kubernetes. [README](/helm-chart/splunk-kubernetes-metrics/README.md)
 
 ## Install ##
 
@@ -17,7 +17,7 @@ First, prepare a Values file. Check the Values files in each sub-chart for detai
 Once you have a Values file, you can simply install the chart with a release name (optional) by running
 
 ```bash
-$ helm install --name my-splunk-connect -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.1/splunk-connect-for-kubernetes-1.0.1.tgz
+$ helm install --name my-splunk-connect -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.1.0/splunk-connect-for-kubernetes-1.1.0.tgz
 ```
 
 ## Uninstall ##
