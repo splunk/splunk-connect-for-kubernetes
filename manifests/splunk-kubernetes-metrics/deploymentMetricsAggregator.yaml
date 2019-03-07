@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: splunk-kubernetes-metrics-agg
+  labels:
+    app: splunk-kubernetes-metrics
+    version: 1.1.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: splunk-kubernetes-metrics
+      version: 1.1.0
+  template:
+    metadata:
+      labels:
+        app: splunk-kubernetes-metrics
+        version: 1.1.0
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+    spec:
+      serviceAccountName: splunk-kubernetes-metrics
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      containers:
+      - name: splunk-fluentd-k8s-metrics-agg
+        image: splunk/k8s-metrics-aggr:1.1.0
+        imagePullPolicy: Always
+        env:
+        - name: SPLUNK_HEC_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: splunk-kubernetes-metrics
+              key: splunk_hec_token
+        resources:
+          limits:
+            cpu: 200m
+            memory: 300Mi
+          requests:
+            cpu: 200m
+            memory: 300Mi
+        volumeMounts:
+        - name: conf-configmap
+          mountPath: "/fluentd/etc"
+        - name: secrets
+          mountPath: "/fluentd/etc/splunk"
+          readOnly: true
+      volumes:
+      - name: conf-configmap
+        configMap:
+          name: splunk-kubernetes-metrics-aggregator
+      - name: secrets
+        secret:
+          secretName: splunk-kubernetes-metrics

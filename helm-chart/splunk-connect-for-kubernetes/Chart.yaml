@@ -1,15 +1,12 @@
 apiVersion: v1
 name: splunk-connect-for-kubernetes
-version: 1.0.1
+version: 1.1.0
 description: Collect logs, objects (metadata), and metrics with Splunk.
 home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart
 sources:
   - https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart
   - https://github.com/splunk/fluent-plugin-splunk-hec
   - https://github.com/splunk/fluent-plugin-kubernetes-objects
-  - https://github.com/splunk/docker-fluentd-hec
-  - https://github.com/splunk/docker-kube-objects
-  - https://github.com/kubernetes/heapster
 keywords:
   - splunk
   - monitoring
@@ -18,4 +15,5 @@ keywords:
   - metadata
   - objects
 maintainers:
-  - name: Gimi Liang
+  - name: Splunk Inc.
+    email: DataEdge@splunk.com

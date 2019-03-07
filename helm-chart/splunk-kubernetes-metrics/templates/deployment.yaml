@@ -1,5 +1,5 @@
-apiVersion: apps/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
   name: {{ template "splunk-kubernetes-metrics.fullname" . }}
   labels:
@@ -7,20 +7,21 @@ metadata:
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    k8s-app: heapster-fluentd
+    engine: fluentd
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: {{ template "splunk-kubernetes-metrics.name" . }}
-      release: {{ .Release.Name }}
-      k8s-app: heapster
+      name: {{ template "splunk-kubernetes-metrics.fullname" . }}
   template:
     metadata:
+      name: {{ template "splunk-kubernetes-metrics.fullname" . }}
       labels:
+        name: {{ template "splunk-kubernetes-metrics.fullname" . }}
         app: {{ template "splunk-kubernetes-metrics.name" . }}
+        chart: {{ template "splunk-kubernetes-metrics.chart" . }}
         release: {{ .Release.Name }}
-        k8s-app: heapster
+        heritage: {{ .Release.Service }}
+        engine: fluentd
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
@@ -39,50 +40,22 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       containers:
-        - image: k8s.gcr.io/heapster-amd64:{{ .Values.image.heapsterTag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          name: splunk-heapster
-          command:
-            - /heapster
-            # - --source=kubernetes.summary_api:''
-            - --source=kubernetes
-            - --sink=statsd:udp://127.0.0.1:9001
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8082
-              scheme: HTTP
-            initialDelaySeconds: 180
-            timeoutSeconds: 5
-          resources:
-{{ toYaml .Values.resources.heapster | indent 12 }}
-        - image: splunk/fluentd-hec:{{ .Values.image.sidecarTag }}
-          name: splunk-fluentd-heapster
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args:
-            - -c
-            - /fluentd/etc/fluent.conf
-          env:
-            - name: MY_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: MY_POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: SPLUNK_HEC_HOST
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "splunk-kubernetes-metrics.fullname" . }}
-                  key: splunk_hec_token
-          resources:
-{{ toYaml .Values.resources.sidecar | indent 12 }}
-          volumeMounts:
+      - name: splunk-fluentd-k8s-metrics
+        image: {{ .Values.image.name }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: SPLUNK_HEC_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: SPLUNK_HEC_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+                key: splunk_hec_token
+        resources:
+{{ toYaml .Values.resources.fluent | indent 12 }}
+        volumeMounts:
           - name: conf-configmap
             mountPath: /fluentd/etc
           - name: secrets

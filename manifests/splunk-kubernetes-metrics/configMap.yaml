@@ -5,35 +5,55 @@ metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.0.0
+    version: 1.1.0
 data:
   fluent.conf: |
     # system wide configurations
     <system>
       log_level info
     </system>
-
     <source>
-      @type udp
-      tag raw.metrics.udp
-      port 9001
-      message_length_limit 100m
-      <parse>
-        @type jq
-        jq 'split("\n") | reduce .[] as $item ({}; ($item | rindex(":")) as $i | .[$item[:$i]] = ($item[$i+1:-2] | tonumber))'
-      </parse>
+      @type kubernetes_metrics
+      tag kube.*
+      node_name "#{ENV['SPLUNK_HEC_HOST']}"
+      use_rest_client_ssl true
+      cluster_name cluster_name
     </source>
-
-    <match raw.metrics.udp>
-      @type jq
-      jq "def extract_labels:\n  . as $labels | reduce range(length) as $n ({}; if $n % 2 == 0 then .[\"label.\" + $labels[$n]] = $labels[$n + 1] else . end);\n\ndef extract_metric:\n  if length % 2 == 0\n  then (.[:-2] | extract_labels) + {metric: (.[-2] | gsub(\"/\"; \".\")), resource_id: .[-1]}\n  else (.[:-1] | extract_labels) + {metric: (.[-1] | gsub(\"/\"; \".\"))}\n  end;\n  \ndef extract_container:\n  split(\".\") | {container_type: \"pod\", node: .[1], namespace: .[3], pod: .[5], container: .[7]} + (.[8:] | extract_metric) | .metric = \"kube.container.\" + .metric | . ;\n  \ndef extract_syscontainer:\n  split(\".\") | {container_type: \"sys\", node: .[1], container: .[3]} + (.[4:] | extract_metric) | .metric = \"kube.container.\" + .metric | . ;\n  \ndef extract_pod:\n  split(\".\") | {node: .[1], namespace: .[3], pod: .[5]} + (.[6:] | extract_metric) | .metric = \"kube.pod.\" + .metric | . ;\n  \ndef extract_namespace:\n  split(\".\") | {namespace: .[1]} + (.[2:] | extract_metric) | .metric = \"kube.namespace.\" + .metric | . ;\n  \ndef extract_node:\n  split(\".\") | {node: .[1]} + (.[2:] | extract_metric) | .metric = \"kube.node.\" + .metric | . ;\n  \ndef extract_cluster:\n  split(\".\") | .[1:] | extract_metric | .metric = \"kube.cluster.\" + .metric | . ;\n\ndef extract:\n  if contains(\".container.\")\n  then extract_container\n  elif contains(\".sys-container.\")\n  then extract_syscontainer\n  elif contains(\".pod.\")\n  then extract_pod\n  elif startswith(\"namespace.\")\n  then extract_namespace\n  elif startswith(\"node.\")\n  then extract_node\n  elif startswith(\"cluster.\")\n  then extract_cluster\n  else {}\n  end;\n\n \"heapster/namespace:\\(env.MY_NAMESPACE)/pod:\\(env.MY_POD_NAME)\" as $source | .record | to_entries | map({value, source: $source} + (.key | extract)) | ."
-      remove_tag_prefix raw
-    </match>
-
-    <match metrics.udp>
+    <filter kube.**>
+      @type record_modifier
+      <record>
+        metric_name ${tag}
+        cluster_name cluster_name
+      </record>
+    </filter>
+    <filter kube.node.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}
+      </record>
+    </filter>
+    <filter kube.pod.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}
+      </record>
+    </filter>
+    <filter kube.sys-container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['name']}
+      </record>
+    </filter>
+    <filter kube.container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['container-name']}
+      </record>
+    </filter>
+    <match kube.**>
       @type splunk_hec
       data_type metric
-      metric_name_key metric
+      metric_name_key metric_name
       metric_value_key value
       protocol https
       hec_host MY-SPLUNK-HOST
@@ -44,11 +64,12 @@ data:
       insecure_ssl true
       <buffer>
         @type memory
-        chunk_limit_size 500m
-        chunk_limit_records 100000
+        chunk_limit_records 1e+06
+        chunk_limit_size 100m
         flush_interval 5s
         flush_thread_count 1
         overflow_action block
         retry_max_times 3
+        total_limit_size 400m
       </buffer>
     </match>

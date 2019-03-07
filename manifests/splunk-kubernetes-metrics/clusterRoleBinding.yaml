@@ -5,11 +5,11 @@ metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.0.0
+    version: 1.1.0
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: system:heapster
+  name: kubelet-summary-api-read
 subjects:
 - kind: ServiceAccount
   name: splunk-kubernetes-metrics

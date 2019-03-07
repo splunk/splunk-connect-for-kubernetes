@@ -14,6 +14,10 @@ global:
     hec:
       protocol: https
       insecureSSL: false
+      # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name same as the namespace. Default is false.
+      indexRouting:
+      # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
+      indexRoutingDefaultIndex:
 
 
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
@@ -39,7 +43,7 @@ splunk:
     protocol:
     # indexName tells which index to use, this is optional. If it's not present, will use the default one configured in HEC.
     indexName:
-    # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default is false.
+    # insecureSSL is a boolean, it indicates should it allow inscure SSL connection (when protocol is "https"). Default is false.
     insecureSSL:
     # The PEM-format CA certificate for this client.
     # NOTE: The content of the certificate itself should be used here, not the file path.
@@ -53,6 +57,10 @@ splunk:
     # NOTE: The content of the file itself should be used here, not the file path.
     #       The file will be stored as a secret in kubernetes.
     caFile:
+    # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name same as the namespace. Default is false.
+    indexRouting:
+    # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
+    indexRoutingDefaultIndex:
 
 
 # Directory where to read journald logs.
@@ -85,7 +93,7 @@ journalLogPath: /run/log/journal
 #     journald:
 #       unit: docker.service
 # ```
-#   
+#
 # For `file` logs, `path` is required for specifying where is the log files. Log files are expected in `/var/log`, example:
 # ```
 # docker:
@@ -213,8 +221,8 @@ logs:
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  tag: 1.0.1
-  pullPolicy: IfNotPresent
+  name: splunk/fluentd-hec:1.1.0
+  pullPolicy: Always
 
 
 # Controls the resources used by the fluentd daemonset
@@ -225,6 +233,24 @@ resources:
   requests:
    cpu: 100m
    memory: 200Mi
+
+
+ # Controls the output buffer for the fluentd daemonset
+ # Note that, for memory buffer, if `resources.limits.memory` is set,
+ # the total buffer size should not bigger than the memory limit, it should also
+ # consider the basic memory usage by fluentd itself.
+ # All buffer parameters (except Argument) defined in
+ # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
+ # can be configured here.
+buffer:
+  "@type": memory
+  total_limit_size: 600m
+  chunk_limit_size: 200m
+  chunk_limit_records: 100000
+  flush_interval: 5s
+  flush_thread_count: 1
+  overflow_action: block
+  retry_max_times: 3
 
 
 # This default tolerations allow the daemonset to be deployed on master nodes,
@@ -240,3 +266,9 @@ nodeSelector: {}
 
 # Defines node affinity to restrict pod deployment.
 affinity: {}
+
+
+# = Kubernetes Connection Configs =
+kubernetes:
+  # The cluster name used to tag logs. Default is cluster_name
+  clusterName: "cluster_name"

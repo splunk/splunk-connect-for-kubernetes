@@ -1,0 +1,19 @@
+# This role allows read access to the kubelet summary API
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubelet-summary-api-read
+  labels:
+    app: {{ template "splunk-kubernetes-metrics.name" . }}
+    chart: {{ template "splunk-kubernetes-metrics.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - "nodes"
+  - "nodes/stats"
+  - "nodes/metrics"
+  verbs:
+  - "get"

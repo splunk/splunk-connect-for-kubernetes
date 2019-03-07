@@ -74,36 +74,84 @@ splunk:
 
 
 image:
-  heapsterTag: v1.5.1
-  sidecarTag: 1.0.1
-  pullPolicy: IfNotPresent
+  name: splunk/k8s-metrics:1.1.0
+  pullPolicy: Always
+
+
+imageAgg:
+  name: splunk/k8s-metrics-aggr:1.1.0
+  pullPolicy: Always
 
 
 resources:
-  heapster:
+  fluent:
     limits:
-      cpu: 100m
+      cpu: 200m
       memory: 300Mi
     requests:
-      cpu: 100m
+      cpu: 200m
       memory: 300Mi
-  sidecar:
-    limits:
-      cpu: 100m
-      memory: 300Mi
-    requests:
-      cpu: 100m
-      memory: 300Mi
+
+
+ # Controls the output buffer for fluentd.
+ # Note that, for memory buffer, if `resources.sidecar.limits.memory` is set,
+ # the total buffer size should not bigger than the memory limit, it should also
+ # consider the basic memory usage by fluentd itself.
+ # All buffer parameters (except Argument) defined in
+ # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
+ # can be configured here.
+buffer:
+  "@type": memory
+  total_limit_size: 400m
+  chunk_limit_size: 100m
+  chunk_limit_records: 1000000
+  flush_interval: 5s
+  flush_thread_count: 1
+  overflow_action: block
+  retry_max_times: 3
+
+
+aggregatorBuffer:
+  "@type": memory
+  total_limit_size: 400m
+  chunk_limit_size: 100m
+  chunk_limit_records: 1000000
+  flush_interval: 5s
+  flush_thread_count: 1
+  overflow_action: block
+  retry_max_times: 3
+  
+  
+# Configure how often SCK pulls metrics for its kubenetes sources. 15s is the default where 's' is seconds.
+metricsInterval: 15s
 
 
 nodeSelector: {}
   # kubernetes.io/role: master
 
 
-tolerations: []
-  # - key: "node-role.kubernetes.io/master"
-  #   operator: "Exists"
-  #   effect: "NoSchedule"
+# This default tolerations allow the daemonset to be deployed on master nodes,
+# so that we can also collect metrics from those nodes.
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
 
 
 affinity: {}
+
+# = Kubernetes Connection Configs =
+kubernetes:
+  # The port that kubelet is listening to. Default is 10250
+  kubeletPort:
+  # This option is used to get the metrics from summary api on each kubelet using ssl
+  useRestClientSSL: true
+  # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
+  insecureSSL: false
+  # Path to the CA file.
+  caFile:
+  # Path to the file contains the API token. By default it reads from the file "token" in the `secret_dir`.
+  bearerTokenFile:
+  # Path of the location where pod's service account's credentials are stored. Usually you don't need to care about this config, the default value should work in most cases.
+  secretDir:
+  # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
+  clusterName: "cluster_name"

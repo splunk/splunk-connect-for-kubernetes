@@ -45,7 +45,7 @@ data:
       {{- if $.Values.checkpointFile.volume }}
       <storage>
         path /fluentd/var/checkpoints/{{ .Values.checkpointFile.name | default "kubernetes-objects" }}
-      </storage> 
+      </storage>
       {{- end }}
       {{- range $objects }}
       {{- if eq (.mode | default "pull" | lower) "pull" }}
@@ -82,6 +82,11 @@ data:
       jq '.record.source = "namespace:\(env.MY_NAMESPACE)/pod:\(env.MY_POD_NAME)" | .record.sourcetype = (.tag | gsub("\\\\."; ":")) | .record'
     </filter>
 
+    <filter kube.**>
+      @type jq_transformer
+      jq '.record.cluster_name = "{{ .Values.kubernetes.clusterName }}" | .record'
+    </filter>
+
     <match kube.**>
       @type splunk_hec
       protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol | default "https" }}
@@ -108,12 +113,16 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
+      <fields>
+        {{- if .Values.kubernetes.clusterName }}
+        cluster_name
+        {{- end }}
+      </fields>
+      {{- with .Values.buffer }}
       <buffer>
-        @type memory
-        {{- $limit := .Values.resources.limit }}
-        chunk_limit_size {{ if $limit.memory }}{{ template "splunk-kubernetes-objects.convert-memory" $limit.memory }}{{ else }}{{ "200m" }}{{ end }}
-        chunk_limit_records 10000
-        flush_interval 3s
-        retry_max_times 3
+      {{- range $parameter, $value := . }}
+        {{ $parameter }} {{ $value }}
+      {{- end }}
       </buffer>
+      {{- end }}
     </match>

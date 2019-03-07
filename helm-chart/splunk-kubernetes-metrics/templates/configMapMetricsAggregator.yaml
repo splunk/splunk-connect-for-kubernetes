@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "splunk-kubernetes-metrics.fullname" . }}-aggregator
+  labels:
+    app: {{ template "splunk-kubernetes-metrics.name" . }}
+    chart: {{ template "splunk-kubernetes-metrics.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  fluent.conf: |
+    # system wide configurations
+    <system>
+      log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
+    </system>
+    <source>
+      @type kubernetes_metrics_aggregator
+      tag kube.*
+      {{- with .Values.kubernetes.kubeletPort }}
+      kubelet_port {{ . }}
+      {{- end }}
+    </source>
+    <filter kube.**>
+      @type record_modifier
+      <record>
+        metric_name ${tag}
+        {{- with .Values.kubernetes.clusterName }}
+        cluster_name {{ . }}
+        {{- end }}
+      </record>
+    </filter>
+    <filter kube.cluster.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
+      </record>
+    </filter>
+    <filter kube.namespace.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
+      </record>
+    </filter>
+    <filter kube.node.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}
+      </record>
+    </filter>
+    <filter kube.pod.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}
+      </record>
+    </filter>
+    <filter kube.sys-container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['name']}
+      </record>
+    </filter>
+    <filter kube.container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['container-name']}
+      </record>
+    </filter>
+    <match kube.**>
+      @type splunk_hec
+      data_type metric
+      metric_name_key metric_name
+      metric_value_key value
+      protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
+      {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
+      hec_host {{ . }}
+      {{- end }}
+      {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
+      hec_port {{ . }}
+      {{- end }}
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      host "#{ENV['MY_NODE_NAME']}"
+      {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
+      index {{ . }}
+      {{- end }}
+      source source
+      insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
+      {{- if or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
+      client_cert /fluentd/etc/splunk/hec_client_cert
+      {{- end }}
+      {{- if  or .Values.splunk.hec.clientKey .Values.global.splunk.hec.clientKey }}
+      client_key /fluentd/etc/splunk/hec_client_key
+      {{- end }}
+      {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+      ca_file /fluentd/etc/splunk/hec_ca_file
+      {{- end }}
+      {{- with .Values.aggregatorBuffer }}
+      <buffer>
+      {{- range $parameter, $value := . }}
+        {{ $parameter }} {{ $value }}
+      {{- end }}
+      </buffer>
+      {{- end }}
+    </match>

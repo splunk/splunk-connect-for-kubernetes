@@ -13,28 +13,67 @@ data:
     <system>
       log_level {{ or .Values.logLevel .Values.global.logLevel | default "info" }}
     </system>
-
     <source>
-      @type udp
-      tag raw.metrics.udp
-      port 9001
-      message_length_limit 100m
-      <parse>
-        @type jq
-        jq 'split("\n") | reduce .[] as $item ({}; ($item | rindex(":")) as $i | .[$item[:$i]] = ($item[$i+1:-2] | tonumber))'
-      </parse>
+      @type kubernetes_metrics
+      tag kube.*
+      node_name "#{ENV['SPLUNK_HEC_HOST']}"
+      {{- with .Values.kubernetes.kubeletPort }}
+      kubelet_port {{ . }}
+      {{- end }}
+      use_rest_client_ssl {{ .Values.kubernetes.useRestClientSSL }}
+      {{- with .Values.kubernetes.insecureSSL }}
+      insecure_ssl {{ . }}
+      {{- end }}
+      {{- if .Values.kubernetes.caFile }}
+      ca_file /fluentd/etc/splunk/k8s_ca_file
+      {{- end }}
+      {{- with .Values.kubernetes.bearerTokenFile }}
+      bearer_token_file {{ . }}
+      {{- end }}
+      {{- with .Values.kubernetes.secretDir }}
+      secret_dir {{ . }}
+      {{- end }}
+      {{- with .Values.kubernetes.clusterName }}
+      cluster_name {{ . }}
+      {{- end }}
     </source>
-
-    <match raw.metrics.udp>
-      @type jq
-      jq {{ include "splunk-kubernetes-metrics.jq_filter" . | quote }}
-      remove_tag_prefix raw
-    </match>
-
-    <match metrics.udp>
+    <filter kube.**>
+      @type record_modifier
+      <record>
+        metric_name ${tag}
+        {{- with .Values.kubernetes.clusterName }}
+        cluster_name {{ . }}
+        {{- end }}
+      </record>
+    </filter>
+    <filter kube.node.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}
+      </record>
+    </filter>
+    <filter kube.pod.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}
+      </record>
+    </filter>
+    <filter kube.sys-container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['name']}
+      </record>
+    </filter>
+    <filter kube.container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['container-name']}
+      </record>
+    </filter>
+    <match kube.**>
       @type splunk_hec
       data_type metric
-      metric_name_key metric
+      metric_name_key metric_name
       metric_value_key value
       protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
       {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
@@ -58,15 +97,12 @@ data:
       {{- end }}
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
-      {{- end }}
+      {{- end }} 
+      {{- with .Values.buffer }}
       <buffer>
-        @type memory
-        {{- $limit := .Values.resources.sidecar.limit }}
-        chunk_limit_size {{ if $limit.memory }}{{ template "splunk-kubernetes-logging.convert-memory" $limit.memory }}{{ else }}{{ "500m" }}{{ end }}
-        chunk_limit_records 100000
-        flush_interval 5s
-        flush_thread_count 1
-        overflow_action block
-        retry_max_times 3
+      {{- range $parameter, $value := . }}
+        {{ $parameter }} {{ $value }}
+      {{- end }}
       </buffer>
+      {{- end }}
     </match>

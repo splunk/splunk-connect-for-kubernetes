@@ -1,0 +1,136 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.6.1-node-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
+            sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
+            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+            helm init -c
+            echo "Installing aws cli..."
+            sudo pip install awscli > /dev/null 2>&1
+      - run:
+          name: Update configurables to build artifacts
+          command: |
+            .circleci/update_sck_config.sh
+      - run:
+          name: Build SCK artifacts
+          command: |
+            .circleci/build_sck_artifacts.sh
+      - run:
+          name: Push SCK artifacts to s3
+          command: |
+            .circleci/push_sck_artifacts.sh
+      - run:
+          name: Deploy k8s connector
+          command: |
+            .circleci/deploy_connector.sh
+      - run:
+          name: Run functional tests
+          command: |
+            .circleci/run_functional_tests.sh
+      - run:
+          name:  Teardown deployment
+          command: |
+            helm delete --purge ci-$CIRCLE_SHA1
+
+  perf-test:
+    docker:
+      - image: circleci/ruby:2.6.1-node-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
+            sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
+            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+            helm init -c
+            echo "Installing aws cli..."
+            sudo pip install awscli > /dev/null 2>&1
+      - run:
+          name: Update configurables to build artifacts
+          command: |
+            .circleci/update_sck_config.sh
+      - run:
+          name: Build SCK artifacts
+          command: |
+            .circleci/build_sck_artifacts.sh
+      - run:
+          name:  Deploy k8s connector for perf-tests
+          command: |
+            python .circleci/performance/run_perf_scenarios.py
+
+  release:
+    docker:
+      - image: circleci/ruby:2.6.1-node-browsers
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
+            sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
+            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+            helm init -c
+      - run:
+          name: Update configurables to build artifacts
+          command: |
+            .circleci/update_sck_config_for_release.sh
+      - run:
+          name: Build SCK artifacts
+          command: |
+            .circleci/build_sck_artifacts_for_release.sh
+      - run:
+          name: Push SCK artifacts to Github Release
+          command: |
+            .circleci/push_sck_release.sh
+      - run:
+          name: Deploy k8s connector
+          command: |
+            .circleci/deploy_connector_release.sh
+      - run:
+          name: Run functional tests
+          command: |
+            .circleci/run_functional_tests.sh
+
+# Need to add teardown step
+
+workflows:
+  version: 2
+  build_perf-test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: perf-testing
+      - perf-test:
+          filters:
+            branches:
+              only: perf-testing
+      - release:
+          requires:
+          - build
+          filters:
+            branches:
+              only: release-testing

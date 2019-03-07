@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-kubernetes-metrics-aggregator
+  labels:
+    app: splunk-kubernetes-metrics
+    version: 1.1.0
+data:
+  fluent.conf: |
+    # system wide configurations
+    <system>
+      log_level info
+    </system>
+    <source>
+      @type kubernetes_metrics_aggregator
+      tag kube.*
+    </source>
+    <filter kube.**>
+      @type record_modifier
+      <record>
+        metric_name ${tag}
+        cluster_name cluster_name
+      </record>
+    </filter>
+    <filter kube.cluster.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
+      </record>
+    </filter>
+    <filter kube.namespace.**>
+      @type record_modifier
+      <record>
+        source ${record['name']}
+      </record>
+    </filter>
+    <filter kube.node.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}
+      </record>
+    </filter>
+    <filter kube.pod.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}
+      </record>
+    </filter>
+    <filter kube.sys-container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['name']}
+      </record>
+    </filter>
+    <filter kube.container.**>
+      @type record_modifier
+      <record>
+        source ${record['node']}/${record['pod-name']}/${record['container-name']}
+      </record>
+    </filter>
+    <match kube.**>
+      @type splunk_hec
+      data_type metric
+      metric_name_key metric_name
+      metric_value_key value
+      protocol https
+      hec_host MY-SPLUNK-HOST
+      hec_port 8088
+      hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
+      host "#{ENV['MY_NODE_NAME']}"
+      source source
+      insecure_ssl true
+      <buffer>
+        @type memory
+        chunk_limit_records 1e+06
+        chunk_limit_size 100m
+        flush_interval 5s
+        flush_thread_count 1
+        overflow_action block
+        retry_max_times 3
+        total_limit_size 400m
+      </buffer>
+    </match>

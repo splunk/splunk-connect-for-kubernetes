@@ -1,66 +1,37 @@
 ---
-apiVersion: apps/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    k8s-app: heapster-fluentd
-    version: 1.0.0
+    engine: fluentd
+    version: 1.1.0
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: splunk-kubernetes-metrics
-      k8s-app: heapster
-      version: 1.0.0
+      name: splunk-kubernetes-metrics
+      version: 1.1.0
   template:
     metadata:
+      name: splunk-kubernetes-metrics
       labels:
+        name: splunk-kubernetes-metrics
         app: splunk-kubernetes-metrics
-        k8s-app: heapster
-        version: 1.0.0
+        engine: fluentd
+        version: 1.1.0
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
       serviceAccountName: splunk-kubernetes-metrics
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
       containers:
-      - image: k8s.gcr.io/heapster-amd64:v1.5.1
-        imagePullPolicy: IfNotPresent
-        name: splunk-heapster
-        command:
-        - "/heapster"
-        - "--source=kubernetes"
-        - "--sink=statsd:udp://127.0.0.1:9001"
-        livenessProbe:
-          httpGet:
-            path: "/healthz"
-            port: 8082
-            scheme: HTTP
-          initialDelaySeconds: 180
-          timeoutSeconds: 5
-        resources:
-          limits:
-            cpu: 100m
-            memory: 300Mi
-          requests:
-            cpu: 100m
-            memory: 300Mi
-      - image: splunk/fluentd-hec:1.0.1
-        name: splunk-fluentd-heapster
-        imagePullPolicy: IfNotPresent
-        args:
-        - "-c"
-        - "/fluentd/etc/fluent.conf"
+      - name: splunk-fluentd-k8s-metrics
+        image: splunk/k8s-metrics:1.1.0
+        imagePullPolicy: Always
         env:
-        - name: MY_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: MY_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
         - name: SPLUNK_HEC_HOST
           valueFrom:
             fieldRef:
@@ -72,10 +43,10 @@ spec:
               key: splunk_hec_token
         resources:
           limits:
-            cpu: 100m
+            cpu: 200m
             memory: 300Mi
           requests:
-            cpu: 100m
+            cpu: 200m
             memory: 300Mi
         volumeMounts:
         - name: conf-configmap

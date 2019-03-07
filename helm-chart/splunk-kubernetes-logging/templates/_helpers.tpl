@@ -85,14 +85,25 @@ elif startswith({{ list (or .from.container .name) .from.pod | join "/" | quote 
 else empty
 end;
 
+def set_namespace(value):
+if value == "default"
+then
+{{- $index := or .Values.splunk.hec.indexRoutingDefaultIndex .Values.global.splunk.hec.indexRoutingDefaultIndex | default "main" | quote}}
+{{- printf " %s" $index -}}
+else value
+end;
+
 def extract_container_info:
   (.source | ltrimstr("/var/log/containers/") | split("_")) as $parts
   | ($parts[-1] | split("-")) as $cparts
   | .pod = $parts[0]
-  | .namespace = $parts[1]
+  | .namespace = set_namespace($parts[1])
   | .container_name = ($cparts[:-1] | join("-"))
   | .container_id = ($cparts[-1] | rtrimstr(".log"))
+  {{- if .Values.kubernetes.clusterName }}
+  | .cluster_name = "{{ .Values.kubernetes.clusterName }}"
+  {{- end }}
   | .;
-  
+
 .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
 {{- end -}}
