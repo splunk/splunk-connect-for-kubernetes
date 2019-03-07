@@ -70,7 +70,7 @@ Once set up run:
     helm upgrade {{ .Release.Name }} \
         --set global.splunk.hec.host=YOUR-HEC-HOST \
         --set global.splunk.hec.token=YOUR-HEC-TOKEN \
-        https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.1/splunk-connect-for-kubernetes-1.0.1.tgz
+        https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.1.0/splunk-connect-for-kubernetes-1.1.0.tgz
 {{- end }}
 {{- $lInd := or $lHec.indexName $gHec.indexName | default "<default-index>" }}
 {{- $oInd := or $oHec.indexName $gHec.indexName | default "<default-index>" }}
@@ -94,5 +94,5 @@ Then run:
 
     helm upgrade {{ .Release.Name }} \
         --set splunk-kubernetes-metrics.splunk.hec.indexName=YOUR-METRICS-INDEX \
-        https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/v1.0.1/splunk-connect-for-kubernetes-1.0.1.tgz
+        https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.1.0/splunk-connect-for-kubernetes-1.1.0.tgz
 {{- end -}}
