@@ -15,7 +15,7 @@ jobs:
             sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
             sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
             sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
-            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash -s -- --version v2.12.3
             helm init -c
             echo "Installing aws cli..."
             sudo pip install awscli > /dev/null 2>&1
@@ -59,7 +59,7 @@ jobs:
             sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
             sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
             sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
-            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash -s -- --version v2.12.3
             helm init -c
             echo "Installing aws cli..."
             sudo pip install awscli > /dev/null 2>&1

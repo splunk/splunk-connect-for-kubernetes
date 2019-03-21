@@ -13,15 +13,150 @@ PERF_YAML_FILE = ".circleci/performance/perf_test_sck_values.yml"
 
 # Lookup configurables for datagen - https://github.com/dtregonning/kafka-data-gen
 DATAGEN_PERF_CASES = [
-    {
-        'deployment_name': 'perf-test-datagen',
-        'namespace': 'default',
-        'number_of_datagen': 3,
-        'message_count': 10000,
-        'message_size': 256,
-        'eps': 500,
-        'sleep_duration': 120
-    },
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #    'message_count': 100000,
+    #    'message_size': 128,
+    #    'eps': 100,
+    #    'sleep_duration': 1800
+    #},
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #    'message_count': 100000,
+    #    'message_size': 256,
+    #   'eps': 100,
+    #    'sleep_duration': 1800
+    #},
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #    'message_count': 100000,
+    #    'message_size': 512,
+    #    'eps': 100,
+    #    'sleep_duration': 1800
+    #},
+    #{
+    #    'deployment_name': 'perf-test-datagen',
+    #    'namespace': 'default',
+    #    'number_of_datagen': 10,
+    #   'message_count': 100000,
+    #    'message_size': 1024,
+    #    'eps': 100,
+    #    'sleep_duration': 1800
+    # },
+    #{
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 50,
+    #     'message_count': 100000,
+    #     'message_size': 128,
+    #     'eps': 100,
+    #     'sleep_duration': 1800
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 50,
+    #     'message_count': 100000,
+    #     'message_size': 256,
+    #     'eps': 100,
+    #     'sleep_duration': 1800
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 50,
+    #     'message_count': 100000,
+    #     'message_size': 512,
+    #     'eps': 100,
+    #     'sleep_duration': 1800
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 50,
+    #     'message_count': 100000,
+    #     'message_size': 1024,
+    #     'eps': 100,
+    #     'sleep_duration': 1800
+    # }
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 128,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 256,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 512,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 100000,
+    #     'message_size': 1024,
+    #     'eps': 100,
+    #     'sleep_duration': 3600
+    #
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 225000 ,
+    #     'message_size': 1024,
+    #     'eps': 250,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 225000 ,
+    #     'message_size': 1024,
+    #     'eps': 250,
+    #     'sleep_duration': 3600
+    # },
+    # {
+    #     'deployment_name': 'perf-test-datagen',
+    #     'namespace': 'default',
+    #     'number_of_datagen': 100,
+    #     'message_count': 225000 ,
+    #     'message_size': 1024,
+    #     'eps': 250,
+    #     'sleep_duration': 3600
+    # },
+     {
+         'deployment_name': 'perf-test-datagen',
+         'namespace': 'default',
+         'number_of_datagen': 10,
+         'message_count': 1000 ,
+         'message_size': 1024,
+         'eps': 100,
+         'sleep_duration': 3600
+     }
 ]
 
 # Lookup configurables for fluent and kubernetes
@@ -30,18 +165,74 @@ DATAGEN_PERF_CASES = [
 CONNECTOR_PERF_CASES = [
     {
         'buffer_type': 'memory',
-        'total_limit_size': '400m',
-        'chunk_limit_size': '500m',
-        'chunk_limit_records': 1,
-        'flush_interval': '1s',
+        'total_limit_size': '600m',
+        'chunk_limit_size': '200m',
+        'chunk_limit_records': 512000,
+        'flush_interval': '10s',
         'flush_thread_count': 1,
         'overflow_action': 'block',
         'retry_max_times': 3,
-        'limits_cpu': '1000m',
-        'limits_memory': '1000Mi',
-        'requests_cpu': '500m',
-        'requests_memory': '500Mi',
+        'limits_cpu': '2000m',
+        'limits_memory': '2000Mi',
+        'requests_cpu': '1000m',
+        'requests_memory': '1000Mi',
     },
+    # {
+    #     'buffer_type': 'memory',
+    #     'total_limit_size': '600m',
+    #     'chunk_limit_size': '200m',
+    #     'chunk_limit_records': 10000,
+    #     'flush_interval': '5s',
+    #     'flush_thread_count': 1,
+    #     'overflow_action': 'block',
+    #     'retry_max_times': 3,
+    #     'limits_cpu': '2000m',
+    #     'limits_memory': '2000Mi',
+    #     'requests_cpu': '1000m',
+    #     'requests_memory': '1000Mi',
+    # },
+    # {
+    #     'buffer_type': 'memory',
+    #     'total_limit_size': '400m',
+    #     'chunk_limit_size': '100m',
+    #     'chunk_limit_records': 10000,
+    #     'flush_interval': '5s',
+    #     'flush_thread_count': 1,
+    #     'overflow_action': 'block',
+    #     'retry_max_times': 3,
+    #     'limits_cpu': '2000m',
+    #     'limits_memory': '2000Mi',
+    #     'requests_cpu': '500m',
+    #     'requests_memory': '500Mi',
+    # },
+    # {
+    #     'buffer_type': 'memory',
+    #     'total_limit_size': '400m',
+    #     'chunk_limit_size': '100m',
+    #     'chunk_limit_records': 10000,
+    #     'flush_interval': '5s',
+    #     'flush_thread_count': 1,
+    #     'overflow_action': 'block',
+    #     'retry_max_times': 3,
+    #     'limits_cpu': '2000m',
+    #     'limits_memory': '2000Mi',
+    #     'requests_cpu': '1000m',
+    #     'requests_memory': '1000Mi',
+    # },
+    # {
+    #     'buffer_type': 'file',
+    #     'total_limit_size': '600m',
+    #     'chunk_limit_size': '200m',
+    #     'chunk_limit_records': 10000,
+    #     'flush_interval': '5s',
+    #     'flush_thread_count': 1,
+    #     'overflow_action': 'block',
+    #     'retry_max_times': 3,
+    #     'limits_cpu': '2000m',
+    #     'limits_memory': '2000Mi',
+    #     'requests_cpu': '500m',
+    #     'requests_memory': '500Mi',
+    # },
 ]
 
 
@@ -131,7 +322,10 @@ def teardown_connector_and_datagen(test_case_datagen, test_case_connector):
 
 def wait_for_connector_do_data_collection_injection(test_case_datagen):
     logging.info('Sleeping for data collection')
-    time.sleep(int(test_case_datagen['sleep_duration']))
+    for second in range(int(test_case_datagen['sleep_duration']), 0, -1):
+        if(second % 60 == 0):
+            logging.info('Sleeping ' + str(second) + '........')
+        time.sleep(1)
 
 
 def _do_perf():
