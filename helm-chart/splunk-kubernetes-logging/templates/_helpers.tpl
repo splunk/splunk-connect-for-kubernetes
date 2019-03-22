@@ -100,8 +100,8 @@ def extract_container_info:
   | .namespace = set_namespace($parts[1])
   | .container_name = ($cparts[:-1] | join("-"))
   | .container_id = ($cparts[-1] | rtrimstr(".log"))
-  {{- if .Values.kubernetes.clusterName }}
-  | .cluster_name = "{{ .Values.kubernetes.clusterName }}"
+  {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
+  | .cluster_name = "{{ . }}"
   {{- end }}
   | .;
 

@@ -84,7 +84,7 @@ data:
 
     <filter kube.**>
       @type jq_transformer
-      jq '.record.cluster_name = "{{ .Values.kubernetes.clusterName }}" | .record'
+      jq '.record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}" | .record'
     </filter>
 
     <match kube.**>
@@ -114,7 +114,7 @@ data:
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
       <fields>
-        {{- if .Values.kubernetes.clusterName }}
+        {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
         cluster_name
         {{- end }}
       </fields>
