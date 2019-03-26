@@ -44,6 +44,7 @@ serviceAccount:
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+  usePullSecrets: false
 
 
 # = Kubernetes Connection Configs =
@@ -174,8 +175,12 @@ secret:
 
 
 image:
-  name: splunk/kube-objects:1.1.0
+  registry: docker.io
+  name: splunk/kube-objects
+  tag: 1.1.0
   pullPolicy: IfNotPresent
+  usePullSecret: false
+  pullSecretName:
 
 
 # = Resoruce Limitation Configs =
