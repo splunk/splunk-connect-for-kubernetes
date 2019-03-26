@@ -116,3 +116,10 @@ def extract_container_info:
 
 .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
 {{- end -}}
+
+{{/*
+Create the image name
+*/}}
+{{- define "splunk-kubernetes-logging.image" -}}
+{{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}

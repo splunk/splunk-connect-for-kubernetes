@@ -81,3 +81,10 @@ Rules:
 {{- $mem -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the image name
+*/}}
+{{- define "splunk-kubernetes-objects.image" -}}
+{{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}

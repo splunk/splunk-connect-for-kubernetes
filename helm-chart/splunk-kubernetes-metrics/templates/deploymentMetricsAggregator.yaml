@@ -37,7 +37,7 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-metrics-agg
-        image: {{ .Values.imageAgg.name }}
+        image: {{ template "splunk-kubernetes-metrics.imageAgg" . }}
         imagePullPolicy: {{ .Values.imageAgg.pullPolicy }}
         env:
           - name: SPLUNK_HEC_TOKEN

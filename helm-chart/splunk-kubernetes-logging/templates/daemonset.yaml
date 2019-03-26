@@ -31,7 +31,7 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-logs
-        image: {{ .Values.image.name }}
+        image: {{ template "splunk-kubernetes-logging.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
           - -c

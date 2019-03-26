@@ -41,7 +41,7 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-metrics
-        image: {{ .Values.image.name }}
+        image: {{ template "splunk-kubernetes-metrics.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
           - name: KUBERNETES_NODE_IP
