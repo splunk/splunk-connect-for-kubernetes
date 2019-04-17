@@ -36,6 +36,9 @@ data:
       {{- with or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
       cluster_name {{ . }}
       {{- end }}
+      {{- with .Values.metricsInterval }}
+      interval {{ . }}
+      {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
@@ -97,7 +100,7 @@ data:
       {{- end }}
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
-      {{- end }} 
+      {{- end }}
       {{- with .Values.buffer }}
       <buffer>
       {{- range $parameter, $value := . }}
