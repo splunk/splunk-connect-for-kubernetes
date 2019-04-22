@@ -32,6 +32,10 @@ spec:
         image: splunk/k8s-metrics:1.1.0
         imagePullPolicy: Always
         env:
+        - name: KUBERNETES_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
         - name: SPLUNK_HEC_HOST
           valueFrom:
             fieldRef:
