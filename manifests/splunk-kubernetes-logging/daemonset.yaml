@@ -26,7 +26,7 @@ spec:
         - "-c"
         - "/fluentd/etc/fluent.conf"
         env:
-        - name: SPLUNK_HEC_HOST
+        - name: NODE_NAME
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName

@@ -48,7 +48,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
-          - name: SPLUNK_HEC_HOST
+          - name: NODE_NAME
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
