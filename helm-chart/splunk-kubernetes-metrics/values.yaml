@@ -136,6 +136,9 @@ tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
 
+# Tolerations for the aggregator pod. We do not really want this running on the master nodes, so we leave this 
+# blank by default.
+aggregatorTolerations: {}
 
 affinity: {}
 
