@@ -155,3 +155,5 @@ kubernetes:
   secretDir:
   # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
   clusterName: "cluster_name"
+  # (Misnomer) The address used to access the kubelet. Must be either a domain name or an IP address
+  nodeName:
