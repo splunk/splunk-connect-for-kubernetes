@@ -1,4 +1,5 @@
 # This role allows read access to the kubelet summary API
+{{- if .Values.rbac.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -19,3 +20,4 @@ rules:
   verbs:
   - get
   - list
+{{- end -}}
