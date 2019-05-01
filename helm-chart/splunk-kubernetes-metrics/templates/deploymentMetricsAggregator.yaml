@@ -31,7 +31,7 @@ spec:
       affinity:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.aggregatorTolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
