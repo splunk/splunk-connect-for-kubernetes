@@ -141,7 +141,7 @@ affinity: {}
 
 # = Kubernetes Connection Configs =
 kubernetes:
-  # The address that kubelet is on. This can be a hostname or an IP address.  Default is nil (see nodeName)
+  # The address that kubelet is on. This can be a hostname or an IP address. In the absence of this variable, node_name will be used instead. Default is nil.
   kubeletAddress:
   # The port that kubelet is listening on. Default is 10250
   kubeletPort:
@@ -157,5 +157,3 @@ kubernetes:
   secretDir:
   # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
   clusterName: "cluster_name"
-  # The name of the Kubernetes node. In the absence of kubeletAddress, this will be used as the address to reach the kubelet.
-  nodeName:
