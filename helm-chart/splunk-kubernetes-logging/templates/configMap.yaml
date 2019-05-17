@@ -241,11 +241,16 @@ data:
         ca_file /fluentd/etc/splunk/hec_ca_file
         {{- end }}
         <fields>
-          pod
+          {{- if eq .Values.containers.format "cri"}}
           pod_uid
+          container_name
+          container_retry
+          {{- else }}
+          pod
           namespace
           container_name
           container_id
+          {{- end }}
           {{- if .Values.kubernetes.clusterName }}
           cluster_name
           {{- end }}
