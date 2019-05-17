@@ -44,12 +44,17 @@ data:
       @type tail
       @label @SPLUNK
       tag tail.containers.*
-      path /var/log/containers/*.log
+      path {{ .Values.containers.glob | default "/var/log/containers/*.log" }} 
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
       <parse>
+      {{- if eq .Values.containers.format "cri" }}
+        @type regexp
+        expression /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
+      {{- else }}
         @type json
+      {{- end }}
         time_key time
         time_type string
         time_format %Y-%m-%dT%H:%M:%S.%NZ
@@ -158,6 +163,14 @@ data:
         jq {{ include "splunk-kubernetes-logging.container_jq_filter" . | replace "\n" " " | quote }}
       </filter>
 
+      # extract pod_uid and container_name for CRIO runtime
+      {{- if eq .Values.containers.format "cri" }}
+      <filter tail.containers.var.log.pods.**>
+        @type jq_transformer
+        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log"))'
+      </filter>
+      {{- end }}
+
       # = filters for journald logs =
       {{- range $name, $logDef := .Values.logs }}
       {{- if and $logDef.from.journald $logDef.multiline }}
@@ -229,6 +242,7 @@ data:
         {{- end }}
         <fields>
           pod
+          pod_uid
           namespace
           container_name
           container_id
