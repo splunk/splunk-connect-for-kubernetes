@@ -28,20 +28,19 @@ global:
 # * error
 logLevel:
 
+# Configurations for container logs
+containers:
+  # Path to root directory of container logs
+  path: /var/log
+  # Final volume destination of container log symlinks
+  pathDest: /var/lib/docker/containers
+  # Glob to match for container log paths
+  logGlob: /var/log/containers/*.log
+  # Log format, "json" or "cri"
+  logFormat: json
 
 # Local splunk configurations
 splunk:
-  # Configurations for container logs
-  containers:
-    # Path to root directory of container logs
-    path: /var/log
-    # Final volume destination of container log symlinks
-    pathDest: /var/lib/docker/containers
-    # Glob to match for container log paths
-    logGlob: /var/log/containers/*.log
-    # Log format, "json" or "cri"
-    logFormat: json
-
   # Configurations for HEC (HTTP Event Collector)
   hec:
     # host is required and should be provided by user
