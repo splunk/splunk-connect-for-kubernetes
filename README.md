@@ -61,6 +61,10 @@ To configure the Splunk Connector for Kubernetes using YAML files:
 
 2. Read through all YAML files in the Manifests folder and make any necessary changes. Note that the YAML files in the Manifests folder are examples and are not expected to be used as provided.
 
+  * For example Splunk Cloud users can enable the logging daemonset by modifying the following:
+    * In [configMap.yml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/manifests/splunk-kubernetes-logging/configMap.yaml) update `hec_host` to your Splunk Cloud HEC input address and `hec_port` to `443`
+    * In [secret.yml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/manifests/splunk-kubernetes-logging/secret.yaml) update `splunk_hec_token` to your base64 encoded HEC token. Ensure there is no trailing newline.
+
 3. Verify that your Kubernetes logs are recognized by the Splunk Connect for Kubernetes.
 
 # Architecture
