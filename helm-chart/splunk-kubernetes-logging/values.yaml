@@ -272,4 +272,4 @@ affinity: {}
 # = Kubernetes Connection Configs =
 kubernetes:
   # The cluster name used to tag logs. Default is cluster_name
-  clusterName: 
+  clusterName: "cluster_name"
