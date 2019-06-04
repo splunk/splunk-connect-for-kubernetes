@@ -44,7 +44,7 @@ data:
       {{- end }}
       {{- if $.Values.checkpointFile.volume }}
       <storage>
-        path /fluentd/var/checkpoints/{{ .Values.checkpointFile.name | default "kubernetes-objects" }}
+        path /fluentd/var/checkpoints/{{ $.Values.checkpointFile.name | default "kubernetes-objects" }}
       </storage>
       {{- end }}
       {{- range $objects }}
