@@ -18,7 +18,8 @@ global:
       indexRouting:
       # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
       indexRoutingDefaultIndex:
-
+  kubernetes:
+    clusterName: "cluster_name"
 
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace

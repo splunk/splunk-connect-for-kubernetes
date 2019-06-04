@@ -14,7 +14,8 @@ global:
       port: 8088
       protocol: https
       insecureSSL: false
-
+  kubernetes:
+    clusterName: "cluster_name"
 
 # = Log Level =
 # logLevel is to set log level of the Splunk kubernetes metrics collector. Avaiable values are:
