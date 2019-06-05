@@ -15,7 +15,7 @@ data:
     <source>
       @type kubernetes_metrics
       tag kube.*
-      node_name "#{ENV['SPLUNK_HEC_HOST']}"
+      node_name "#{ENV['NODE_NAME']}"
       use_rest_client_ssl true
       cluster_name cluster_name
     </source>

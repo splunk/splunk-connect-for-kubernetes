@@ -16,7 +16,10 @@ data:
     <source>
       @type kubernetes_metrics
       tag kube.*
-      node_name "#{ENV['MY_NODE_IP']}"
+      node_name "#{ENV['NODE_NAME']}"
+      {{- with .Values.kubernetes.kubeletAddress }}
+      kubelet_address {{ . }}
+      {{- end }}
       {{- with .Values.kubernetes.kubeletPort }}
       kubelet_port {{ . }}
       {{- end }}
