@@ -68,6 +68,10 @@ splunk:
 journalLogPath: /run/log/journal
 
 
+# Directory where the docker daemon's data is stored
+dockerPath: /var/lib/docker
+
+
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
 #
 # The scheme to define a log is:
