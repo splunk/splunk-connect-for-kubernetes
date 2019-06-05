@@ -52,10 +52,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
-          - name: MY_NODE_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP 
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
