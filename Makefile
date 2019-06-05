@@ -25,6 +25,9 @@ manifests: connect-chart
 	   --set global.splunk.hec.host=MY-SPLUNK-HOST \
 	   --set global.splunk.hec.token=MY-SPLUNK-TOKEN \
 	   --set global.splunk.hec.insecureSSL=true \
+	   --set splunk-kubernetes-logging.fullnameOverride="splunk-kubernetes-logging" \
+	   --set splunk-kubernetes-metrics.fullnameOverride="splunk-kubernetes-metrics" \
+	   --set splunk-kubernetes-objects.fullnameOverride="splunk-kubernetes-objects" \
 	   --set splunk-kubernetes-objects.kubernetes.insecureSSL=true \
 	   $$(ls build/splunk-connect-for-kubernetes-*.tgz) \
 	   | ruby tools/gen_manifest.rb manifests

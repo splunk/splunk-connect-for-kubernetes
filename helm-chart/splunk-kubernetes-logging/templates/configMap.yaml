@@ -117,6 +117,7 @@ data:
       <storage>
         @type local
         persistent true
+        path /var/log/splunkd-fluentd-journald-{{ $name }}.pos.json
       </storage>
       <entry>
         field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
