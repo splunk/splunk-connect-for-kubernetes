@@ -15,7 +15,8 @@ global:
       protocol: https
       port: 8088
       insecureSSL: false
-
+  kubernetes:
+    clusterName: "cluster_name"
 
 # = Log Level =
 # logLevel is to set log level of the object collector. Avaiable values are:

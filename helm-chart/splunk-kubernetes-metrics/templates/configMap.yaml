@@ -36,7 +36,7 @@ data:
       {{- with .Values.kubernetes.secretDir }}
       secret_dir {{ . }}
       {{- end }}
-      {{- with .Values.kubernetes.clusterName }}
+      {{- with or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
       cluster_name {{ . }}
       {{- end }}
       {{- with .Values.metricsInterval }}
@@ -47,7 +47,7 @@ data:
       @type record_modifier
       <record>
         metric_name ${tag}
-        {{- with .Values.kubernetes.clusterName }}
+        {{- with or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
         cluster_name {{ . }}
         {{- end }}
       </record>

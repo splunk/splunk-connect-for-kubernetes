@@ -18,7 +18,8 @@ global:
       indexRouting:
       # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
       indexRoutingDefaultIndex:
-
+  kubernetes:
+    clusterName: "cluster_name"
 
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
@@ -65,6 +66,10 @@ splunk:
 
 # Directory where to read journald logs.
 journalLogPath: /run/log/journal
+
+
+# Directory where the docker daemon's data is stored
+dockerPath: /var/lib/docker
 
 
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
