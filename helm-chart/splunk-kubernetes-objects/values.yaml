@@ -165,6 +165,12 @@ splunk:
     caPath:
 
 
+# Create or use existing secret if name is empty default name is used
+secret:
+  create: true
+  name:
+
+
 image:
   name: splunk/kube-objects:1.1.0
   pullPolicy: IfNotPresent

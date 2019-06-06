@@ -64,6 +64,12 @@ splunk:
     indexRoutingDefaultIndex:
 
 
+# Create or use existing secret if name is empty default name is used
+secret:
+  create: true
+  name:
+
+
 # Directory where to read journald logs.
 journalLogPath: /run/log/journal
 

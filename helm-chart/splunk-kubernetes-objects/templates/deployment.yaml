@@ -60,7 +60,7 @@ spec:
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ template "splunk-kubernetes-objects.fullname" . }}
+                name: {{ template "splunk-kubernetes-objects.secret" . }}
                 key: splunk_hec_token
         resources:
 {{ toYaml .Values.resources | indent 10 }}
@@ -80,7 +80,7 @@ spec:
           name: {{ template "splunk-kubernetes-objects.fullname" . }}
       - name: secrets
         secret:
-          secretName: {{ template "splunk-kubernetes-objects.fullname" . }}
+          secretName: {{ template "splunk-kubernetes-objects.secret" . }}
       {{- if .Values.checkpointFile.volume }}
       - name: checkpoints
 {{ toYaml .Values.checkpointFile.volume | indent 8 }}

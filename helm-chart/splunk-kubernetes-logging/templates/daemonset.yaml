@@ -52,7 +52,7 @@ spec:
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ template "splunk-kubernetes-logging.fullname" . }}
+                name: {{ template "splunk-kubernetes-logging.secret" . }}
                 key: splunk_hec_token
         resources:
 {{ toYaml .Values.resources | indent 10 }}
@@ -86,4 +86,4 @@ spec:
           name: {{ template "splunk-kubernetes-logging.fullname" . }}
       - name: secrets
         secret:
-          secretName: {{ template "splunk-kubernetes-logging.fullname" . }}
+          secretName: {{ template "splunk-kubernetes-logging.secret" . }}
