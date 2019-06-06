@@ -32,6 +32,17 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "splunk-kubernetes-logging.secret" -}}
+{{- if .Values.secret.name -}}
+{{- printf "%s" .Values.secret.name -}}
+{{- else -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Convert memory value from resources.limit to fluentd buffer.
 Rules:
 * fluentd does not support *i units
