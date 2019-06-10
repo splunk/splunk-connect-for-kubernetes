@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.1.0
+    version: 1.2.0
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

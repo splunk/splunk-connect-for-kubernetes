@@ -7,7 +7,7 @@ wget https://github.com/mikefarah/yq/releases/download/2.2.1/yq_linux_amd64
 sudo chmod +x yq_linux_amd64
 sudo mv yq_linux_amd64 /usr/local/bin/yq
 
-yq w -i helm-chart/splunk-kubernetes-logging/values.yaml image.name splunk/fluentd-hec:1.1.0
+yq w -i helm-chart/splunk-kubernetes-logging/values.yaml image.name splunk/fluentd-hec:1.1.1
 yq w -i helm-chart/splunk-kubernetes-metrics/values.yaml image.name splunk/k8s-metrics:1.1.1
 yq w -i helm-chart/splunk-kubernetes-metrics/values.yaml imageAgg.name splunk/k8s-metrics-aggr:1.1.0
 yq w -i helm-chart/splunk-kubernetes-objects/values.yaml image.name splunk/kube-objects:1.1.0

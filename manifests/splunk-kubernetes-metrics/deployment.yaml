@@ -6,12 +6,12 @@ metadata:
   labels:
     app: splunk-kubernetes-metrics
     engine: fluentd
-    version: 1.1.0
+    version: 1.2.0
 spec:
   selector:
     matchLabels:
       name: splunk-kubernetes-metrics
-      version: 1.1.0
+      version: 1.2.0
   template:
     metadata:
       name: splunk-kubernetes-metrics
@@ -19,7 +19,7 @@ spec:
         name: splunk-kubernetes-metrics
         app: splunk-kubernetes-metrics
         engine: fluentd
-        version: 1.1.0
+        version: 1.2.0
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
