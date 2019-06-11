@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.1.0
+    version: 1.2.0
 data:
   fluent.conf: |
     # system wide configurations
@@ -60,7 +60,7 @@ data:
       hec_host MY-SPLUNK-HOST
       hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      host "#{ENV['SPLUNK_HEC_HOST']}"
+      host "#{ENV['NODE_NAME']}"
       source ${tag}
       insecure_ssl true
       <buffer>
