@@ -21,6 +21,7 @@ global:
   kubernetes:
     clusterName: "cluster_name"
 
+
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
 # * debug
