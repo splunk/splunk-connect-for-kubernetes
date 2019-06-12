@@ -53,14 +53,14 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          - name: SPLUNK_HEC_HOST
+          - name: NODE_NAME
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ template "splunk-kubernetes-objects.fullname" . }}
+                name: {{ template "splunk-kubernetes-objects.secret" . }}
                 key: splunk_hec_token
         resources:
 {{ toYaml .Values.resources | indent 10 }}
@@ -68,7 +68,7 @@ spec:
         - name: conf-configmap
           mountPath: /fluentd/etc
         {{- if .Values.checkpointFile.volume }}
-        - name: conf-configmap
+        - name: checkpoints
           mountPath: /fluentd/var/checkpoints
         {{- end }}
         - name: secrets
@@ -80,7 +80,7 @@ spec:
           name: {{ template "splunk-kubernetes-objects.fullname" . }}
       - name: secrets
         secret:
-          secretName: {{ template "splunk-kubernetes-objects.fullname" . }}
+          secretName: {{ template "splunk-kubernetes-objects.secret" . }}
       {{- if .Values.checkpointFile.volume }}
       - name: checkpoints
 {{ toYaml .Values.checkpointFile.volume | indent 8 }}

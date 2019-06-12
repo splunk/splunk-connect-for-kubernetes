@@ -9,7 +9,8 @@
 #   splunk:
 #     # HEC related configurations
 #     hec:
-#
+#   kubernetes:
+#     clusterName: "cluster_name"
 # For other configurations for sub-charts, please check their values.yaml for details.
 
 ## Enabling logging will install the `splunk-kubernetes-logging` chart to a kubernetes

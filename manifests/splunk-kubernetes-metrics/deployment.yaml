@@ -6,12 +6,12 @@ metadata:
   labels:
     app: splunk-kubernetes-metrics
     engine: fluentd
-    version: 1.1.0
+    version: 1.2.0
 spec:
   selector:
     matchLabels:
       name: splunk-kubernetes-metrics
-      version: 1.1.0
+      version: 1.2.0
   template:
     metadata:
       name: splunk-kubernetes-metrics
@@ -19,7 +19,7 @@ spec:
         name: splunk-kubernetes-metrics
         app: splunk-kubernetes-metrics
         engine: fluentd
-        version: 1.1.0
+        version: 1.2.0
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
@@ -29,10 +29,14 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-metrics
-        image: splunk/k8s-metrics:1.1.0
+        image: splunk/k8s-metrics:1.1.1
         imagePullPolicy: Always
         env:
-        - name: SPLUNK_HEC_HOST
+        - name: KUBERNETES_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: NODE_NAME
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName

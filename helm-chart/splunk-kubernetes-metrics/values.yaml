@@ -14,7 +14,8 @@ global:
       port: 8088
       protocol: https
       insecureSSL: false
-
+  kubernetes:
+    clusterName: "cluster_name"
 
 # = Log Level =
 # logLevel is to set log level of the Splunk kubernetes metrics collector. Avaiable values are:
@@ -73,8 +74,14 @@ splunk:
     caFile:
 
 
+# Create or use existing secret if name is empty default name is used
+secret:
+  create: true
+  name:
+
+
 image:
-  name: splunk/k8s-metrics:1.1.0
+  name: splunk/k8s-metrics:1.1.1
   pullPolicy: Always
 
 
@@ -104,7 +111,7 @@ buffer:
   "@type": memory
   total_limit_size: 400m
   chunk_limit_size: 100m
-  chunk_limit_records: 1000000
+  chunk_limit_records: 10000
   flush_interval: 5s
   flush_thread_count: 1
   overflow_action: block
@@ -115,7 +122,7 @@ aggregatorBuffer:
   "@type": memory
   total_limit_size: 400m
   chunk_limit_size: 100m
-  chunk_limit_records: 1000000
+  chunk_limit_records: 10000
   flush_interval: 5s
   flush_thread_count: 1
   overflow_action: block
@@ -136,12 +143,18 @@ tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
 
+# Tolerations for the aggregator pod. We do not really want this running on the master nodes, so we leave this 
+# blank by default.
+aggregatorTolerations: {}
 
 affinity: {}
 
 # = Kubernetes Connection Configs =
 kubernetes:
-  # The port that kubelet is listening to. Default is 10250
+  # The hostname or IP address that kubelet will use to connect to. If not supplied, status.hostIP of the node is used to fetch metrics from the Kubelet API (via the $KUBERNETES_NODE_IP environment variable).
+  # Default is "#{ENV['KUBERNETES_NODE_IP']}"
+  kubeletAddress:
+  # The port that kubelet is listening on. Default is 10250
   kubeletPort:
   # This option is used to get the metrics from summary api on each kubelet using ssl
   useRestClientSSL: true

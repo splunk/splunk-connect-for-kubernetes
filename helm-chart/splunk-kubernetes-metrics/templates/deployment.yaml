@@ -44,14 +44,18 @@ spec:
         image: {{ .Values.image.name }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
-          - name: SPLUNK_HEC_HOST
+          - name: KUBERNETES_NODE_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: NODE_NAME
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+                name: {{ template "splunk-kubernetes-metrics.secret" . }}
                 key: splunk_hec_token
         resources:
 {{ toYaml .Values.resources.fluent | indent 12 }}
@@ -67,4 +71,4 @@ spec:
           name: {{ template "splunk-kubernetes-metrics.fullname" . }}
       - name: secrets
         secret:
-          secretName: {{ template "splunk-kubernetes-metrics.fullname" . }}
+          secretName: {{ template "splunk-kubernetes-metrics.secret" . }}

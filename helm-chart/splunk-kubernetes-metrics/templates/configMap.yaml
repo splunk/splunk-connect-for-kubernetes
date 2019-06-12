@@ -16,7 +16,10 @@ data:
     <source>
       @type kubernetes_metrics
       tag kube.*
-      node_name "#{ENV['SPLUNK_HEC_HOST']}"
+      node_name "#{ENV['NODE_NAME']}"
+      {{- with .Values.kubernetes.kubeletAddress }}
+      kubelet_address {{ . }}
+      {{- end }}
       {{- with .Values.kubernetes.kubeletPort }}
       kubelet_port {{ . }}
       {{- end }}
@@ -33,15 +36,18 @@ data:
       {{- with .Values.kubernetes.secretDir }}
       secret_dir {{ . }}
       {{- end }}
-      {{- with .Values.kubernetes.clusterName }}
+      {{- with or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
       cluster_name {{ . }}
+      {{- end }}
+      {{- with .Values.metricsInterval }}
+      interval {{ . }}
       {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
       <record>
         metric_name ${tag}
-        {{- with .Values.kubernetes.clusterName }}
+        {{- with or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
         cluster_name {{ . }}
         {{- end }}
       </record>
@@ -83,7 +89,7 @@ data:
       hec_port {{ . }}
       {{- end }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      host "#{ENV['SPLUNK_HEC_HOST']}"
+      host "#{ENV['NODE_NAME']}"
       {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
       index {{ . }}
       {{- end }}
@@ -97,7 +103,7 @@ data:
       {{- end }}
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
-      {{- end }} 
+      {{- end }}
       {{- with .Values.buffer }}
       <buffer>
       {{- range $parameter, $value := . }}

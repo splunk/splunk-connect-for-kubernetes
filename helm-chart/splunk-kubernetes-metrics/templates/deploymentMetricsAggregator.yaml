@@ -31,7 +31,7 @@ spec:
       affinity:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.aggregatorTolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
@@ -43,7 +43,7 @@ spec:
           - name: SPLUNK_HEC_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+                name: {{ template "splunk-kubernetes-metrics.secret" . }}
                 key: splunk_hec_token
         resources:
 {{ toYaml .Values.resources.fluent | indent 12 }}
@@ -59,4 +59,4 @@ spec:
           name: {{ template "splunk-kubernetes-metrics.fullname" . }}-aggregator
       - name: secrets
         secret:
-          secretName: {{ template "splunk-kubernetes-metrics.fullname" . }}
+          secretName: {{ template "splunk-kubernetes-metrics.secret" . }}

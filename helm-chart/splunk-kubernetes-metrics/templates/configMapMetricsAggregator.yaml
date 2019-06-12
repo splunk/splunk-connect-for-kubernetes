@@ -19,12 +19,18 @@ data:
       {{- with .Values.kubernetes.kubeletPort }}
       kubelet_port {{ . }}
       {{- end }}
+      {{- with .Values.kubernetes.clusterName }}
+      cluster_name {{ . }}
+      {{- end }}
+      {{- with .Values.metricsInterval }}
+      interval {{ . }}
+      {{- end }}
     </source>
     <filter kube.**>
       @type record_modifier
       <record>
         metric_name ${tag}
-        {{- with .Values.kubernetes.clusterName }}
+        {{- with or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
         cluster_name {{ . }}
         {{- end }}
       </record>

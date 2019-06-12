@@ -15,7 +15,8 @@ global:
       protocol: https
       port: 8088
       insecureSSL: false
-
+  kubernetes:
+    clusterName: "cluster_name"
 
 # = Log Level =
 # logLevel is to set log level of the object collector. Avaiable values are:
@@ -162,6 +163,12 @@ splunk:
     caFile:
     # The path to a directory containing CA certificates which are in PEM format.
     caPath:
+
+
+# Create or use existing secret if name is empty default name is used
+secret:
+  create: true
+  name:
 
 
 image:

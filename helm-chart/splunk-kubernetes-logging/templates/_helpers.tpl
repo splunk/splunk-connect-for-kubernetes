@@ -32,6 +32,17 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "splunk-kubernetes-logging.secret" -}}
+{{- if .Values.secret.name -}}
+{{- printf "%s" .Values.secret.name -}}
+{{- else -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Convert memory value from resources.limit to fluentd buffer.
 Rules:
 * fluentd does not support *i units
@@ -100,9 +111,7 @@ def extract_container_info:
   | .namespace = set_namespace($parts[1])
   | .container_name = ($cparts[:-1] | join("-"))
   | .container_id = ($cparts[-1] | rtrimstr(".log"))
-  {{- if .Values.kubernetes.clusterName }}
-  | .cluster_name = "{{ .Values.kubernetes.clusterName }}"
-  {{- end }}
+  | .cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}"
   | .;
 
 .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
