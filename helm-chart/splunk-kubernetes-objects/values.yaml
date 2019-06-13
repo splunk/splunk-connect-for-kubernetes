@@ -206,6 +206,8 @@ buffer:
 
 nodeSelector: {}
 
+# Defines priorityClassName to assign a priority class to pods.
+priorityClassName: 
 
 tolerations: []
 
