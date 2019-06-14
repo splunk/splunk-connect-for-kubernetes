@@ -44,7 +44,10 @@ data:
       @type tail
       @label @SPLUNK
       tag tail.containers.*
-      path /var/log/containers/*.log
+      path {{ .Values.global.fluentd.path | default "/var/log/containers/*.log" }}
+      {{- if .Values.global.fluentd.exclude_path }}
+      exclude_path {{ .Values.global.fluentd.exclude_path | toJson }}
+      {{- end }}
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true

@@ -20,6 +20,17 @@ global:
       indexRoutingDefaultIndex:
   kubernetes:
     clusterName: "cluster_name"
+  
+  # Override global Fluentd config path and exclude path.
+  # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
+  fluentd:
+    # path of logfiles, default /var/log/containers/*.log
+    path: /var/log/containers/*.log
+    # paths of logfiles to exclude. object type is array as per fluentd specification:
+    # https://docs.fluentd.org/input/tail#exclude_path
+    exclude_path: 
+    #  - /var/log/containers/kube-svc-redirect*.log
+    #  - /var/log/containers/tiller*.log
 
 
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
