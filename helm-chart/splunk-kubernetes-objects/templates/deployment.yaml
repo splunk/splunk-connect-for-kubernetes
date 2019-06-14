@@ -37,7 +37,6 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      priorityClassName: {{ .Values.priorityClassName }}
       containers:
       - name: splunk-fluentd-k8s-objects
         image: {{ .Values.image.name }}

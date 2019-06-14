@@ -72,4 +72,3 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-metrics.secret" . }}
-      priorityClassName: {{ .Values.priorityClassName }}

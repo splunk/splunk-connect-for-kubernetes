@@ -147,8 +147,6 @@ tolerations:
 # blank by default.
 aggregatorTolerations: {}
 
-# Defines priorityClassName to assign a priority class to pods.
-priorityClassName: 
 
 affinity: {}
 
