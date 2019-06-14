@@ -87,3 +87,5 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-logging.secret" . }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      
