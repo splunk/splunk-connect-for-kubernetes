@@ -20,7 +20,8 @@ global:
       indexRoutingDefaultIndex:
   kubernetes:
     clusterName: "cluster_name"
-  
+
+
   # Override global Fluentd config path and exclude path.
   # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
   fluentd:
@@ -290,8 +291,10 @@ nodeSelector: {}
 # Defines node affinity to restrict pod deployment.
 affinity: {}
 
+
 # Defines priorityClassName to assign a priority class to pods.
 priorityClassName: 
+
 
 # = Kubernetes Connection Configs =
 kubernetes:

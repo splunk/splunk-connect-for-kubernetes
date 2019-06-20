@@ -72,3 +72,6 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-metrics.secret" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }} {{ toYaml . | indent 8 }}
+      {{- end }}
