@@ -9,4 +9,4 @@ python3 -m pytest \
 	--splunkd-url https://$SPLUNK_HEC_HOST:8089 \
 	--splunk-user admin \
 	--splunk-password $SPLUNK_PASSWORD \
-	-p no:warnings
+	-p no:warnings -s
