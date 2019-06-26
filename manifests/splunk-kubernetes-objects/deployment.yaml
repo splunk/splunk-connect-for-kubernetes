@@ -22,6 +22,8 @@ spec:
       annotations: {}
     spec:
       serviceAccountName: splunk-kubernetes-objects
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       terminationGracePeriodSeconds: 30
       containers:
       - name: splunk-fluentd-k8s-objects
