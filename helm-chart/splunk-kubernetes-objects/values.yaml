@@ -63,7 +63,7 @@ kubernetes:
   # Path of the location where pod's service account's credentials are stored. Usually you don't need to care about this config, the default value should work in most cases.
   secretDir:
   # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
-  clusterName: "cluster_name"
+  clusterName:
 
 
 # = Object Lists =
