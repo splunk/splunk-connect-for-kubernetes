@@ -1,5 +1,5 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: splunk-kubernetes-logging
@@ -8,6 +8,10 @@ metadata:
     engine: fluentd
     version: 1.2.0
 spec:
+  selector:
+    matchLabels:
+      app: splunk-kubernetes-logging
+      version: 1.2.0
   template:
     metadata:
       labels:
