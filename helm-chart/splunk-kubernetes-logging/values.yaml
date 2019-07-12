@@ -43,6 +43,14 @@ global:
 logLevel:
 
 
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+
 # Local splunk configurations
 splunk:
   # Configurations for HEC (HTTP Event Collector)
@@ -300,3 +308,5 @@ priorityClassName:
 kubernetes:
   # The cluster name used to tag logs. Default is cluster_name
   clusterName: "cluster_name"
+  # Add privileged access to containers for openshift compatability
+  openshift: false
