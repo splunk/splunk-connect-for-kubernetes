@@ -97,7 +97,7 @@ data:
       hec_port {{ . }}
       {{- end }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      host "#{ENV['SPLUNK_HEC_HOST']}"
+      host "#{ENV['NODE_NAME']}"
       source_key source
       sourcetype_key sourcetype
       {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
