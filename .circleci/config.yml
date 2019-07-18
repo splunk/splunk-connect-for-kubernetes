@@ -20,6 +20,10 @@ jobs:
             echo "Installing aws cli..."
             sudo pip install awscli > /dev/null 2>&1
       - run:
+          name: Lint helm charts
+          command: |
+            .circleci/lint.sh
+      - run:
           name: Update configurables to build artifacts
           command: |
             .circleci/update_sck_config.sh

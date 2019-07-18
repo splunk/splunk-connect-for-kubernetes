@@ -18,6 +18,20 @@ global:
       indexRouting:
       # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
       indexRoutingDefaultIndex:
+  kubernetes:
+    clusterName: "cluster_name"
+
+
+  # Override global Fluentd config path and exclude path.
+  # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
+  fluentd:
+    # path of logfiles, default /var/log/containers/*.log
+    path: /var/log/containers/*.log
+    # paths of logfiles to exclude. object type is array as per fluentd specification:
+    # https://docs.fluentd.org/input/tail#exclude_path
+    exclude_path: 
+    #  - /var/log/containers/kube-svc-redirect*.log
+    #  - /var/log/containers/tiller*.log
 
 
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
@@ -63,8 +77,18 @@ splunk:
     indexRoutingDefaultIndex:
 
 
+# Create or use existing secret if name is empty default name is used
+secret:
+  create: true
+  name:
+
+
 # Directory where to read journald logs.
 journalLogPath: /run/log/journal
+
+
+# Directory where the docker daemon's data is stored
+dockerPath: /var/lib/docker
 
 
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
@@ -221,7 +245,7 @@ logs:
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  name: splunk/fluentd-hec:1.1.0
+  name: splunk/fluentd-hec:1.1.1
   pullPolicy: Always
 
 
@@ -266,6 +290,10 @@ nodeSelector: {}
 
 # Defines node affinity to restrict pod deployment.
 affinity: {}
+
+
+# Defines priorityClassName to assign a priority class to pods.
+priorityClassName: 
 
 
 # = Kubernetes Connection Configs =

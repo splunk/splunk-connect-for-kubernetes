@@ -25,6 +25,17 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Create secret to be used.
+*/}}
+{{- define "splunk-kubernetes-metrics.secret" -}}
+{{- if .Values.secret.name -}}
+{{- printf "%s" .Values.secret.name -}}
+{{- else -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "splunk-kubernetes-metrics.chart" -}}
