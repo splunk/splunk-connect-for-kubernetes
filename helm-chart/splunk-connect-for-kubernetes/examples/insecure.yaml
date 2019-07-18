@@ -8,7 +8,8 @@ global:
       indexName: main
       # connection to splunk is insecure
       insecureSSL: true
-
+  kubernetes: 
+    clusterName: "cluster_name"
 
 splunk-kubernetes-objects:
   # RBAC is disabled

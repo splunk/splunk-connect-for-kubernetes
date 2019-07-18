@@ -5,20 +5,20 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.1.0
+    version: 1.2.0
 spec:
   selector:
     matchLabels:
       app: splunk-kubernetes-objects
       engine: fluentd
-      version: 1.1.0
+      version: 1.2.0
   replicas: 1
   template:
     metadata:
       labels:
         app: splunk-kubernetes-objects
         engine: fluentd
-        version: 1.1.0
+        version: 1.2.0
       annotations: {}
     spec:
       serviceAccountName: splunk-kubernetes-objects
@@ -39,7 +39,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: SPLUNK_HEC_HOST
+        - name: NODE_NAME
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName

@@ -44,7 +44,10 @@ data:
       @type tail
       @label @SPLUNK
       tag tail.containers.*
-      path {{ .Values.containers.logGlob }} 
+      path {{ .Values.global.fluentd.path | default "/var/log/containers/*.log" }}
+      {{- if .Values.global.fluentd.exclude_path }}
+      exclude_path {{ .Values.global.fluentd.exclude_path | toJson }}
+      {{- end }}
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
@@ -122,6 +125,7 @@ data:
       <storage>
         @type local
         persistent true
+        path /var/log/splunkd-fluentd-journald-{{ $name }}.pos.json
       </storage>
       <entry>
         field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
@@ -220,7 +224,7 @@ data:
         hec_port {{ . }}
         {{- end }}
         hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-        host "#{ENV['SPLUNK_HEC_HOST']}"
+        host "#{ENV['NODE_NAME']}"
         source_key source
         sourcetype_key sourcetype
         {{- if or .Values.splunk.hec.indexRouting .Values.global.splunk.hec.indexRouting }}
@@ -254,7 +258,7 @@ data:
           container_name
           container_id
           {{- end }}
-          {{- if .Values.kubernetes.clusterName }}
+          {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
           cluster_name
           {{- end }}
         </fields>

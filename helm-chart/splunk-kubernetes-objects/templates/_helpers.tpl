@@ -43,6 +43,17 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Create secret to be used.
+*/}}
+{{- define "splunk-kubernetes-objects.secret" -}}
+{{- if .Values.secret.name -}}
+{{- printf "%s" .Values.secret.name -}}
+{{- else -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Convert memory value from resources.limit to fluentd buffer.
 Rules:
 * fluentd does not support *i units
