@@ -42,6 +42,14 @@ global:
 # * error
 logLevel:
 
+# Configurations for container logs
+containers:
+  # Path to root directory of container logs
+  path: /var/log
+  # Final volume destination of container log symlinks
+  pathDest: /var/lib/docker/containers
+  # Log format, "json" or "cri"
+  logFormat: json
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
@@ -93,11 +101,6 @@ secret:
 
 # Directory where to read journald logs.
 journalLogPath: /run/log/journal
-
-
-# Directory where the docker daemon's data is stored
-dockerPath: /var/lib/docker
-
 
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
 #

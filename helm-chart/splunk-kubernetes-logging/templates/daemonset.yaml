@@ -65,9 +65,9 @@ spec:
 {{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
         - name: varlog
-          mountPath: /var/log
-        - name: varlibdockercontainers
-          mountPath: {{ with .Values.dockerPath }}{{ printf "%s/containers" . | quote }}{{ end }}
+          mountPath: {{ .Values.containers.path }}
+        - name: varlogdest
+          mountPath: {{ .Values.containers.pathDest }}
           readOnly: true
         - name: journallogpath
           mountPath: {{ .Values.journalLogPath | quote }}
@@ -81,10 +81,10 @@ spec:
       volumes:
       - name: varlog
         hostPath:
-          path: /var/log
-      - name: varlibdockercontainers
+          path: {{ .Values.containers.path }}
+      - name: varlogdest
         hostPath:
-          path: {{ with .Values.dockerPath }}{{ printf "%s/containers" . | quote }}{{ end }}
+          path: {{ .Values.containers.pathDest }}
       - name: journallogpath
         hostPath:
           path: {{ .Values.journalLogPath | quote }}
