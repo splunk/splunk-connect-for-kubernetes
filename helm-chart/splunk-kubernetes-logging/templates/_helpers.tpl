@@ -116,3 +116,14 @@ def extract_container_info:
 
 .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
 {{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "splunk-kubernetes-logging.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "splunk-kubernetes-logging.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
