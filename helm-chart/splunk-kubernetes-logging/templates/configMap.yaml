@@ -52,15 +52,16 @@ data:
       path_key source
       read_from_head true
       <parse>
-      {{- if eq .Values.containers.logFormat "cri" }}
+      {{- if eq .Values.containers.logFormatType "cri" }}
         @type regexp
         expression /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
+        time_format  {{ .Values.containers.logFormat | default "%Y-%m-%dT%H:%M:%S.%N%:z" }}
       {{- else if eq .Values.containers.logFormat "json" }}
         @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
       {{- end }}
         time_key time
         time_type string
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
         localtime false
       </parse>
     </source>
