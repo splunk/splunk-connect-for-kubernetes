@@ -52,15 +52,16 @@ data:
       path_key source
       read_from_head true
       <parse>
-      {{- if eq .Values.containers.logFormat "cri" }}
+      {{- if eq .Values.containers.logFormatType "cri" }}
         @type regexp
         expression /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
-      {{- else if eq .Values.containers.logFormat "json" }}
+        time_format  {{ .Values.containers.logFormat | default "%Y-%m-%dT%H:%M:%S.%N%:z" }}
+      {{- else if eq .Values.containers.logFormatType "json" }}
         @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
       {{- end }}
         time_key time
         time_type string
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
         localtime false
       </parse>
     </source>
@@ -168,7 +169,7 @@ data:
       </filter>
 
       # extract pod_uid and container_name for CRIO runtime
-      {{- if eq .Values.containers.logFormat "cri" }}
+      {{- if eq .Values.containers.logFormatType "cri" }}
       <filter tail.containers.var.log.pods.**>
         @type jq_transformer
         jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("kube:container:" + .container_name)'
@@ -248,7 +249,7 @@ data:
           # currently CRI does not produce log paths with all the necessary
           # metadata to parse out pod, namespace, container_name, container_id.
           # this may be resolved in the future by this issue: https://github.com/kubernetes/kubernetes/issues/58638#issuecomment-385126031
-          {{- if eq .Values.containers.logFormat "cri"}}
+          {{- if eq .Values.containers.logFormatType "cri"}}
           pod_uid
           container_name
           container_retry

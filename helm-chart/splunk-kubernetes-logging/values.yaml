@@ -48,8 +48,11 @@ containers:
   path: /var/log
   # Final volume destination of container log symlinks
   pathDest: /var/lib/docker/containers
-  # Log format, "json" or "cri"
-  logFormat: json
+  # Log format type, "json" or "cri"
+  logFormatType: json
+  # Specify the log format for "cri" logFormatType
+  # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
+  logFormat:
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
