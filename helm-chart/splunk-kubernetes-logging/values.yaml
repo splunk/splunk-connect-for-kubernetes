@@ -283,3 +283,9 @@ affinity: {}
 kubernetes:
   # The cluster name used to tag logs. Default is cluster_name
   clusterName: "cluster_name"
+
+# List of key/value pairs for metadata purpse.
+# Can be used to define things such as cloud_account_id, cloud_account_region, etc.
+custom_metadata:
+#  - name: "cloud_account_id"
+#    value: "1234567890"

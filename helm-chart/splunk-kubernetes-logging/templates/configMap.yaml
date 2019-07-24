@@ -236,6 +236,11 @@ data:
           {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
           cluster_name
           {{- end }}
+          {{- if .Values.custom_metadata }}
+          {{-   range .Values.custom_metadata }}
+          {{ .name }}
+          {{-   end }}
+          {{- end }}
         </fields>
         {{- with .Values.buffer }}
         <buffer>
