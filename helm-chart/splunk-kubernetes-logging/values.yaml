@@ -21,6 +21,19 @@ global:
   kubernetes:
     clusterName: "cluster_name"
 
+
+  # Override global Fluentd config path and exclude path.
+  # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
+  fluentd:
+    # path of logfiles, default /var/log/containers/*.log
+    path: /var/log/containers/*.log
+    # paths of logfiles to exclude. object type is array as per fluentd specification:
+    # https://docs.fluentd.org/input/tail#exclude_path
+    exclude_path: 
+    #  - /var/log/containers/kube-svc-redirect*.log
+    #  - /var/log/containers/tiller*.log
+
+
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
 # * debug
@@ -28,6 +41,25 @@ global:
 # * warn
 # * error
 logLevel:
+
+# Configurations for container logs
+containers:
+  # Path to root directory of container logs
+  path: /var/log
+  # Final volume destination of container log symlinks
+  pathDest: /var/lib/docker/containers
+  # Log format type, "json" or "cri"
+  logFormatType: json
+  # Specify the log format for "cri" logFormatType
+  # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
+  logFormat:
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
 
 
 # Local splunk configurations
@@ -72,11 +104,6 @@ secret:
 
 # Directory where to read journald logs.
 journalLogPath: /run/log/journal
-
-
-# Directory where the docker daemon's data is stored
-dockerPath: /var/lib/docker
-
 
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
 #
@@ -232,7 +259,7 @@ logs:
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  name: splunk/fluentd-hec:1.1.0
+  name: splunk/fluentd-hec:1.1.1
   pullPolicy: Always
 
 
@@ -279,10 +306,16 @@ nodeSelector: {}
 affinity: {}
 
 
+# Defines priorityClassName to assign a priority class to pods.
+priorityClassName: 
+
+
 # = Kubernetes Connection Configs =
 kubernetes:
   # The cluster name used to tag logs. Default is cluster_name
   clusterName: "cluster_name"
+  # Add privileged access to containers for openshift compatability
+  openshift: false
 
 # List of key/value pairs for metadata purpse.
 # Can be used to define things such as cloud_account_id, cloud_account_region, etc.
