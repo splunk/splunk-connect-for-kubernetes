@@ -1,18 +1,22 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
     engine: fluentd
-    version: 1.1.0
+    version: 1.2.0
 spec:
+  selector:
+    matchLabels:
+      app: splunk-kubernetes-logging
+      version: 1.2.0
   template:
     metadata:
       labels:
         app: splunk-kubernetes-logging
-        version: 1.1.0
+        version: 1.2.0
       annotations: {}
     spec:
       tolerations:
@@ -20,7 +24,7 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-logs
-        image: splunk/fluentd-hec:1.1.0
+        image: splunk/fluentd-hec:1.1.1
         imagePullPolicy: Always
         args:
         - "-c"

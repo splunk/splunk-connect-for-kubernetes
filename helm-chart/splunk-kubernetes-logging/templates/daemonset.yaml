@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ template "splunk-kubernetes-logging.fullname" . }}
@@ -9,6 +9,10 @@ metadata:
     heritage: {{ .Release.Service }}
     engine: fluentd
 spec:
+  selector:
+    matchLabels:
+      app: {{ template "splunk-kubernetes-logging.name" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -17,6 +21,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
     spec:
+      serviceAccountName: {{ template "splunk-kubernetes-logging.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -33,6 +38,12 @@ spec:
       - name: splunk-fluentd-k8s-logs
         image: {{ .Values.image.name }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if or .Values.global.kubernetes.openshift .Values.kubernetes.openshift }}
+        securityContext:
+        {{ toYaml . | indent 12 }}
+          privileged: true
+          runAsUser: 0
+        {{- end }}
         args:
           - -c
           - /fluentd/etc/fluent.conf
@@ -58,9 +69,9 @@ spec:
 {{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
         - name: varlog
-          mountPath: /var/log
-        - name: varlibdockercontainers
-          mountPath: {{ with .Values.dockerPath }}{{ printf "%s/containers" . | quote }}{{ end }}
+          mountPath: {{ .Values.containers.path }}
+        - name: varlogdest
+          mountPath: {{ .Values.containers.pathDest }}
           readOnly: true
         - name: journallogpath
           mountPath: {{ .Values.journalLogPath | quote }}
@@ -74,10 +85,10 @@ spec:
       volumes:
       - name: varlog
         hostPath:
-          path: /var/log
-      - name: varlibdockercontainers
+          path: {{ .Values.containers.path }}
+      - name: varlogdest
         hostPath:
-          path: {{ with .Values.dockerPath }}{{ printf "%s/containers" . | quote }}{{ end }}
+          path: {{ .Values.containers.pathDest }}
       - name: journallogpath
         hostPath:
           path: {{ .Values.journalLogPath | quote }}
@@ -87,3 +98,6 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-logging.secret" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }} {{ toYaml . | indent 8 }}
+      {{- end }}

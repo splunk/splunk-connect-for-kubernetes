@@ -44,15 +44,24 @@ data:
       @type tail
       @label @SPLUNK
       tag tail.containers.*
-      path /var/log/containers/*.log
+      path {{ .Values.global.fluentd.path | default "/var/log/containers/*.log" }}
+      {{- if .Values.global.fluentd.exclude_path }}
+      exclude_path {{ .Values.global.fluentd.exclude_path | toJson }}
+      {{- end }}
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
       <parse>
+      {{- if eq .Values.containers.logFormatType "cri" }}
+        @type regexp
+        expression /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
+        time_format  {{ .Values.containers.logFormat | default "%Y-%m-%dT%H:%M:%S.%N%:z" }}
+      {{- else if eq .Values.containers.logFormatType "json" }}
         @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      {{- end }}
         time_key time
         time_type string
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
         localtime false
       </parse>
     </source>
@@ -159,6 +168,14 @@ data:
         jq {{ include "splunk-kubernetes-logging.container_jq_filter" . | replace "\n" " " | quote }}
       </filter>
 
+      # extract pod_uid and container_name for CRIO runtime
+      {{- if eq .Values.containers.logFormatType "cri" }}
+      <filter tail.containers.var.log.pods.**>
+        @type jq_transformer
+        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("kube:container:" + .container_name)'
+      </filter>
+      {{- end }}
+
       # = filters for journald logs =
       {{- range $name, $logDef := .Values.logs }}
       {{- if and $logDef.from.journald $logDef.multiline }}
@@ -176,7 +193,7 @@ data:
       {{- if $checks.hasJournald }}
       <filter journald.**>
         @type jq_transformer
-        jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record'
+        jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record'
       </filter>
       {{- end }}
 
@@ -192,7 +209,7 @@ data:
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
-        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
+        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record"
       </filter>
 
       # = output =
@@ -208,7 +225,7 @@ data:
         hec_port {{ . }}
         {{- end }}
         hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-        host "#{ENV['SPLUNK_HEC_HOST']}"
+        host "#{ENV['NODE_NAME']}"
         source_key source
         sourcetype_key sourcetype
         {{- if or .Values.splunk.hec.indexRouting .Values.global.splunk.hec.indexRouting }}
@@ -229,10 +246,19 @@ data:
         ca_file /fluentd/etc/splunk/hec_ca_file
         {{- end }}
         <fields>
+          # currently CRI does not produce log paths with all the necessary
+          # metadata to parse out pod, namespace, container_name, container_id.
+          # this may be resolved in the future by this issue: https://github.com/kubernetes/kubernetes/issues/58638#issuecomment-385126031
+          {{- if eq .Values.containers.logFormatType "cri"}}
+          pod_uid
+          container_name
+          container_retry
+          {{- else }}
           pod
           namespace
           container_name
           container_id
+          {{- end }}
           {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
           cluster_name
           {{- end }}

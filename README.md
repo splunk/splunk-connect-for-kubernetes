@@ -35,7 +35,7 @@ Helm, maintained by the CNCF, allows the Kubernetes administrator to install, up
 To install and configure defaults with Helm:
 
 ```
-$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.1.0/splunk-connect-for-kubernetes-1.1.0.tgz
+$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.2.0/splunk-connect-for-kubernetes-1.2.0.tgz
 ```
 
 To learn more about using and modifying charts, see:
