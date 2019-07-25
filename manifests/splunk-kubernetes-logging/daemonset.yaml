@@ -22,6 +22,8 @@ spec:
       tolerations:
       - effect: NoSchedule
         key: node-role.kubernetes.io/master
+      nodeSelector:
+        beta.kubernetes.io/os: linux
       containers:
       - name: splunk-fluentd-k8s-logs
         image: splunk/fluentd-hec:1.1.1
