@@ -313,6 +313,6 @@ priorityClassName:
 # = Kubernetes Connection Configs =
 kubernetes:
   # The cluster name used to tag logs. Default is cluster_name
-  clusterName: "cluster_name"
+  clusterName:
   # Add privileged access to containers for openshift compatability
   openshift: false
