@@ -130,12 +130,15 @@ using the two configurable parameters `indexRouting` and `indexRoutingDefaultInd
 `indexRoutingDefaultIndex` is the Splunk index used for the events from the default Kubernetes namespace
 
 Warning: Before enabling this feature it is essential to have Splunk indexes created which map to your Kubernetes namespaces.
-Example:
 
+For example:
+Consider the following kubernetes namespace to splunk index topology.
 * (Namespace) -> (Splunk Index)
 * kube-system -> kube-system
 * kube-public -> kube-public
-* default -> indexRoutingDefaultIndex 
+* default -> indexRoutingDefaultIndex
+For this topology to work appropriately we have to create the splunk indexes "kube-system", "kube-public" and the value of indexRoutingDefaultIndex.
+
 
 # Maintenance And Support
 
