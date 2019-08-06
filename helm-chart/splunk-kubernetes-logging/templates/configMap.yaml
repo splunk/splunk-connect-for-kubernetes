@@ -212,6 +212,18 @@ data:
         jq '.record.source = "namespace:#{ENV[\'MY_NAMESPACE\']}/pod:#{ENV[\'MY_POD_NAME\']}" | .record.sourcetype = "fluentd:monitor-agent" | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record'
       </filter>
 
+      # = custom filters specified by users =
+      {{- range $name, $filterDef := .Values.customFilters }}
+      {{- if and $filterDef.tag $filterDef.type }}
+      <filter {{ $filterDef.tag }}>
+        @type {{ $filterDef.type }}
+        {{- if $filterDef.body }}
+        {{ $filterDef.body }}
+        {{- end }}
+      </filter>
+      {{- end }}
+      {{- end }}
+
       # = output =
       <match **>
         @type splunk_hec
