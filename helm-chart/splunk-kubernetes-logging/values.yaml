@@ -16,7 +16,7 @@ global:
       insecureSSL: false
       # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name same as the namespace. Default is false.
       indexRouting:
-      # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
+      # indexRoutingDefaultIndex tells which index to use for the default kubernetes namespace. Used with indexRouting. This value is required when using indexRouting. Default is main if indexRoutingDefaultIndex is not specified.
       indexRoutingDefaultIndex:
   kubernetes:
     clusterName: "cluster_name"
@@ -29,7 +29,7 @@ global:
     path: /var/log/containers/*.log
     # paths of logfiles to exclude. object type is array as per fluentd specification:
     # https://docs.fluentd.org/input/tail#exclude_path
-    exclude_path: 
+    exclude_path:
     #  - /var/log/containers/kube-svc-redirect*.log
     #  - /var/log/containers/tiller*.log
 
@@ -92,7 +92,7 @@ splunk:
     caFile:
     # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name same as the namespace. Default is false.
     indexRouting:
-    # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
+    # indexRoutingDefaultIndex tells which index to use for the default kubernetes namespace. Used with indexRouting. This value is required when using indexRouting.
     indexRoutingDefaultIndex:
 
 
@@ -307,7 +307,7 @@ affinity: {}
 
 
 # Defines priorityClassName to assign a priority class to pods.
-priorityClassName: 
+priorityClassName:
 
 
 # = Kubernetes Connection Configs =
