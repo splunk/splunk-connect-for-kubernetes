@@ -209,7 +209,7 @@ data:
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
-        jq '.record.source = "namespace:#{ENV[\'MY_NAMESPACE\']}/pod:#{ENV[\'MY_POD_NAME\']}" | .record.sourcetype = "fluentd:monitor-agent" | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record'
+        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record"
       </filter>
 
       # = output =
