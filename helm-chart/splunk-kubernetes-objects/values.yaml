@@ -213,3 +213,41 @@ tolerations: []
 
 
 affinity: {}
+
+
+# `customFilters` defines the custom filters to be used.
+# This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
+# Its also possible to use other filters like https://www.fluentd.org/plugins#filter
+#
+# The scheme to define a custom filter is:
+#
+# ```
+# <name>:
+#   tag: <fluentd tag for the filter>
+#   type: <fluentd filter type>
+#   body: <definition of the fluentd filter>
+# ```
+#
+# = fluentd tag for the filter =
+# This is the fluentd tag for the record
+#
+# = fluentd filter type =
+# This is the fluentd filter that the user wants to use for record manipulation.
+#
+# = definition of the fluentd filter =
+# This defines the body/logic for using the filter for record manipulation.
+#
+# For example if you want to define a filter which sets cluster_name field to "my_awesome_cluster" you would the following filter
+# <filter tail.containers.**>
+#  @type jq_transformer
+#  jq '.record.cluster_name = "my_awesome_cluster" | .record'
+# </filter>
+# This can be defined in the customFilters section as follows:
+# ```
+# customFilters:
+#   NamespaceSourcetypeFilter:
+#     tag: tail.containers.**
+#     type: jq_transformer
+#     body: jq '.record.cluster_name = "my_awesome_cluster" | .record'
+# ```
+customFilters: {}
