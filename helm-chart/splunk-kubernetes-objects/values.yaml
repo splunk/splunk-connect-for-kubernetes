@@ -1,4 +1,4 @@
-# Default values for splunk-kubernetes-logging.
+# Default values for splunk-kubernetes-objects.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -176,12 +176,19 @@ secret:
   name:
 
 
+# Defines which version of image to use, and how it should be pulled.
 image:
+  # The domain of the registry to pull the image from
   registry: docker.io
+  # The name of the image to pull
   name: splunk/kube-objects
+  # The tag of the image to pull
   tag: 1.1.2
+  # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
+  # Indicates if the image should be pulled using authentication from a secret
   usePullSecret: false
+  # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullSecretName:
 
 
@@ -213,12 +220,16 @@ buffer:
   retry_max_times: 3
 
 
+# Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector: {}
 
 
+# This default tolerations allow the daemonset to be deployed on master nodes,
+# so that we can also collect metrics from those nodes.
 tolerations: []
 
 
+# Defines node affinity to restrict pod deployment.
 affinity: {}
 
 

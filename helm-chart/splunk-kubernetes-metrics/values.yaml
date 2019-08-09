@@ -1,15 +1,16 @@
-# Default values for splunk-kubernetes-logging.
+# Default values for splunk-kubernetes-metrics.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 
-# = Global Configs =
-# Allow to pass config values from parent chart using `global.*`.
-# Global values have lower priority.
-# Values defined here are the default values.
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
 global:
   logLevel: info
+  # If local splunk configurations are not present, the global ones will be used (if available)
   splunk:
+    # It has exactly the same configs as splunk.hec does
     hec:
       port: 8088
       protocol: https
@@ -83,24 +84,39 @@ secret:
   name:
 
 
+# Defines which version of image to use, and how it should be pulled.
 image:
+  # The domain of the registry to pull the image from
   registry: docker.io
+  # The name of the image to pull
   name: splunk/k8s-metrics
+  # The tag of the image to pull
   tag: 1.1.1
+  # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
+  # Indicates if the image should be pulled using authentication from a secret
   usePullSecret: false
+  # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullsecretName:
 
 
+# Defines which version of image to use, and how it should be pulled.
 imageAgg:
+  # The domain of the registry to pull the image from
   registry: docker.io
+  # The name of the image to pull
   name: splunk/k8s-metrics-aggr
+  # The tag of the image to pull
   tag: 1.1.0
+  # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
+  # Indicates if the image should be pulled using authentication from a secret
   usePullSecret: false
+  # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullsecretName:
 
 
+# Controls the resources used by the fluentd daemonset
 resources:
   fluent:
     limits:
@@ -111,7 +127,7 @@ resources:
       memory: 300Mi
 
 
- # Controls the output buffer for fluentd.
+ # Controls the output buffer for fluentd for the metrics pod
  # Note that, for memory buffer, if `resources.sidecar.limits.memory` is set,
  # the total buffer size should not bigger than the memory limit, it should also
  # consider the basic memory usage by fluentd itself.
@@ -129,6 +145,7 @@ buffer:
   retry_max_times: 3
 
 
+ # Controls the output buffer for fluentd for the metrics aggregator pod
 aggregatorBuffer:
   "@type": memory
   total_limit_size: 400m
@@ -144,6 +161,7 @@ aggregatorBuffer:
 metricsInterval: 15s
 
 
+# Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector: {}
   # kubernetes.io/role: master
 
@@ -164,6 +182,7 @@ aggregatorTolerations: {}
 priorityClassName:
 
 
+# Defines node affinity to restrict pod deployment.
 affinity: {}
 
 # = Kubernetes Connection Configs =
