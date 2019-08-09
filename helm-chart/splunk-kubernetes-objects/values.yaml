@@ -44,6 +44,8 @@ serviceAccount:
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+  # This flag specifies if the user wants to use a secret for creating the serviceAccount,
+  # which will be used to get the images from a private registry
   usePullSecrets: false
 
 
@@ -177,8 +179,8 @@ secret:
 image:
   registry: docker.io
   name: splunk/kube-objects
-  tag: 1.1.0
-  pullPolicy: IfNotPresent
+  tag: 1.1.2
+  pullPolicy: Always
   usePullSecret: false
   pullSecretName:
 
