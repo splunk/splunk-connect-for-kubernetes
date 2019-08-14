@@ -112,6 +112,9 @@ data:
       host "#{ENV['NODE_NAME']}"
       source_key source
       sourcetype_key sourcetype
+      {{- if or .Values.splunk.hec.indexRouting .Values.global.splunk.hec.indexRouting }}
+      index_key index
+      {{- else }}
       {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
       index {{ . }}
       {{- end }}
