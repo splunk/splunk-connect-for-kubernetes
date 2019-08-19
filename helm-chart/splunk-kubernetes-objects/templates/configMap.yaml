@@ -129,6 +129,9 @@ data:
         {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
         cluster_name
         {{- end }}
+        {{- range .Values.indexFields }}
+        {{ . }}
+        {{- end }}
       </fields>
       {{- with .Values.buffer }}
       <buffer>

@@ -319,7 +319,7 @@ kubernetes:
 
 # List of key/value pairs for metadata purpse.
 # Can be used to define things such as cloud_account_id, cloud_account_region, etc.
-custom_metadata:
+customMetadata:
 #  - name: "cloud_account_id"
 #    value: "1234567890"
 
@@ -359,3 +359,21 @@ custom_metadata:
 #     body: jq '.record.cluster_name = "my_awesome_cluster" | .record'
 # ```
 customFilters: {}
+
+
+# `indexFields` defines the fields from the fluentd record to be indexed.
+#
+# The scheme to define an indexed field is:
+#
+# ```
+# ["field_1", "field_2"]
+# ```
+# This is basically an srray of the fields that you want to use.
+# WARNING: The fields being used here must be available inside the fluentd record.
+#
+# For example if you want to define indexed fields for "field_1" and "field_2"
+# you will have to define an indexFields section as follows in values.yaml file.
+# ```
+# indexFields: ["field_1", "field_2"]
+# ```
+indexFields: []

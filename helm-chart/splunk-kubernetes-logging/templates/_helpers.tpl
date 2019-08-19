@@ -113,8 +113,8 @@ def extract_container_info:
   | .container_name = ($cparts[:-1] | join("-"))
   | .container_id = ($cparts[-1] | rtrimstr(".log"))
   | .cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}"
-  {{- if .Values.custom_metadata }}
-  {{- range .Values.custom_metadata }}
+  {{- if .Values.customMetadata }}
+  {{- range .Values.customMetadata }}
   | .{{ .name }} = "{{ .value }}"
   {{- end }}
   {{- end }}

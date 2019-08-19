@@ -6,7 +6,7 @@ splunk:
 kubernetes:
   clusterName: "my-eks-cluster"
 
-custom_metadata:
+customMetadata:
   - name: "cloud_account_id"
     value: "1234567890"
   - name: "cloud_account_region"

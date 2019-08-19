@@ -274,10 +274,13 @@ data:
           {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
           cluster_name
           {{- end }}
-          {{- if .Values.custom_metadata }}
-          {{- range .Values.custom_metadata }}
+          {{- if .Values.customMetadata }}
+          {{- range .Values.customMetadata }}
           {{ .name }}
           {{- end }}
+          {{- end }}
+          {{- range .Values.indexFields }}
+          {{ . }}
           {{- end }}
         </fields>
         {{- with .Values.buffer }}
