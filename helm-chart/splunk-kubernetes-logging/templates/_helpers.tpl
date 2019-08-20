@@ -133,3 +133,8 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+Create the image name
+*/}}
+{{- define "splunk-kubernetes-logging.image" -}}
+{{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}
