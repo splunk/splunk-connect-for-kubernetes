@@ -41,7 +41,6 @@ spec:
         imagePullPolicy: {{ .Values.imageAgg.pullPolicy }}
         {{- if or .Values.global.kubernetes.openshift .Values.kubernetes.openshift }}
         securityContext:
-        {{ toYaml . | indent 12 }}
           privileged: true
           runAsUser: 0
         {{- end }}
