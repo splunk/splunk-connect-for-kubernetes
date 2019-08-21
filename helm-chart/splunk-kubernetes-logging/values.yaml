@@ -362,18 +362,13 @@ customFilters: {}
 
 
 # `indexFields` defines the fields from the fluentd record to be indexed.
-#
-# The scheme to define an indexed field is:
-#
-# ```
-# ["field_1", "field_2"]
-# ```
-# This is basically an srray of the fields that you want to use.
-# WARNING: The fields being used here must be available inside the fluentd record.
+# You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
+# The input is in the form of an array(comma separated list) of the values you want to use as indexed fields.
 #
 # For example if you want to define indexed fields for "field_1" and "field_2"
 # you will have to define an indexFields section as follows in values.yaml file.
 # ```
 # indexFields: ["field_1", "field_2"]
 # ```
+# WARNING: The fields being used here must be available inside the fluentd record.
 indexFields: []
