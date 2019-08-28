@@ -52,3 +52,16 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the image name
+*/}}
+{{- define "splunk-kubernetes-metrics.image" -}}
+{{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}
+{{/*
+Create the aggregate image name
+*/}}
+{{- define "splunk-kubernetes-metrics.imageAgg" -}}
+{{- printf "%s/%s:%s" .Values.imageAgg.registry .Values.imageAgg.name .Values.imageAgg.tag -}}
+{{- end -}}

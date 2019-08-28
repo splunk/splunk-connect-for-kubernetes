@@ -60,6 +60,9 @@ serviceAccount:
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+  # This flag specifies if the user wants to use a secret for creating the serviceAccount,
+  # which will be used to get the images from a private registry
+  usePullSecrets: false
 
 
 # Local splunk configurations
@@ -264,8 +267,18 @@ logs:
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  name: splunk/fluentd-hec:1.1.1
+  # The domain of the registry to pull the image from
+  registry: docker.io
+  # The name of the image to pull
+  name: splunk/fluentd-hec
+  # The tag of the image to pull
+  tag: 1.1.1
+  # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
+  # Indicates if the image should be pulled using authentication from a secret
+  usePullSecret: false
+  # The name of the pull secret to attach to the respective serviceaccount used to pull the image
+  pullsecretName:
 
 
 # Controls the resources used by the fluentd daemonset

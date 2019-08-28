@@ -141,9 +141,8 @@ For this topology to work appropriately we have to create the splunk indexes "ku
 
 
 # Maintenance And Support
-
+Splunk Connect For Kubernetes is supported through Splunk Support assuming the customer has a current Splunk support entitlement. For customers that do not have a current Splunk support entitlement, please file an issue at create a new issue at [Create a new issue in splunk connect for kubernetes project](https://github.com/splunk/splunk-connect-for-kubernetes/issues/new)
 The current maintainers of this project are the DataEdge team at Splunk. You can reach us at [DataEdge@splunk.com](mailto:DataEdge@splunk.com).
-If you have any issues with the software, please file an issue at [Create a new issue in splunk connect for kubernetes project](https://github.com/splunk/splunk-connect-for-kubernetes/issues/new)
 
 # License
 

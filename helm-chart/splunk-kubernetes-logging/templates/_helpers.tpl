@@ -126,6 +126,13 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Create the image name
+*/}}
+{{- define "splunk-kubernetes-logging.image" -}}
+{{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}
+
+{{/*
 Converts a path glob to a regular expression.
 */}}
 {{- define "splunk-kubernetes-logging.glob_to_regex" -}}
