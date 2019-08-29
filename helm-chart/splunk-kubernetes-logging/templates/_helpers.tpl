@@ -120,7 +120,7 @@ def extract_container_info:
   {{- end }}
   | .;
 
-.record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
+.record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name){{ if .Values.containers.splitStream }} + ":" + .stream{{ end }} // "kube:container:\(.container_name){{ if .Values.containers.splitStream }}:\(.stream){{ end }}")
 {{- end -}}
 
 {{/*

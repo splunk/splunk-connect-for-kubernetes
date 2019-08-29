@@ -53,6 +53,8 @@ containers:
   # Specify the log format for "cri" logFormatType
   # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
   logFormat:
+  # Whether to append stream to sourcetype (e.g. kube:container:<my-container>:stdout or kube:container:<my-container>:stderr)
+  splitStream: false
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created

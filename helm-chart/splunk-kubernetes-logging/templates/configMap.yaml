@@ -172,7 +172,7 @@ data:
       {{- if eq .Values.containers.logFormatType "cri" }}
       <filter tail.containers.var.log.pods.**>
         @type jq_transformer
-        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("kube:container:" + .container_name)'
+        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("kube:container:" + .container_name{{ if .Values.containers.splitStream }} + ":" + .stream{{ end }})'
       </filter>
       {{- end }}
 
