@@ -258,6 +258,13 @@ logs:
       pod: kube-dns-autoscaler
       container: autoscaler
     sourcetype: kube:kube-dns-autoscaler
+  kube-audit:
+    from:
+      file:
+        path: /var/log/kube-apiserver-audit.log
+    timestampExtraction:
+      format: "%Y-%m-%dT%H:%M:%SZ"
+    sourcetype: kube:apiserver-audit
 
 
 # Defines which version of image to use, and how it should be pulled.
