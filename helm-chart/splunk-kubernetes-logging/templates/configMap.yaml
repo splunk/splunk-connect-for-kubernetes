@@ -121,7 +121,7 @@ data:
       @label @SPLUNK
       tag journald.{{ or $logDef.sourcetype $name }}
       path {{ $.Values.journalLogPath | quote }}
-      filters [{ "_SYSTEMD_UNIT": {{ $logDef.from.journald.unit | quote }} }]
+      matches [{ "_SYSTEMD_UNIT": {{ $logDef.from.journald.unit | quote }} }]
       read_from_head true
       <storage>
         @type local
