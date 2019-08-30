@@ -251,8 +251,14 @@ affinity: {}
 #     body: jq '.record.cluster_name = "my_awesome_cluster" | .record'
 # ```
 customFilters: {}
-
-
+#
+# You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
+# The scheme to define an indexed field is:
+#
+# ```
+# ["field_1", "field_2"]
+# ```
+#
 # `indexFields` defines the fields from the fluentd record to be indexed.
 # You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
 # The input is in the form of an array(comma separated list) of the values you want to use as indexed fields.
