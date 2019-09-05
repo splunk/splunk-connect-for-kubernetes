@@ -206,6 +206,12 @@ kubernetes:
   clusterName:
   # Add privileged access to containers for openshift compatability
   openshift: false
+  # Add privileged access to containers for any PodSecurityPolicy enabled clusters (same as above for Openshift but generic)
+  securityContext: false
+
+# Creates PodSecurityPolicy resources for any pods and associate it with any created service acccounts
+podSecurityPolicy:
+  create: false
 
   # `customFilters` defines the custom filters to be used.
   # This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq

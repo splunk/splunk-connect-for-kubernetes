@@ -46,6 +46,9 @@ rbac:
   # b) you want to create RBAC resources by yourself.
   create: true
 
+# Creates PodSecurityPolicy resources for any pods and associate it with any created service acccounts
+podSecurityPolicy:
+  create: false
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
@@ -78,7 +81,8 @@ kubernetes:
   clusterName:
   # Add privileged access to containers for openshift compatability
   openshift: false
-
+  # Add privileged access to containers for any PodSecurityPolicy enabled clusters (same as above for Openshift but generic)
+  securityContext: false
 
 # = Object Lists =
 # NOTE: at least one object must be provided.

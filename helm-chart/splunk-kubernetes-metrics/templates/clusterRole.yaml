@@ -18,4 +18,10 @@ rules:
   - "nodes/metrics"
   verbs:
   - "get"
+  {{- if .Values.podSecurityPolicy.create -}}
+  - apiGroups:      ['extensions']
+    resources:      ['podsecuritypolicies']
+    verbs:          ['use']
+    resourceNames:  [{{ template "splunk-kubernetes-metrics.fullname" . }}]
+  {{- end -}}
 {{- end -}}

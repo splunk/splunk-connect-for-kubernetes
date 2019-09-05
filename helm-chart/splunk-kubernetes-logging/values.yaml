@@ -336,6 +336,14 @@ kubernetes:
   clusterName:
   # Add privileged access to containers for openshift compatability
   openshift: false
+  # Add privileged access to containers for any PodSecurityPolicy enabled clusters (same as above for Openshift but generic)
+  securityContext: false
+
+
+# Creates PodSecurityPolicy resources for any pods and associate it with any created service acccounts
+podSecurityPolicy:
+  create: false
+
 
 # List of key/value pairs for metadata purpse.
 # Can be used to define things such as cloud_account_id, cloud_account_region, etc.
