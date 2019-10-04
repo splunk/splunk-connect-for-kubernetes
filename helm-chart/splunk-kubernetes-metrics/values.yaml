@@ -162,8 +162,8 @@ metricsInterval: 15s
 
 
 # Defines which nodes should be selected to deploy the fluentd daemonset.
-nodeSelector: {}
-  # kubernetes.io/role: master
+nodeSelector:
+  beta.kubernetes.io/os: linux
 
 
 # This default tolerations allow the daemonset to be deployed on master nodes,
