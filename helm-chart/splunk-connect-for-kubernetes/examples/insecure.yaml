@@ -2,13 +2,13 @@
 global:
   splunk:
     hec:
-      token: 9bca7e2a-0a4b-5b75-b63f-900fac026807
-      host: 64.129.124.21
-      port: 8088
+      token: my-hec-token
+      host: my-hec-host
+      port: my-hec-port
       indexName: main
       # connection to splunk is insecure
       insecureSSL: true
-  kubernetes: 
+  kubernetes:
     clusterName: "cluster_name"
 
 splunk-kubernetes-objects:

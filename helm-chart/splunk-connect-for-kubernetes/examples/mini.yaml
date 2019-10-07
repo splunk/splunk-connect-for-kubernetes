@@ -1,9 +1,9 @@
 global:
   splunk:
     hec:
-      token: 7fbefa0b-8c06-4a62-a54b-0fa69c016988
-      host: 45.209.241.112
-      port: 8088
+      token: my-hec-token
+      host: my-hec-host
+      port: my-hec-port
       indexName: main
 
 

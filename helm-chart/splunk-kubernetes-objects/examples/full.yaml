@@ -6,8 +6,8 @@ rbac:
 splunk:
   hec:
     token: 11111111-2222-3333-4444-555555555555
-    host: 12.34.56.78
-    ndexName: myIndex
+    host: my-hec-host
+    indexName: myIndex
     insecureSSL: false
 
 
