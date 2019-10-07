@@ -11,7 +11,6 @@ spec:
     matchLabels:
       app: splunk-kubernetes-objects
       engine: fluentd
-      version: 1.2.0
   replicas: 1
   template:
     metadata:

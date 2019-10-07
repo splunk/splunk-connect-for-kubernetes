@@ -21,7 +21,6 @@ def sanitize_yaml(yaml)
 
   yaml['metadata']['labels']['version'] = @version
   yaml.fetch('spec', {}).tap { |spec|
-    spec.fetch('selector', {}).fetch('matchLabels', {})['version'] = @version
     spec.fetch('template', {}).fetch('metadata', {}).fetch('labels', {})['version'] = @version
   }
 

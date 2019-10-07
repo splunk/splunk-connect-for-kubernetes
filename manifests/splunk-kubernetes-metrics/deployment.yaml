@@ -11,7 +11,6 @@ spec:
   selector:
     matchLabels:
       name: splunk-kubernetes-metrics
-      version: 1.2.0
   template:
     metadata:
       name: splunk-kubernetes-metrics

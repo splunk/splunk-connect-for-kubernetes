@@ -319,7 +319,8 @@ tolerations:
 
 
 # Defines which nodes should be selected to deploy the fluentd daemonset.
-nodeSelector: {}
+nodeSelector:
+  beta.kubernetes.io/os: linux
 
 
 # Defines node affinity to restrict pod deployment.
