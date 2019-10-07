@@ -158,6 +158,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp {{ $logDef.multiline.firstline }}
         flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
+        separator ""
+        use_first_timestamp true
       </filter>
       {{- end }}
       {{- end }}
