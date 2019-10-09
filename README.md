@@ -139,6 +139,15 @@ Consider the following kubernetes namespace to splunk index topology.
 * default -> indexRoutingDefaultIndex
 For this topology to work appropriately we have to create the splunk indexes "kube-system", "kube-public" and the value of indexRoutingDefaultIndex.
 
+# Sending logs to ingest API
+Splunk Connect for Kubernetes can be used to send events to [Splunk Ingest API](https://sdc.splunkbeta.com/reference/api/ingest/v1beta2). In the ingest_api section of the yaml file you are using to deploy, the following configuration options have to be configured:</br>
+* serviceClientIdentifier - Splunk Connect for Kubernetes uses the client identifier to make authorized requests to the ingest API.
+* serviceClientSecretKey - Splunk Connect for Kubernetes uses the client secret key to make authorized requests to the ingest API.
+* tokenEndpoint - This value indicates which endpoint Splunk Connect for Kubernetes should look to for the authorization token necessary for making requests to the ingest API.
+* ingestAPIHost - Indicates which url/hostname to use for requests to the ingest API.
+* tenant - Indicates which tenant Splunk Connect for Kubernetes should use for requests to the ingest API.
+* eventsEndpoint - Indicates which endpoint to use for requests to the ingest API.
+* debugIngestAPI - Set to True if you want to debug requests and responses to ingest API.
 
 # Maintenance And Support
 Splunk Connect For Kubernetes is supported through Splunk Support assuming the customer has a current Splunk support entitlement. For customers that do not have a current Splunk support entitlement, please file an issue at create a new issue at [Create a new issue in splunk connect for kubernetes project](https://github.com/splunk/splunk-connect-for-kubernetes/issues/new)

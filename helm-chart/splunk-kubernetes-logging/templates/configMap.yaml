@@ -226,30 +226,6 @@ data:
 
       # = output =
       <match **>
-        {{- if .Values.splunk.ingest_api }}
-        @type splunk_ingest_api
-        {{- with or .Values.splunk.ingest_api.serviceClientIdentifier }}
-        service_client_identifier {{ . }}
-        {{- end }}
-        {{- with or .Values.splunk.ingest_api.serviceClientSecretKey }}
-        service_client_secret_key {{ . }}
-        {{- end }}
-        {{- with or .Values.splunk.ingest_api.tokenEndpoint }}
-        token_endpoint {{ . }}
-        {{- end }}
-        {{- with or .Values.splunk.ingest_api.ingestAPIHost }}
-        ingest_api_host {{ . }}
-        {{- end }}
-        {{- with or .Values.splunk.ingest_api.tenant }}
-        ingest_api_tenant {{ . }}
-        {{- end }}
-        {{- with or .Values.splunk.ingest_api.eventsEndpoint }}
-        ingest_api_events_endpoint {{ . }}
-        {{- end }}
-        {{- with or .Values.splunk.ingest_api.debugIngestAPI }}
-        debug_http {{ . }}
-        {{- end }}
-        {{- end }}
         {{- if .Values.splunk.hec }}
         @type splunk_hec
         {{- with or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
@@ -278,6 +254,29 @@ data:
         {{- end }}
         {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
         ca_file /fluentd/etc/splunk/hec_ca_file
+        {{- end }}
+        {{ else }}
+        @type splunk_ingest_api
+        {{- with or .Values.splunk.ingest_api.serviceClientIdentifier }}
+        service_client_identifier {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.serviceClientSecretKey }}
+        service_client_secret_key {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.tokenEndpoint }}
+        token_endpoint {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.ingestAPIHost }}
+        ingest_api_host {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.tenant }}
+        ingest_api_tenant {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.eventsEndpoint }}
+        ingest_api_events_endpoint {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.debugIngestAPI }}
+        debug_http {{ . }}
         {{- end }}
         {{- end }}
         host "#{ENV['NODE_NAME']}"
