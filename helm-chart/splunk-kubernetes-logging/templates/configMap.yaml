@@ -34,10 +34,6 @@ data:
     </source>
 
     <source>
-      @type monitor_agent
-    </source>
-
-    <source>
       @type forward
     </source>
 
