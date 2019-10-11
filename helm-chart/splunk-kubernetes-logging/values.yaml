@@ -20,6 +20,7 @@ global:
       indexRoutingDefaultIndex:
   kubernetes:
     clusterName: "cluster_name"
+  prometheus_enabled: true
 
 
   # Override global Fluentd config path and exclude path.
