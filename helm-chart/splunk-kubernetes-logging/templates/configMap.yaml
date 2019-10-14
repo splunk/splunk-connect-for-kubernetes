@@ -228,6 +228,7 @@ data:
 
       # = output =
       <match **>
+        {{- if .Values.splunk.hec }}
         @type splunk_hec
         {{- with or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
         protocol {{ . }}
@@ -239,9 +240,6 @@ data:
         hec_port {{ . }}
         {{- end }}
         hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-        host "#{ENV['NODE_NAME']}"
-        source_key source
-        sourcetype_key sourcetype
         {{- if or .Values.splunk.hec.indexRouting .Values.global.splunk.hec.indexRouting }}
         index_key index
         {{- else }}
@@ -259,6 +257,33 @@ data:
         {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
         ca_file /fluentd/etc/splunk/hec_ca_file
         {{- end }}
+        {{ else }}
+        @type splunk_ingest_api
+        {{- with or .Values.splunk.ingest_api.serviceClientIdentifier }}
+        service_client_identifier {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.serviceClientSecretKey }}
+        service_client_secret_key {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.tokenEndpoint }}
+        token_endpoint {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.ingestAPIHost }}
+        ingest_api_host {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.tenant }}
+        ingest_api_tenant {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.eventsEndpoint }}
+        ingest_api_events_endpoint {{ . }}
+        {{- end }}
+        {{- with or .Values.splunk.ingest_api.debugIngestAPI }}
+        debug_http {{ . }}
+        {{- end }}
+        {{- end }}
+        host "#{ENV['NODE_NAME']}"
+        source_key source
+        sourcetype_key sourcetype
         <fields>
           # currently CRI does not produce log paths with all the necessary
           # metadata to parse out pod, namespace, container_name, container_id.

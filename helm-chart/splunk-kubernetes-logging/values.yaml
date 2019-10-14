@@ -97,6 +97,22 @@ splunk:
     indexRouting:
     # indexRoutingDefaultIndex tells which index to use for the default kubernetes namespace. Used with indexRouting. This value is required when using indexRouting.
     indexRoutingDefaultIndex:
+  # Configurations for Ingest API
+  ingest_api:
+    # serviceClientIdentifier is a string, the client identifier is used to make requests to the ingest API with authorization.
+    serviceClientIdentifier:
+    # serviceClientSecretKey is a string, the client identifier is used to make requests to the ingest API with authorization.
+    serviceClientSecretKey:
+    # tokenEndpoint is a string, it indicates which endpoint should be used to get the authorization token used to make requests to the ingest API.
+    tokenEndpoint:
+    # ingestAPIHost is a string, it indicates which url/hostname should be used to make requests to the ingest API.
+    ingestAPIHost:
+    # tenant is a string, it indicates which tenant should be used to make requests to the ingest API.
+    tenant:
+    # eventsEndpoint is a string, it indicates which endpoint should be used to make requests to the ingest API.
+    eventsEndpoint:
+    # debugIngestAPI is a boolean, it indicates whether user wants to debug requests and responses to ingest API. Default is false.
+    debugIngestAPI: false
 
 
 # Create or use existing secret if name is empty default name is used
