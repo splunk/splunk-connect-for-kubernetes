@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_test:
     docker:
       - image: circleci/ruby:2.6.1-node-browsers
     working_directory: ~/repo
@@ -98,10 +98,6 @@ jobs:
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
             helm init -c
       - run:
-          name: Update configurables to build artifacts
-          command: |
-            .circleci/update_sck_config_for_release.sh
-      - run:
           name: Build SCK artifacts
           command: |
             .circleci/build_sck_artifacts_for_release.sh
@@ -109,32 +105,45 @@ jobs:
           name: Push SCK artifacts to Github Release
           command: |
             .circleci/push_sck_release.sh
-      - run:
-          name: Deploy k8s connector
-          command: |
-            .circleci/deploy_connector_release.sh
-      - run:
-          name: Run functional tests
-          command: |
-            .circleci/run_functional_tests.sh
 
-# Need to add teardown step
+  check_version:
+    docker:
+      - image: circleci/ruby:2.6.1-node-browsers
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - checkout          
+      - setup_remote_docker:
+          reusable: true
+      - run:
+          name: Check VERSION file for change
+          command: |
+            .circleci/check_version_trigger_release.sh
 
 workflows:
   version: 2
-  build_perf-test:
+  build_test:
     jobs:
-      - build:
+      - build_test:
           filters:
             branches:
-              ignore: perf-testing
+              ignore: 
+                - perf-testing
+                - /^release\/.*/
+                - master
+      - check_version:
+          requires:
+            - build_test
+  perf-test:
+    jobs:
       - perf-test:
           filters:
             branches:
               only: perf-testing
+  release:
+    jobs:
       - release:
-          requires:
-          - build
           filters:
             branches:
-              only: release-testing
+              only: master
