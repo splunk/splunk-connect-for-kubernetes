@@ -4,8 +4,8 @@ global:
     hec:
       protocol: https
       insecureSSL: true
-      host: $SPLUNK_HEC_HOST
-      token: $SPLUNK_HEC_TOKEN
+      host: $CI_SPLUNK_HEC_HOST
+      token: $CI_SPLUNK_HEC_TOKEN
 
 splunk-kubernetes-logging:
   kubernetes:

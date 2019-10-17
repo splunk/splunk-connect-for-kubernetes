@@ -1,13 +1,76 @@
 version: 2
 jobs:
   build_test:
-    docker:
-      - image: circleci/ruby:2.6.1-node-browsers
+    resource_class: large
+    machine:
+      image: ubuntu-1604:201903-01
+    environment:
+      CHANGE_MINIKUBE_NONE_USER: true
+      GOPATH: /home/circleci/go
+      KUBECONFIG: /home/circleci/.kube/config
+      KUBERNETES_VERSION: v1.15.2
+      MINIKUBE_HOME: /home/circleci
+      MINIKUBE_VERSION: v1.2.0
+      MINIKUBE_WANTUPDATENOTIFICATION: false
+      MINIKUBE_WANTREPORTERRORPROMPT: false
+      SKAFFOLD_VERSION: v0.33.0
+      GO111MODULE: "on"
+      CI_SPLUNK_HEC_HOST: 127.0.0.1
+      CI_SPLUNK_HEC_TOKEN: aaaa-0000-bbbb-1111
+      CI_SPLUNK_HEC_HOST_PERF: 127.0.0.1
+      CI_SPLUNK_HEC_TOKEN_PERF: aaaa-0000-bbbb-1111
+      CI_SPLUNK_PASSWORD: helloworld
+      CI_HEC_PROTOCOL: http
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker:
-          reusable: true
+      - run:
+          name: Install kubectl
+          command: |
+            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin/
+            mkdir -p ${HOME}/.kube
+            touch ${HOME}/.kube/config
+      - run:
+          name: Install Minikube
+          command: |
+            curl -Lo minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64
+            chmod +x minikube
+            sudo mv minikube /usr/local/bin/        
+      - run:
+          name: Start Minikube
+          command: |
+            sudo -E minikube start --vm-driver=none --cpus 2 --memory 4098 --kubernetes-version=${KUBERNETES_VERSION}
+      - run:
+          name: Wait for Minikube
+          command: |
+            JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+            until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+              sleep 1;
+            done 
+      - run:
+          name: Install Splunk
+          command: |
+            cd /tmp && wget -O splunk-7.3.2-c60db69f8e32-linux-2.6-amd64.deb 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.3.2&product=splunk&filename=splunk-7.3.2-c60db69f8e32-linux-2.6-amd64.deb&wget=true'
+            sudo dpkg -i splunk-7.3.2-c60db69f8e32-linux-2.6-amd64.deb
+            # Set user seed
+            hashed_pwd=$(sudo /opt/splunk/bin/splunk hash-passwd $CI_SPLUNK_PASSWORD)
+            sudo tee /opt/splunk/etc/system/local/user-seed.conf > /dev/null << EOF
+            [user_info]
+            USERNAME = admin
+            HASHED_PASSWORD = $hashed_pwd
+            EOF
+            # start Splunk
+            sudo /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
+            # Enable HEC services
+            curl -X POST -u admin:$CI_SPLUNK_PASSWORD-k https://127.0.0.1:8089/servicesNS/nobody/splunk_httpinput/data/inputs/http/http/enable
+            # Create new HEC token
+            curl -X POST -u admin:$CI_SPLUNK_PASSWORD-k -d "name=splunk_hec_token&token=$SPLUNK_HEC_TOKEN" https://127.0.0.1:8089/servicesNS/nobody/splunk_httpinput/data/inputs/http
+            # Enable HEC new-token
+            sudo /opt/splunk/bin/splunk http-event-collector enable -name splunk_hec_token -uri https://127.0.0.1:8089 -auth admin:$CI_SPLUNK_PASSWORD
+            # Disable SSL for HEC new-token
+            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -enable-ssl 0 -auth admin:$CI_SPLUNK_PASSWORD
       - run:
           name: Install dependencies
           command: |
@@ -17,8 +80,6 @@ jobs:
             sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash -s -- --version v2.12.3
             helm init -c
-            echo "Installing aws cli..."
-            sudo pip install awscli > /dev/null 2>&1
       - run:
           name: Lint helm charts
           command: |
@@ -42,6 +103,7 @@ jobs:
       - run:
           name: Run functional tests
           command: |
+            pyenv global 3.6.5
             .circleci/run_functional_tests.sh
       - run:
           name:  Teardown deployment

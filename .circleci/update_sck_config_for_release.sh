@@ -12,8 +12,8 @@ sudo mv yq_linux_amd64 /usr/local/bin/yq
 
 # setup necessary for functional tests
 # Modify splunk environment values
-yq w -i .circleci/sck_values.yml global.splunk.hec.host $SPLUNK_HEC_HOST
-yq w -i .circleci/sck_values.yml global.splunk.hec.token $SPLUNK_HEC_TOKEN
+yq w -i .circleci/sck_values.yml global.splunk.hec.host $CI_SPLUNK_HEC_HOST
+yq w -i .circleci/sck_values.yml global.splunk.hec.token $CI_SPLUNK_HEC_TOKEN
 
 # Pull docker images locally
 docker pull splunk/fluentd-hec:$FLUENTD_HEC_VERSION

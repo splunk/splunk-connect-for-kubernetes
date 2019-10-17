@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+yq#!/usr/bin/env bash
 set -e
 TAG=`cat VERSION`
 
