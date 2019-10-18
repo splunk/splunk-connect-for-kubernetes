@@ -71,6 +71,10 @@ jobs:
             sudo /opt/splunk/bin/splunk http-event-collector enable -name splunk_hec_token -uri https://127.0.0.1:8089 -auth admin:$CI_SPLUNK_PASSWORD
             # Disable SSL for HEC new-token
             sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -enable-ssl 0 -auth admin:$CI_SPLUNK_PASSWORD
+            # Setup Indexes
+            sudo /opt/splunk/bin/splunk add index circleci_events -auth admin:helloworld
+            sudo /opt/splunk/bin/splunk add index circleci_objects -auth admin:helloworld
+            sudo /opt/splunk/bin/splunk add index circleci_metrics -datatype metric -auth admin:helloworld
       - run:
           name: Install dependencies
           command: |
@@ -104,6 +108,8 @@ jobs:
           name: Run functional tests
           command: |
             pyenv global 3.6.5
+            pip install --upgrade pip
+            pip install -r test/requirements.txt
             .circleci/run_functional_tests.sh
       - run:
           name:  Teardown deployment
