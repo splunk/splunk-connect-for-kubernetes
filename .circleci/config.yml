@@ -16,9 +16,9 @@ jobs:
       SKAFFOLD_VERSION: v0.33.0
       GO111MODULE: "on"
       CI_SPLUNK_HEC_HOST: 127.0.0.1
-      CI_SPLUNK_HEC_TOKEN: aaaa-0000-bbbb-1111
+      CI_SPLUNK_HEC_TOKEN: a6b5e77f-d5f6-415a-bd43-930cecb12959
       CI_SPLUNK_HEC_HOST_PERF: 127.0.0.1
-      CI_SPLUNK_HEC_TOKEN_PERF: aaaa-0000-bbbb-1111
+      CI_SPLUNK_HEC_TOKEN_PERF: a6b5e77f-d5f6-415a-bd43-930cecb12959
       CI_SPLUNK_PASSWORD: helloworld
       CI_HEC_PROTOCOL: http
     working_directory: ~/repo
@@ -45,7 +45,7 @@ jobs:
       - run:
           name: Wait for Minikube
           command: |
-            JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+            export JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
             until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
               sleep 1;
             done 
@@ -61,6 +61,7 @@ jobs:
             USERNAME = admin
             HASHED_PASSWORD = $hashed_pwd
             EOF
+            cat /opt/splunk/etc/system/local/user-seed.conf
             # start Splunk
             sudo /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
             # Enable HEC services
@@ -72,9 +73,9 @@ jobs:
             # Disable SSL for HEC new-token
             sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -enable-ssl 0 -auth admin:$CI_SPLUNK_PASSWORD
             # Setup Indexes
-            sudo /opt/splunk/bin/splunk add index circleci_events -auth admin:helloworld
-            sudo /opt/splunk/bin/splunk add index circleci_objects -auth admin:helloworld
-            sudo /opt/splunk/bin/splunk add index circleci_metrics -datatype metric -auth admin:helloworld
+            sudo /opt/splunk/bin/splunk add index circleci_events -auth admin:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk add index circleci_objects -auth admin:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk add index circleci_metrics -datatype metric -auth admin:$CI_SPLUNK_PASSWORD
       - run:
           name: Install dependencies
           command: |
