@@ -8,7 +8,7 @@ until kubectl get pod --all-namespaces | grep tiller | grep -q "1\/1"; do
 done 
 #Make sure to check and clean previously failed deployment
 echo "Checking if previous deployment exist..."
-if [ "`helm ls`" == "" ]; thenx  
+if [ "`helm ls`" == "" ]; then
    echo "Nothing to clean, ready for deployment"
 else
    helm delete --purge $(helm ls --short)

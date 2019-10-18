@@ -20,7 +20,7 @@ jobs:
       CI_SPLUNK_HEC_HOST_PERF: 127.0.0.1
       CI_SPLUNK_HEC_TOKEN_PERF: a6b5e77f-d5f6-415a-bd43-930cecb12959
       CI_SPLUNK_PASSWORD: helloworld
-      CI_HEC_PROTOCOL: http
+      CI_HEC_PROTOCOL: https
     working_directory: ~/repo
     steps:
       - checkout
