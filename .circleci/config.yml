@@ -67,7 +67,7 @@ jobs:
             # Enable HEC services
             curl -X POST -u admin:$CI_SPLUNK_PASSWORD -k https://127.0.0.1:8089/servicesNS/nobody/splunk_httpinput/data/inputs/http/http/enable
             # Create new HEC token
-            curl -X POST -u admin:$CI_SPLUNK_PASSWORD -k -d "name=splunk_hec_token&token=$SPLUNK_HEC_TOKEN" https://127.0.0.1:8089/servicesNS/nobody/splunk_httpinput/data/inputs/http
+            curl -X POST -u admin:$CI_SPLUNK_PASSWORD -k -d "name=splunk_hec_token&token=$CI_SPLUNK_HEC_TOKEN" https://127.0.0.1:8089/servicesNS/nobody/splunk_httpinput/data/inputs/http
             # Enable HEC new-token
             sudo /opt/splunk/bin/splunk http-event-collector enable -name splunk_hec_token -uri https://127.0.0.1:8089 -auth admin:$CI_SPLUNK_PASSWORD
             # Disable SSL for HEC new-token
@@ -108,9 +108,6 @@ jobs:
       - run:
           name: Run functional tests
           command: |
-            pyenv global 3.6.5
-            pip install --upgrade pip
-            pip install -r test/requirements.txt
             .circleci/run_functional_tests.sh
       - run:
           name:  Teardown deployment
