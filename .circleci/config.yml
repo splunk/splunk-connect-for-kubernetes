@@ -15,40 +15,15 @@ jobs:
       MINIKUBE_WANTREPORTERRORPROMPT: false
       SKAFFOLD_VERSION: v0.33.0
       GO111MODULE: "on"
-      CI_SPLUNK_HEC_HOST: 127.0.0.1
+      CI_SPLUNK_HEC_HOST: 10.0.2.2
       CI_SPLUNK_HEC_TOKEN: a6b5e77f-d5f6-415a-bd43-930cecb12959
-      CI_SPLUNK_HEC_HOST_PERF: 127.0.0.1
+      CI_SPLUNK_HEC_HOST_PERF: 10.0.2.2
       CI_SPLUNK_HEC_TOKEN_PERF: a6b5e77f-d5f6-415a-bd43-930cecb12959
       CI_SPLUNK_PASSWORD: helloworld
-      CI_HEC_PROTOCOL: https
+      CI_HEC_PROTOCOL: http
     working_directory: ~/repo
     steps:
       - checkout
-      - run:
-          name: Install kubectl
-          command: |
-            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl
-            chmod +x kubectl
-            sudo mv kubectl /usr/local/bin/
-            mkdir -p ${HOME}/.kube
-            touch ${HOME}/.kube/config
-      - run:
-          name: Install Minikube
-          command: |
-            curl -Lo minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64
-            chmod +x minikube
-            sudo mv minikube /usr/local/bin/        
-      - run:
-          name: Start Minikube
-          command: |
-            sudo -E minikube start --vm-driver=none --cpus 2 --memory 4098 --kubernetes-version=${KUBERNETES_VERSION}
-      - run:
-          name: Wait for Minikube
-          command: |
-            export JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
-            until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
-              sleep 1;
-            done 
       - run:
           name: Install Splunk
           command: |
@@ -76,6 +51,35 @@ jobs:
             sudo /opt/splunk/bin/splunk add index circleci_events -auth admin:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index circleci_objects -auth admin:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index circleci_metrics -datatype metric -auth admin:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -name splunk_hec_token -auth admin:$CI_SPLUNK_PASSWORD -index circleci_metrics -indexes circleci_metrics,circleci_objects,circleci_events
+            # Restart Splunk
+            sudo /opt/splunk/bin/splunk restart --accept-license --answer-yes --no-prompt
+
+      - run:
+          name: Install kubectl
+          command: |
+            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin/
+            mkdir -p ${HOME}/.kube
+            touch ${HOME}/.kube/config
+      - run:
+          name: Install Minikube
+          command: |
+            curl -Lo minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64
+            chmod +x minikube
+            sudo mv minikube /usr/local/bin/        
+      - run:
+          name: Start Minikube
+          command: |
+            sudo -E minikube start --vm-driver=none --cpus 2 --memory 4098 --kubernetes-version=${KUBERNETES_VERSION}
+      - run:
+          name: Wait for Minikube
+          command: |
+            export JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
+            until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+              sleep 1;
+            done 
       - run:
           name: Install dependencies
           command: |
@@ -108,11 +112,9 @@ jobs:
       - run:
           name: Run functional tests
           command: |
+            pyenv global 3.6.5
+            pip install -r test/requirements.txt
             .circleci/run_functional_tests.sh
-      - run:
-          name:  Teardown deployment
-          command: |
-            helm delete --purge ci-$CIRCLE_SHA1
 
   perf-test:
     docker:
@@ -209,7 +211,11 @@ workflows:
               only: perf-testing
   release:
     jobs:
-      - release:
+      - build_test:
           filters:
             branches:
-              only: master
+              only: 
+                - master
+      - release:
+          requires:
+            - build_test
