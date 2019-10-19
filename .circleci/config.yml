@@ -15,9 +15,7 @@ jobs:
       MINIKUBE_WANTREPORTERRORPROMPT: false
       SKAFFOLD_VERSION: v0.33.0
       GO111MODULE: "on"
-      CI_SPLUNK_HEC_HOST: 10.0.2.2
       CI_SPLUNK_HEC_TOKEN: a6b5e77f-d5f6-415a-bd43-930cecb12959
-      CI_SPLUNK_HEC_HOST_PERF: 10.0.2.2
       CI_SPLUNK_HEC_TOKEN_PERF: a6b5e77f-d5f6-415a-bd43-930cecb12959
       CI_SPLUNK_PASSWORD: helloworld
       CI_HEC_PROTOCOL: http
@@ -96,6 +94,8 @@ jobs:
       - run:
           name: Update configurables to build artifacts
           command: |
+            export CI_SPLUNK_HEC_HOST=$(hostname -i)
+            export CI_SPLUNK_HEC_HOST_PERF=$(hostname -i)
             .circleci/update_sck_config.sh
       - run:
           name: Build SCK artifacts
