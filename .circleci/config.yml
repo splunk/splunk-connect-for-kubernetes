@@ -34,7 +34,6 @@ jobs:
             USERNAME = admin
             HASHED_PASSWORD = $hashed_pwd
             EOF
-            cat /opt/splunk/etc/system/local/user-seed.conf
             # start Splunk
             sudo /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
             # Enable HEC services
@@ -95,7 +94,6 @@ jobs:
           name: Update configurables to build artifacts
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
-            export CI_SPLUNK_HEC_HOST_PERF=$(hostname -i)
             .circleci/update_sck_config.sh
       - run:
           name: Build SCK artifacts
@@ -112,6 +110,7 @@ jobs:
       - run:
           name: Run functional tests
           command: |
+            export CI_SPLUNK_HEC_HOST=$(hostname -i)
             pyenv global 3.6.5
             pip install -r test/requirements.txt
             .circleci/run_functional_tests.sh
