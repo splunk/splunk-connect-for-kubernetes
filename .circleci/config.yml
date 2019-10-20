@@ -94,6 +94,7 @@ jobs:
           name: Update configurables to build artifacts
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
+            export CI_SPLUNK_HEC_HOST_PERF=$(hostname -i)
             .circleci/update_sck_config.sh
       - run:
           name: Build SCK artifacts
