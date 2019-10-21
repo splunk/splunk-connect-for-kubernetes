@@ -54,7 +54,9 @@ jobs:
             sudo /opt/splunk/bin/splunk add index circleci_objects -auth admin:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index circleci_metrics -datatype metric -auth admin:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index kube-system -auth admin:$CI_SPLUNK_PASSWORD
-            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -name splunk_hec_token -auth admin:$CI_SPLUNK_PASSWORD -index circleci_metrics -indexes circleci_metrics,circleci_objects,circleci_events,kube-system
+            sudo /opt/splunk/bin/splunk add index kube-public -auth admin:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk add index test-namespace-routing -auth admin:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -name splunk_hec_token -auth admin:$CI_SPLUNK_PASSWORD -index circleci_metrics -indexes circleci_metrics,circleci_objects,circleci_events,kube-system,test-namespace-routing,kube-public
             # Restart Splunk
             sudo /opt/splunk/bin/splunk restart --accept-license --answer-yes --no-prompt
       - run:
