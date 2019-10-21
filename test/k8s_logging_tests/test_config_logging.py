@@ -144,7 +144,7 @@ def test_namespace_routing(setup, test_input, expected):
     ("kube:container:splunk-fluentd-k8s-metrics-agg", 1),
     ("kube:container:splunk-fluentd-k8s-metrics", 1),
     ("kube:container:splunk-fluentd-k8s-logs", 1),
-    ("kube:coredns", 1),
+    # ("kube:dns-controller", 1),
     ("kube:etcd", 1),
     ("kube:container:splunk-fluentd-k8s-objects", 1),
     ("kube:container:tiller", 1),

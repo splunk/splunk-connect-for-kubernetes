@@ -87,6 +87,10 @@ jobs:
             sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash -s -- --version v2.12.3
             helm init -c
+            docker pull chaitanyaphalak/kafkadatagen:1.0-4-gca7f6d8
+            pyenv global 3.6.5
+            pip install --upgrade pip
+            pip install -r test/requirements.txt
       - run:
           name: Lint helm charts
           command: |
@@ -115,7 +119,6 @@ jobs:
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             pyenv global 3.6.5
             export PYTHONWARNINGS="ignore:Unverified HTTPS request"
-            pip install -r test/requirements.txt
             .circleci/run_functional_tests.sh
 
   perf-test:

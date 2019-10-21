@@ -203,6 +203,14 @@ logs:
       regexp: (?<time>\d{4}-\d{2}-\d{2} [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
       format: "%Y-%m-%d %H:%M:%S.%N"
     sourcetype: kube:etcd
+  etcd-minikube:
+    from:
+      pod: etcd-minikube
+      container: etcd
+    timestampExtraction:
+      regexp: (?<time>\d{4}-\d{2}-\d{2} [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
+      format: "%Y-%m-%d %H:%M:%S.%N"
+    sourcetype: kube:etcd
   etcd-events:
     from:
       pod: etcd-server-events
@@ -247,6 +255,11 @@ logs:
       pod: kube-dns
       container: sidecar
     sourcetype: kube:kubedns-sidecar
+  dns-minikube:
+    <<: *glog
+    from:
+      container: coredns
+    sourcetype: kube:dns-controller
   dns-controller:
     <<: *glog
     from:
