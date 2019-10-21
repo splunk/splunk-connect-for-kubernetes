@@ -256,8 +256,8 @@ logs:
       container: sidecar
     sourcetype: kube:kubedns-sidecar
   dns-minikube:
-    <<: *glog
     from:
+      pod: coredns
       container: coredns
     sourcetype: kube:dns-controller
   dns-controller:
