@@ -140,15 +140,15 @@ def test_namespace_routing(setup, test_input, expected):
     assert len(events) > 0
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("kube:kube-apiserver", 1),
+    ("kube:kube-apiserver-minikube", 1),
     ("kube:container:splunk-fluentd-k8s-metrics-agg", 1),
     ("kube:container:splunk-fluentd-k8s-metrics", 1),
     ("kube:container:splunk-fluentd-k8s-logs", 1),
-    ("kube:dns-controller", 1),
-    ("kube:etcd", 1),
+    ("kube:coredns-*", 1),
+    ("kube:etcd-minikube", 1),
     ("kube:container:splunk-fluentd-k8s-objects", 1),
-    ("kube:container:tiller", 1),
-    ("kube:kube-controller-manager", 1)
+    ("kube:container:tiller-*", 1),
+    ("kube:kube-controller-manager-minikube", 1)
 ])
 def test_sourcetype(setup, test_input, expected):
     '''
@@ -166,10 +166,10 @@ def test_sourcetype(setup, test_input, expected):
     assert len(events) >= expected
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("/var/log/containers/kube-apiserver-ip*", 1),
+    ("/var/log/containers/kube-apiserver-*", 1),
     ("/var/log/containers/ci*", 1),
-    ("/var/log/containers/dns-controller*", 1),
-    ("/var/log/containers/etcd-server-ip*", 1)
+    ("/var/log/containers/coredns*", 1),
+    ("/var/log/containers/etcd-*", 1)
 ])
 def test_source(setup, test_input, expected):
     '''

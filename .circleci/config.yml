@@ -34,6 +34,11 @@ jobs:
             USERNAME = admin
             HASHED_PASSWORD = $hashed_pwd
             EOF
+            # Add delete capability to admin role
+            sudo tee -a /opt/splunk/etc/system/local/authorize.conf > /dev/null << EOF
+            [role_admin]
+            delete_by_keyword = enabled
+            EOF
             # start Splunk
             sudo /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt
             # Enable HEC services
@@ -48,31 +53,25 @@ jobs:
             sudo /opt/splunk/bin/splunk add index circleci_events -auth admin:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index circleci_objects -auth admin:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index circleci_metrics -datatype metric -auth admin:$CI_SPLUNK_PASSWORD
-            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -name splunk_hec_token -auth admin:$CI_SPLUNK_PASSWORD -index circleci_metrics -indexes circleci_metrics,circleci_objects,circleci_events
+            sudo /opt/splunk/bin/splunk add index kube-system -auth admin:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://127.0.0.1:8089 -name splunk_hec_token -auth admin:$CI_SPLUNK_PASSWORD -index circleci_metrics -indexes circleci_metrics,circleci_objects,circleci_events,kube-system
             # Restart Splunk
             sudo /opt/splunk/bin/splunk restart --accept-license --answer-yes --no-prompt
-
       - run:
-          name: Install kubectl
+          name: Install and Start minikube
           command: |
+            # Install Kubectl
             curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl
             chmod +x kubectl
             sudo mv kubectl /usr/local/bin/
             mkdir -p ${HOME}/.kube
             touch ${HOME}/.kube/config
-      - run:
-          name: Install Minikube
-          command: |
+            # Install Minikube
             curl -Lo minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64
             chmod +x minikube
-            sudo mv minikube /usr/local/bin/        
-      - run:
-          name: Start Minikube
-          command: |
+            sudo mv minikube /usr/local/bin/  
+            # Start Minikube and Wait
             sudo -E minikube start --vm-driver=none --cpus 2 --memory 4098 --kubernetes-version=${KUBERNETES_VERSION}
-      - run:
-          name: Wait for Minikube
-          command: |
             export JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
             until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
               sleep 1;
@@ -91,19 +90,19 @@ jobs:
           command: |
             .circleci/lint.sh
       - run:
-          name: Update configurables to build artifacts
+          name: Build SCK artifacts
+          command: |
+            .circleci/build_sck_artifacts.sh
+      # - run:
+      #     name: Push SCK artifacts to s3
+      #     command: |
+      #       .circleci/push_sck_artifacts.sh
+      - run:
+          name: Update configurables for unit test
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             export CI_SPLUNK_HEC_HOST_PERF=$(hostname -i)
             .circleci/update_sck_config.sh
-      - run:
-          name: Build SCK artifacts
-          command: |
-            .circleci/build_sck_artifacts.sh
-      - run:
-          name: Push SCK artifacts to s3
-          command: |
-            .circleci/push_sck_artifacts.sh
       - run:
           name: Deploy k8s connector
           command: |
@@ -113,6 +112,7 @@ jobs:
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             pyenv global 3.6.5
+            export PYTHONWARNINGS="ignore:Unverified HTTPS request"
             pip install -r test/requirements.txt
             .circleci/run_functional_tests.sh
 
