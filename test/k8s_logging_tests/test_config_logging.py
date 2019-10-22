@@ -166,10 +166,10 @@ def test_sourcetype(setup, test_input, expected):
     assert len(events) >= expected
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("/var/log/containers/kube-apiserver-ip*", 1),
+    ("/var/log/containers/kube-apiserver-*", 1),
     ("/var/log/containers/ci*", 1),
-    ("/var/log/containers/dns-controller*", 1),
-    ("/var/log/containers/etcd-server-ip*", 1)
+    ("/var/log/containers/coredns*", 1),
+    ("/var/log/containers/etcd-*", 1)
 ])
 def test_source(setup, test_input, expected):
     '''

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
-TAG="1.1.0.Alpha-${CIRCLE_SHA1}"
+VERSION=`cat VERSION`
+TAG="$VERSION-${CIRCLE_SHA1}"
 
 function replace_generic_version ()
 {
