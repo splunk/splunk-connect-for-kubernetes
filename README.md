@@ -2,7 +2,7 @@
 [![CircleCI](https://circleci.com/gh/git-lfs/git-lfs.svg?style=shield&circle-token=856152c2b02bfd236f54d21e1f581f3e4ebf47ad)](https://circleci.com/gh/splunk/splunk-connect-for-kubernetes)
 # What does Splunk Connect for Kubernetes do?
 
-Splunk Connect for Kubernetes provides a way to import and search your Kubernetes logging, object, and metrics data in Splunk. Splunk is a proud contributor to Cloud Native Computing Foundation (CNCF) and Splunk Connect for Kubernetes utilizes and supports multiple CNCF components in the development of these tools to get data into Splunk.
+Splunk Connect for Kubernetes provides a way to import and search your Kubernetes logging, object, and metrics data in Splunk. Now, Splunk Connect for Kubenetes also supports [importing and searching your container logs on AWS ECS and AWS Fargate using firelens.](https://github.com/splunk/splunk-connect-for-kubernetes/tree/develop/firelens) Splunk is a proud contributor to Cloud Native Computing Foundation (CNCF) and Splunk Connect for Kubernetes utilizes and supports multiple CNCF components in the development of these tools to get data into Splunk.
 
 
 ## Prerequisites
