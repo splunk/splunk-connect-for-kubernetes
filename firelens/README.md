@@ -48,7 +48,7 @@ Store this `fluent.conf` in an S3 bucket to be used in the next step.
 ```json
 {
    "essential":true,
-   "image":"splunk/fluentd-hec:firelens-1.0",
+   "image":"splunk/fluentd-hec:1.2.0",
    "name":"log_router",
    "firelensConfiguration":{
       "type":"fluentd",
@@ -89,7 +89,7 @@ This results in a container definition as follows:
 ```json
 {
    "essential":true,
-   "image":"splunk/fluentd-hec:firelens-1.0",
+   "image":"splunk/fluentd-hec:1.2.0",
    "name":"log_router",
    "firelensConfiguration":{
       "type":"fluentd",
@@ -117,7 +117,7 @@ Following is an example task definition with an nginx web server accessible on p
    "containerDefinitions":[
       {
          "essential":true,
-         "image":"splunk/fluentd-hec:firelens-1.0",
+         "image":"splunk/fluentd-hec:1.2.0",
          "name":"log_router",
          "firelensConfiguration":{
             "type":"fluentd",
