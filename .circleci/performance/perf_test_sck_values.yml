@@ -2,10 +2,10 @@ global:
   logLevel: info
   splunk:
     hec:
-      host: $SPLUNK_HEC_HOST_PERF
+      host: $CI_SPLUNK_HEC_HOST_PERF
       insecureSSL: true
       protocol: http
-      token: $SPLUNK_HEC_TOKEN_PERF
+      token: $CI_SPLUNK_HEC_TOKEN_PERF
 splunk-kubernetes-logging:
   image:
     pullPolicy: Always
