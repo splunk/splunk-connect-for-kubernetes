@@ -14,12 +14,38 @@ data:
     @include source.journald.conf
     @include monit.conf
     @include output.conf
+    @include prometheus.conf
   system.conf: |-
     # system wide configurations
     <system>
       log_level info
       root_dir /tmp/fluentd
     </system>
+  prometheus.conf: |-
+    # input plugin that exports metrics
+    <source>
+      @type prometheus
+    </source>
+
+    <source>
+      @type forward
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent
+    <source>
+      @type prometheus_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+
+    # input plugin that collects metrics for output plugin
+    <source>
+      @type prometheus_output_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
   source.containers.conf: |-
     # This configuration file for Fluentd / td-agent is used
     # to watch changes to Docker log files. The kubelet creates symlinks that

@@ -15,6 +15,9 @@ data:
     @include source.journald.conf
     @include monit.conf
     @include output.conf
+    {{- if .Values.global.prometheus_enabled }}
+    @include prometheus.conf
+    {{- end }}
 
   system.conf: |-
     # system wide configurations
@@ -22,6 +25,34 @@ data:
       log_level {{ or .Values.logLevel .Values.global.logLevel }}
       root_dir /tmp/fluentd
     </system>
+
+  {{- if .Values.global.prometheus_enabled }}
+  prometheus.conf: |-
+    # input plugin that exports metrics
+    <source>
+      @type prometheus
+    </source>
+
+    <source>
+      @type forward
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent
+    <source>
+      @type prometheus_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+
+    # input plugin that collects metrics for output plugin
+    <source>
+      @type prometheus_output_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+  {{- end }}
 
   source.containers.conf: |-
     # This configuration file for Fluentd / td-agent is used

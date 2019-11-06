@@ -16,7 +16,9 @@ spec:
       labels:
         app: splunk-kubernetes-logging
         version: 1.2.0
-      annotations: {}
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '24231'
     spec:
       tolerations:
       - effect: NoSchedule
