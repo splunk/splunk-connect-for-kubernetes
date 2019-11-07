@@ -214,6 +214,9 @@ workflows:
       - check_version:
           requires:
             - build_test
+          filters:
+            branches:
+              only: develop
   perf-test:
     jobs:
       - perf-test:
