@@ -125,6 +125,7 @@ jobs:
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             pyenv global 3.6.5
             export PYTHONWARNINGS="ignore:Unverified HTTPS request"
+            sleep 30
             .circleci/run_functional_tests.sh
 
   perf-test:
@@ -214,6 +215,9 @@ workflows:
       - check_version:
           requires:
             - build_test
+          filters:
+            branches:
+              only: develop
   perf-test:
     jobs:
       - perf-test:
