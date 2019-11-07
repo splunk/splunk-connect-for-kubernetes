@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.2.0
+    version: 1.3.0
 data:
   fluent.conf: |-
     @include system.conf
@@ -14,12 +14,38 @@ data:
     @include source.journald.conf
     @include monit.conf
     @include output.conf
+    @include prometheus.conf
   system.conf: |-
     # system wide configurations
     <system>
       log_level info
       root_dir /tmp/fluentd
     </system>
+  prometheus.conf: |-
+    # input plugin that exports metrics
+    <source>
+      @type prometheus
+    </source>
+
+    <source>
+      @type forward
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent
+    <source>
+      @type prometheus_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+
+    # input plugin that collects metrics for output plugin
+    <source>
+      @type prometheus_output_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
   source.containers.conf: |-
     # This configuration file for Fluentd / td-agent is used
     # to watch changes to Docker log files. The kubelet creates symlinks that
@@ -47,14 +73,31 @@ data:
       read_from_head true
       <parse>
         @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
         time_key time
         time_type string
-        time_format %Y-%m-%dT%H:%M:%S.%NZ
         localtime false
       </parse>
     </source>
-  source.files.conf: "# This fluentd conf file contains sources for log files other
-    than container logs."
+  source.files.conf: |-
+    # This fluentd conf file contains sources for log files other than container logs.
+    <source>
+      @id tail.file.kube-audit
+      @type tail
+      @label @SPLUNK
+      tag tail.file.kube:apiserver-audit
+      path /var/log/kube-apiserver-audit.log
+      pos_file /var/log/splunk-fluentd-kube-audit.pos
+      read_from_head true
+      path_key source
+      <parse>
+        @type regexp
+        expression /^(?<log>.*)$/
+        time_key time
+        time_type string
+        time_format %Y-%m-%dT%H:%M:%SZ
+      </parse>
+    </source>
   source.journald.conf: |-
     # This fluentd conf file contains configurations for reading logs from systemd journal.
     <source>
@@ -63,7 +106,7 @@ data:
       @label @SPLUNK
       tag journald.kube:docker
       path "/run/log/journal"
-      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+      matches [{ "_SYSTEMD_UNIT": "docker.service" }]
       read_from_head true
       <storage>
         @type local
@@ -81,7 +124,7 @@ data:
       @label @SPLUNK
       tag journald.kube:kubelet
       path "/run/log/journal"
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       read_from_head true
       <storage>
         @type local
@@ -110,6 +153,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-dns*sidecar*.log>
         @type concat
@@ -118,6 +163,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-dns*dnsmasq*.log>
         @type concat
@@ -126,6 +173,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-apiserver*kube-apiserver*.log>
         @type concat
@@ -134,6 +183,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-controller-manager*kube-controller-manager*.log>
         @type concat
@@ -142,6 +193,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-dns-autoscaler*autoscaler*.log>
         @type concat
@@ -150,6 +203,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-proxy*kube-proxy*.log>
         @type concat
@@ -158,6 +213,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-scheduler*kube-scheduler*.log>
         @type concat
@@ -166,6 +223,8 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
       <filter tail.containers.var.log.containers.kube-dns*kubedns*.log>
         @type concat
@@ -174,13 +233,17 @@ data:
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
         flush_interval 5s
+        separator ""
+        use_first_timestamp true
       </filter>
 
       # extract index fields and sourcetype for container logs
       <filter tail.containers.**>
         @type jq_transformer
-        jq "def find_sourcetype(pod; container_name): container_name + \"/\" + pod | if startswith(\"dns-controller/dns-controller\") then \"kube:dns-controller\" elif startswith(\"sidecar/kube-dns\") then \"kube:kubedns-sidecar\" elif startswith(\"dnsmasq/kube-dns\") then \"kube:dnsmasq\" elif startswith(\"etcd-container/etcd-server\") then \"kube:etcd\" elif startswith(\"etcd-container/etcd-server-events\") then \"kube:etcd-events\" elif startswith(\"kube-apiserver/kube-apiserver\") then \"kube:kube-apiserver\" elif startswith(\"kube-controller-manager/kube-controller-manager\") then \"kube:kube-controller-manager\" elif startswith(\"autoscaler/kube-dns-autoscaler\") then \"kube:kube-dns-autoscaler\" elif startswith(\"kube-proxy/kube-proxy\") then \"kube:kube-proxy\" elif startswith(\"kube-scheduler/kube-scheduler\") then \"kube:kube-scheduler\" elif startswith(\"kubedns/kube-dns\") then \"kube:kubedns\" else empty end;  def set_namespace(value): if value == \"default\" then \"main\"else value end;  def extract_container_info:   (.source | ltrimstr(\"/var/log/containers/\") | split(\"_\")) as $parts   | ($parts[-1] | split(\"-\")) as $cparts   | .pod = $parts[0]   | .namespace = set_namespace($parts[1])   | .container_name = ($cparts[:-1] | join(\"-\"))   | .container_id = ($cparts[-1] | rtrimstr(\".log\"))   | .cluster_name = \"cluster_name\"   | .;  .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // \"kube:container:\\(.container_name)\")"
+        jq "def find_sourcetype(pod; container_name): container_name + \"/\" + pod | if startswith(\"dns-controller/dns-controller\") then \"kube:dns-controller\" elif startswith(\"coredns/coredns\") then \"kube:dns-controller\" elif startswith(\"sidecar/kube-dns\") then \"kube:kubedns-sidecar\" elif startswith(\"dnsmasq/kube-dns\") then \"kube:dnsmasq\" elif startswith(\"etcd-container/etcd-server\") then \"kube:etcd\" elif startswith(\"etcd-container/etcd-server-events\") then \"kube:etcd-events\" elif startswith(\"etcd/etcd-minikube\") then \"kube:etcd\" elif startswith(\"kube-apiserver/kube-apiserver\") then \"kube:kube-apiserver\" elif startswith(\"kube-controller-manager/kube-controller-manager\") then \"kube:kube-controller-manager\" elif startswith(\"autoscaler/kube-dns-autoscaler\") then \"kube:kube-dns-autoscaler\" elif startswith(\"kube-proxy/kube-proxy\") then \"kube:kube-proxy\" elif startswith(\"kube-scheduler/kube-scheduler\") then \"kube:kube-scheduler\" elif startswith(\"kubedns/kube-dns\") then \"kube:kubedns\" else empty end;  def set_index(value): if value == \"default\" then \"main\"else value end;  def extract_container_info:   (.source | ltrimstr(\"/var/log/containers/\") | split(\"_\")) as $parts   | ($parts[-1] | split(\"-\")) as $cparts   | .pod = $parts[0]   | .namespace = $parts[1]   | .index = set_index($parts[1])   | .container_name = ($cparts[:-1] | join(\"-\"))   | .container_id = ($cparts[-1] | rtrimstr(\".log\"))   | .cluster_name = \"cluster_name\"   | .;  .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // \"kube:container:\\(.container_name)\")"
       </filter>
+
+      # extract pod_uid and container_name for CRIO runtime
 
       # = filters for journald logs =
       <filter journald.kube:kubelet>
@@ -194,29 +257,34 @@ data:
       # create source and sourcetype
       <filter journald.**>
         @type jq_transformer
-        jq '.record.source = "/run/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record'
+        jq '.record.source = "/run/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "cluster_name" | .record'
       </filter>
 
       # = filters for non-container log files =
+      # extract sourcetype
+      <filter tail.file.**>
+        @type jq_transformer
+        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record'
+      </filter>
 
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
-        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record"
+        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"cluster_name\" | .record"
       </filter>
+
+      # = custom filters specified by users =
 
       # = output =
       <match **>
-        @type splunk_hec
-        protocol https
-        hec_host MY-SPLUNK-HOST
-        hec_port 8088
-        hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-        host "#{ENV['SPLUNK_HEC_HOST']}"
+        @type splunk_ingest_api
+        host "#{ENV['NODE_NAME']}"
         source_key source
         sourcetype_key sourcetype
-        insecure_ssl true
         <fields>
+          # currently CRI does not produce log paths with all the necessary
+          # metadata to parse out pod, namespace, container_name, container_id.
+          # this may be resolved in the future by this issue: https://github.com/kubernetes/kubernetes/issues/58638#issuecomment-385126031
           pod
           namespace
           container_name

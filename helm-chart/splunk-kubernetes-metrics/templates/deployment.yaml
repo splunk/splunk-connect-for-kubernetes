@@ -41,8 +41,13 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-metrics
-        image: {{ .Values.image.name }}
+        image: {{ template "splunk-kubernetes-metrics.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if or .Values.global.kubernetes.openshift .Values.kubernetes.openshift }}
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        {{- end }}
         env:
           - name: KUBERNETES_NODE_IP
             valueFrom:
@@ -72,3 +77,6 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-metrics.secret" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}

@@ -1,15 +1,16 @@
-# Default values for splunk-kubernetes-logging.
+# Default values for splunk-kubernetes-metrics.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 
-# = Global Configs =
-# Allow to pass config values from parent chart using `global.*`.
-# Global values have lower priority.
-# Values defined here are the default values.
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
 global:
   logLevel: info
+  # If local splunk configurations are not present, the global ones will be used (if available)
   splunk:
+    # It has exactly the same configs as splunk.hec does
     hec:
       port: 8088
       protocol: https
@@ -42,6 +43,9 @@ serviceAccount:
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+  # This flag specifies if the user wants to use a secret for creating the serviceAccount,
+  # which will be used to get the images from a private registry
+  usePullSecrets: false
 
 
 # = Splunk HEC Connection =
@@ -80,16 +84,39 @@ secret:
   name:
 
 
+# Defines which version of image to use, and how it should be pulled.
 image:
-  name: splunk/k8s-metrics:1.1.1
+  # The domain of the registry to pull the image from
+  registry: docker.io
+  # The name of the image to pull
+  name: splunk/k8s-metrics
+  # The tag of the image to pull
+  tag: 1.1.1
+  # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
+  # Indicates if the image should be pulled using authentication from a secret
+  usePullSecret: false
+  # The name of the pull secret to attach to the respective serviceaccount used to pull the image
+  pullsecretName:
 
 
+# Defines which version of image to use, and how it should be pulled.
 imageAgg:
-  name: splunk/k8s-metrics-aggr:1.1.0
+  # The domain of the registry to pull the image from
+  registry: docker.io
+  # The name of the image to pull
+  name: splunk/k8s-metrics-aggr
+  # The tag of the image to pull
+  tag: 1.1.0
+  # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
+  # Indicates if the image should be pulled using authentication from a secret
+  usePullSecret: false
+  # The name of the pull secret to attach to the respective serviceaccount used to pull the image
+  pullsecretName:
 
 
+# Controls the resources used by the fluentd daemonset
 resources:
   fluent:
     limits:
@@ -100,7 +127,7 @@ resources:
       memory: 300Mi
 
 
- # Controls the output buffer for fluentd.
+ # Controls the output buffer for fluentd for the metrics pod
  # Note that, for memory buffer, if `resources.sidecar.limits.memory` is set,
  # the total buffer size should not bigger than the memory limit, it should also
  # consider the basic memory usage by fluentd itself.
@@ -118,6 +145,7 @@ buffer:
   retry_max_times: 3
 
 
+ # Controls the output buffer for fluentd for the metrics aggregator pod
 aggregatorBuffer:
   "@type": memory
   total_limit_size: 400m
@@ -127,14 +155,15 @@ aggregatorBuffer:
   flush_thread_count: 1
   overflow_action: block
   retry_max_times: 3
-  
-  
+
+
 # Configure how often SCK pulls metrics for its kubenetes sources. 15s is the default where 's' is seconds.
 metricsInterval: 15s
 
 
-nodeSelector: {}
-  # kubernetes.io/role: master
+# Defines which nodes should be selected to deploy the fluentd daemonset.
+nodeSelector:
+  beta.kubernetes.io/os: linux
 
 
 # This default tolerations allow the daemonset to be deployed on master nodes,
@@ -143,10 +172,17 @@ tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
 
-# Tolerations for the aggregator pod. We do not really want this running on the master nodes, so we leave this 
+
+# Tolerations for the aggregator pod. We do not really want this running on the master nodes, so we leave this
 # blank by default.
 aggregatorTolerations: {}
 
+
+# Defines priorityClassName to assign a priority class to pods.
+priorityClassName:
+
+
+# Defines node affinity to restrict pod deployment.
 affinity: {}
 
 # = Kubernetes Connection Configs =
@@ -167,4 +203,43 @@ kubernetes:
   # Path of the location where pod's service account's credentials are stored. Usually you don't need to care about this config, the default value should work in most cases.
   secretDir:
   # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
-  clusterName: "cluster_name"
+  clusterName:
+  # Add privileged access to containers for openshift compatability
+  openshift: false
+
+  # `customFilters` defines the custom filters to be used.
+  # This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
+  # Its also possible to use other filters like https://www.fluentd.org/plugins#filter
+  #
+  # The scheme to define a custom filter is:
+  #
+  # ```
+  # <name>:
+  #   tag: <fluentd tag for the filter>
+  #   type: <fluentd filter type>
+  #   body: <definition of the fluentd filter>
+  # ```
+  #
+  # = fluentd tag for the filter =
+  # This is the fluentd tag for the record
+  #
+  # = fluentd filter type =
+  # This is the fluentd filter that the user wants to use for record manipulation.
+  #
+  # = definition of the fluentd filter =
+  # This defines the body/logic for using the filter for record manipulation.
+  #
+  # For example if you want to define a filter which sets cluster_name field to "my_awesome_cluster" you would the following filter
+  # <filter tail.containers.**>
+  #  @type jq_transformer
+  #  jq '.record.cluster_name = "my_awesome_cluster" | .record'
+  # </filter>
+  # This can be defined in the customFilters section as follows:
+  # ```
+  # customFilters:
+  #   NamespaceSourcetypeFilter:
+  #     tag: tail.containers.**
+  #     type: jq_transformer
+  #     body: jq '.record.cluster_name = "my_awesome_cluster" | .record'
+  # ```
+  customFilters: {}

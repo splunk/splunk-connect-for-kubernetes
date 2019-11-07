@@ -16,10 +16,23 @@ global:
       insecureSSL: false
       # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name same as the namespace. Default is false.
       indexRouting:
-      # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
+      # indexRoutingDefaultIndex tells which index to use for the default kubernetes namespace. Used with indexRouting. This value is required when using indexRouting. Default is main if indexRoutingDefaultIndex is not specified.
       indexRoutingDefaultIndex:
   kubernetes:
     clusterName: "cluster_name"
+  prometheus_enabled: true
+
+
+  # Override global Fluentd config path and exclude path.
+  # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
+  fluentd:
+    # path of logfiles, default /var/log/containers/*.log
+    path: /var/log/containers/*.log
+    # paths of logfiles to exclude. object type is array as per fluentd specification:
+    # https://docs.fluentd.org/input/tail#exclude_path
+    exclude_path:
+    #  - /var/log/containers/kube-svc-redirect*.log
+    #  - /var/log/containers/tiller*.log
 
 
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
@@ -29,6 +42,28 @@ global:
 # * warn
 # * error
 logLevel:
+
+# Configurations for container logs
+containers:
+  # Path to root directory of container logs
+  path: /var/log
+  # Final volume destination of container log symlinks
+  pathDest: /var/lib/docker/containers
+  # Log format type, "json" or "cri"
+  logFormatType: json
+  # Specify the log format for "cri" logFormatType
+  # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
+  logFormat:
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+  # This flag specifies if the user wants to use a secret for creating the serviceAccount,
+  # which will be used to get the images from a private registry
+  usePullSecrets: false
 
 
 # Local splunk configurations
@@ -61,8 +96,24 @@ splunk:
     caFile:
     # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name same as the namespace. Default is false.
     indexRouting:
-    # indexRoutingDefaultIndex tells which index to use for the default kubenetes namespace. Used with indexRouting. Default is main.
+    # indexRoutingDefaultIndex tells which index to use for the default kubernetes namespace. Used with indexRouting. This value is required when using indexRouting.
     indexRoutingDefaultIndex:
+  # Configurations for Ingest API
+  ingest_api:
+    # serviceClientIdentifier is a string, the client identifier is used to make requests to the ingest API with authorization.
+    serviceClientIdentifier:
+    # serviceClientSecretKey is a string, the client identifier is used to make requests to the ingest API with authorization.
+    serviceClientSecretKey:
+    # tokenEndpoint is a string, it indicates which endpoint should be used to get the authorization token used to make requests to the ingest API.
+    tokenEndpoint:
+    # ingestAPIHost is a string, it indicates which url/hostname should be used to make requests to the ingest API.
+    ingestAPIHost:
+    # tenant is a string, it indicates which tenant should be used to make requests to the ingest API.
+    tenant:
+    # eventsEndpoint is a string, it indicates which endpoint should be used to make requests to the ingest API.
+    eventsEndpoint:
+    # debugIngestAPI is a boolean, it indicates whether user wants to debug requests and responses to ingest API. Default is false.
+    debugIngestAPI: false
 
 
 # Create or use existing secret if name is empty default name is used
@@ -73,11 +124,6 @@ secret:
 
 # Directory where to read journald logs.
 journalLogPath: /run/log/journal
-
-
-# Directory where the docker daemon's data is stored
-dockerPath: /var/lib/docker
-
 
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
 #
@@ -174,6 +220,14 @@ logs:
       regexp: (?<time>\d{4}-\d{2}-\d{2} [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
       format: "%Y-%m-%d %H:%M:%S.%N"
     sourcetype: kube:etcd
+  etcd-minikube:
+    from:
+      pod: etcd-minikube
+      container: etcd
+    timestampExtraction:
+      regexp: (?<time>\d{4}-\d{2}-\d{2} [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
+      format: "%Y-%m-%d %H:%M:%S.%N"
+    sourcetype: kube:etcd
   etcd-events:
     from:
       pod: etcd-server-events
@@ -218,6 +272,11 @@ logs:
       pod: kube-dns
       container: sidecar
     sourcetype: kube:kubedns-sidecar
+  dns-minikube:
+    from:
+      pod: coredns
+      container: coredns
+    sourcetype: kube:dns-controller
   dns-controller:
     <<: *glog
     from:
@@ -229,12 +288,29 @@ logs:
       pod: kube-dns-autoscaler
       container: autoscaler
     sourcetype: kube:kube-dns-autoscaler
+  kube-audit:
+    from:
+      file:
+        path: /var/log/kube-apiserver-audit.log
+    timestampExtraction:
+      format: "%Y-%m-%dT%H:%M:%SZ"
+    sourcetype: kube:apiserver-audit
 
 
 # Defines which version of image to use, and how it should be pulled.
 image:
-  name: splunk/fluentd-hec:1.1.1
+  # The domain of the registry to pull the image from
+  registry: docker.io
+  # The name of the image to pull
+  name: splunk/fluentd-hec
+  # The tag of the image to pull
+  tag: 1.1.1
+  # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
+  # Indicates if the image should be pulled using authentication from a secret
+  usePullSecret: false
+  # The name of the pull secret to attach to the respective serviceaccount used to pull the image
+  pullsecretName:
 
 
 # Controls the resources used by the fluentd daemonset
@@ -273,14 +349,85 @@ tolerations:
 
 
 # Defines which nodes should be selected to deploy the fluentd daemonset.
-nodeSelector: {}
+nodeSelector:
+  beta.kubernetes.io/os: linux
 
 
 # Defines node affinity to restrict pod deployment.
 affinity: {}
 
 
+# Defines priorityClassName to assign a priority class to pods.
+priorityClassName:
+
+
 # = Kubernetes Connection Configs =
 kubernetes:
   # The cluster name used to tag logs. Default is cluster_name
-  clusterName: "cluster_name"
+  clusterName:
+  # Add privileged access to containers for openshift compatability
+  openshift: false
+
+# List of key/value pairs for metadata purpse.
+# Can be used to define things such as cloud_account_id, cloud_account_region, etc.
+customMetadata:
+#  - name: "cloud_account_id"
+#    value: "1234567890"
+
+# `customFilters` defines the custom filters to be used.
+# This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
+# Its also possible to use other filters like https://www.fluentd.org/plugins#filter
+#
+# The scheme to define a custom filter is:
+#
+# ```
+# <name>:
+#   tag: <fluentd tag for the filter>
+#   type: <fluentd filter type>
+#   body: <definition of the fluentd filter>
+# ```
+#
+# = fluentd tag for the filter =
+# This is the fluentd tag for the record
+#
+# = fluentd filter type =
+# This is the fluentd filter that the user wants to use for record manipulation.
+#
+# = definition of the fluentd filter =
+# This defines the body/logic for using the filter for record manipulation.
+#
+# For example if you want to define a filter which sets cluster_name field to "my_awesome_cluster" you would the following filter
+# <filter tail.containers.**>
+#  @type jq_transformer
+#  jq '.record.cluster_name = "my_awesome_cluster" | .record'
+# </filter>
+# This can be defined in the customFilters section as follows:
+# ```
+# customFilters:
+#   NamespaceSourcetypeFilter:
+#     tag: tail.containers.**
+#     type: jq_transformer
+#     body: jq '.record.cluster_name = "my_awesome_cluster" | .record'
+# ```
+customFilters: {}
+
+
+#
+# You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
+# The scheme to define an indexed field is:
+#
+# ```
+# ["field_1", "field_2"]
+# ```
+#
+# `indexFields` defines the fields from the fluentd record to be indexed.
+# You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
+# The input is in the form of an array(comma separated list) of the values you want to use as indexed fields.
+#
+# For example if you want to define indexed fields for "field_1" and "field_2"
+# you will have to define an indexFields section as follows in values.yaml file.
+# ```
+# indexFields: ["field_1", "field_2"]
+# ```
+# WARNING: The fields being used here must be available inside the fluentd record.
+indexFields: []

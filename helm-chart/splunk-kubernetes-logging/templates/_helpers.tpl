@@ -96,10 +96,10 @@ elif startswith({{ list (or .from.container .name) .from.pod | join "/" | quote 
 else empty
 end;
 
-def set_namespace(value):
+def set_index(value):
 if value == "default"
 then
-{{- $index := or .Values.splunk.hec.indexRoutingDefaultIndex .Values.global.splunk.hec.indexRoutingDefaultIndex | default "main" | quote}}
+{{- $index := or .Values.splunk.hec.indexRoutingDefaultIndex .Values.global.splunk.hec.indexRoutingDefaultIndex | default "main" | quote }}
 {{- printf " %s" $index -}}
 else value
 end;
@@ -108,11 +108,33 @@ def extract_container_info:
   (.source | ltrimstr("/var/log/containers/") | split("_")) as $parts
   | ($parts[-1] | split("-")) as $cparts
   | .pod = $parts[0]
-  | .namespace = set_namespace($parts[1])
+  | .namespace = $parts[1]
+  | .index = set_index($parts[1])
   | .container_name = ($cparts[:-1] | join("-"))
   | .container_id = ($cparts[-1] | rtrimstr(".log"))
   | .cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}"
+  {{- if .Values.customMetadata }}
+  {{- range .Values.customMetadata }}
+  | .{{ .name }} = "{{ .value }}"
+  {{- end }}
+  {{- end }}
   | .;
 
 .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "splunk-kubernetes-logging.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "splunk-kubernetes-logging.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+Create the image name
+*/}}
+{{- define "splunk-kubernetes-logging.image" -}}
+{{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
 {{- end -}}

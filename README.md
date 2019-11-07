@@ -2,7 +2,7 @@
 [![CircleCI](https://circleci.com/gh/git-lfs/git-lfs.svg?style=shield&circle-token=856152c2b02bfd236f54d21e1f581f3e4ebf47ad)](https://circleci.com/gh/splunk/splunk-connect-for-kubernetes)
 # What does Splunk Connect for Kubernetes do?
 
-Splunk Connect for Kubernetes provides a way to import and search your Kubernetes logging, object, and metrics data in Splunk. Splunk is a proud contributor to Cloud Native Computing Foundation (CNCF) and Splunk Connect for Kubernetes utilizes and supports multiple CNCF components in the development of these tools to get data into Splunk.
+Splunk Connect for Kubernetes provides a way to import and search your Kubernetes logging, object, and metrics data in Splunk. Now, Splunk Connect for Kubenetes also supports [importing and searching your container logs on AWS ECS and AWS Fargate using firelens.](https://github.com/splunk/splunk-connect-for-kubernetes/tree/develop/firelens) Splunk is a proud contributor to Cloud Native Computing Foundation (CNCF) and Splunk Connect for Kubernetes utilizes and supports multiple CNCF components in the development of these tools to get data into Splunk.
 
 
 ## Prerequisites
@@ -130,17 +130,28 @@ using the two configurable parameters `indexRouting` and `indexRoutingDefaultInd
 `indexRoutingDefaultIndex` is the Splunk index used for the events from the default Kubernetes namespace
 
 Warning: Before enabling this feature it is essential to have Splunk indexes created which map to your Kubernetes namespaces.
-Example:
 
+For example:
+Consider the following kubernetes namespace to splunk index topology.
 * (Namespace) -> (Splunk Index)
 * kube-system -> kube-system
 * kube-public -> kube-public
-* default -> indexRoutingDefaultIndex 
+* default -> indexRoutingDefaultIndex
+For this topology to work appropriately we have to create the splunk indexes "kube-system", "kube-public" and the value of indexRoutingDefaultIndex.
+
+# Sending logs to ingest API
+Splunk Connect for Kubernetes can be used to send events to [Splunk Ingest API](https://sdc.splunkbeta.com/reference/api/ingest/v1beta2). In the ingest_api section of the yaml file you are using to deploy, the following configuration options have to be configured:</br>
+* serviceClientIdentifier - Splunk Connect for Kubernetes uses the client identifier to make authorized requests to the ingest API.
+* serviceClientSecretKey - Splunk Connect for Kubernetes uses the client secret key to make authorized requests to the ingest API.
+* tokenEndpoint - This value indicates which endpoint Splunk Connect for Kubernetes should look to for the authorization token necessary for making requests to the ingest API.
+* ingestAPIHost - Indicates which url/hostname to use for requests to the ingest API.
+* tenant - Indicates which tenant Splunk Connect for Kubernetes should use for requests to the ingest API.
+* eventsEndpoint - Indicates which endpoint to use for requests to the ingest API.
+* debugIngestAPI - Set to True if you want to debug requests and responses to ingest API.
 
 # Maintenance And Support
-
+Splunk Connect For Kubernetes is supported through Splunk Support assuming the customer has a current Splunk support entitlement. For customers that do not have a current Splunk support entitlement, please file an issue at create a new issue at [Create a new issue in splunk connect for kubernetes project](https://github.com/splunk/splunk-connect-for-kubernetes/issues/new)
 The current maintainers of this project are the DataEdge team at Splunk. You can reach us at [DataEdge@splunk.com](mailto:DataEdge@splunk.com).
-If you have any issues with the software, please file an issue at [Create a new issue in splunk connect for kubernetes project](https://github.com/splunk/splunk-connect-for-kubernetes/issues/new)
 
 # License
 
