@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.2.0
+    version: 1.3.0
 data:
   fluent.conf: |
     # system wide configurations
@@ -15,7 +15,6 @@ data:
     <source>
       @type kubernetes_metrics_aggregator
       tag kube.*
-      cluster_name cluster_name
       interval 15s
     </source>
     <filter kube.**>
@@ -70,12 +69,12 @@ data:
       hec_host MY-SPLUNK-HOST
       hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-      host "#{ENV['MY_NODE_NAME']}"
+      host "#{ENV['NODE_NAME']}"
       source source
       insecure_ssl true
       <buffer>
         @type memory
-        chunk_limit_records 1e+06
+        chunk_limit_records 10000
         chunk_limit_size 100m
         flush_interval 5s
         flush_thread_count 1
