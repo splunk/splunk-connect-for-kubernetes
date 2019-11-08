@@ -8,6 +8,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: {{ template "splunk-kubernetes-objects.name" . }}
