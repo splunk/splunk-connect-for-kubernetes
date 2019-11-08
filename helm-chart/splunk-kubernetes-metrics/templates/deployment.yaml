@@ -9,6 +9,8 @@ metadata:
     heritage: {{ .Release.Service }}
     engine: fluentd
 spec:
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       name: {{ template "splunk-kubernetes-metrics.fullname" . }}
