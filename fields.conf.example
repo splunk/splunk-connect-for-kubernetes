@@ -1,0 +1,17 @@
+# To address this issue, add the following lines to fields.conf on your search heads in
+# $SPLUNK_HOME/etc/system/local/fields.conf or in a custom app directory ($SPLUNK_HOME/etc/apps/MYCUSTOMAPP/local/fields.conf
+
+[namespace]
+INDEXED = true
+
+[pod]
+INDEXED = true
+
+[container_name]
+INDEXED = true
+
+[container_id]
+INDEXED = true
+
+[cluster_name]
+INDEXED = true
