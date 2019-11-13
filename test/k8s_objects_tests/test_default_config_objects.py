@@ -37,7 +37,8 @@ def test_k8s_objects(setup, test_input, expected):
     ("kube:objects:events", 1),
     ("kube:objects:pods", 1),
     ("kube:objects:namespaces", 1),
-    ("kube:objects:nodes", 1)
+    ("kube:objects:nodes", 1),
+    ("empty_sourcetype", 0)
 ])
 def test_k8s_objects_sourcetype(setup, test_input, expected):
     '''
@@ -47,7 +48,8 @@ def test_k8s_objects_sourcetype(setup, test_input, expected):
                 expected={1} event(s)".format(test_input, expected))
     default_index = "circleci_objects"
     index_objects = os.environ["CI_INDEX_OBJECTS"] if os.environ["CI_INDEX_OBJECTS"] else default_index
-    search_query = "index=" + index_objects + " sourcetype=" + test_input
+    source_type = ' sourcetype=""' if test_input == "empty_sourcetype" else ' sourcetype=' + test_input
+    search_query = "index=" + index_objects + source_type
     events = check_events_from_splunk(start_time="-24h@h",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
@@ -55,7 +57,7 @@ def test_k8s_objects_sourcetype(setup, test_input, expected):
                                   password=setup["splunk_password"])
     logging.getLogger().info("Splunk received %s events in the last minute",
                          len(events))
-    assert len(events) >= expected
+    assert len(events) >= expected if test_input != "empty_sourcetype" else len(events) == expected
 
 @pytest.mark.parametrize("test_input,expected", [
     ("dummy_host", 1),
@@ -102,7 +104,7 @@ def test_k8s_objects_source(setup, test_input, expected):
                                   password=setup["splunk_password"])
     logging.getLogger().info("Splunk received %s events in the last minute",
                          len(events))
-    assert len(events) >= expected
+    assert len(events) >= expected if test_input != "empty_source" else len(events) == expected
 
 @pytest.mark.parametrize("test_input,expected", [
     ("circleci-k8s-cluster-objects", 1)
