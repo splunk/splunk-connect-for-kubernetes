@@ -139,6 +139,15 @@ Consider the following kubernetes namespace to splunk index topology.
 * default -> indexRoutingDefaultIndex
 For this topology to work appropriately we have to create the splunk indexes "kube-system", "kube-public" and the value of indexRoutingDefaultIndex.
 
+# Searching for SCK metadata in Splunk
+Splunk Connect for Kubernetes sends events to Splunk which can contain extra meta-data attached to each event. Metadata values such as "pod", "namespace", "container_name","container_id", "cluster_name" will appear as fields when viewing the event data inside Splunk.
+There are two solutions for running searches in Splunk on meta-data.
+
+* Modify search to use`fieldname::value` instead of `fieldname=value`.
+* Configure `fields.conf` on your downstream Splunk system to have your meta-data fields available to be searched using `fieldname=value`. Example: [fields.conf.example](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/fields.conf.example)
+
+For more information on index time field extraction please view this [guide](https://docs.splunk.com/Documentation/Splunk/latest/Data/Configureindex-timefieldextraction#Where_to_put_the_configuration_changes_in_a_distributed_environment).
+
 # Sending logs to ingest API
 Splunk Connect for Kubernetes can be used to send events to [Splunk Ingest API](https://sdc.splunkbeta.com/reference/api/ingest/v1beta2). In the ingest_api section of the yaml file you are using to deploy, the following configuration options have to be configured:</br>
 * serviceClientIdentifier - Splunk Connect for Kubernetes uses the client identifier to make authorized requests to the ingest API.
