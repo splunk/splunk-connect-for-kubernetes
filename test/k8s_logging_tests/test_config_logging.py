@@ -165,7 +165,7 @@ def test_sourcetype(setup, test_input, expected):
     default_index = "circleci_events"
     index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else default_index
     source_type = ' sourcetype=""' if test_input == "empty_sourcetype" else ' sourcetype=' + test_input
-    search_query = "index=" + index_logging + source_type
+    search_query = "index=" + index_logging + ' OR index="kube-system"' + source_type
     events = check_events_from_splunk(start_time="-24h@h",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
@@ -173,7 +173,7 @@ def test_sourcetype(setup, test_input, expected):
                                   password=setup["splunk_password"])
     logging.getLogger().info("Splunk received %s events in the last minute",
                          len(events))
-    assert len(events) >= expected
+    assert len(events) >= expected if test_input != "empty_sourcetype" else len(events) == expected
 
 @pytest.mark.parametrize("test_input,expected", [
     ("/var/log/containers/kube-apiserver-*", 1),
@@ -191,7 +191,7 @@ def test_source(setup, test_input, expected):
     default_index = "circleci_events"
     index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else default_index
     source = ' source=""' if test_input == "empty_source" else ' source=' + test_input
-    search_query = "index=" + index_logging + source
+    search_query = "index=" + index_logging + ' OR index="kube-system"' + source
     events = check_events_from_splunk(start_time="-24h@h",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
