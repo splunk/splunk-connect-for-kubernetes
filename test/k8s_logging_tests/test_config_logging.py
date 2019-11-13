@@ -37,7 +37,7 @@ def test_splunk_index(setup, test_input, expected):
 ])
 def test_cluster_name(setup, test_input, expected):
     '''
-    Clustername is a configurable parameter, test that user specified cluster-name is attached as a metadata to all the logs
+    Test that user specified cluster-name is attached as a metadata to all the logs
     '''
     logging.getLogger().info("testing test_clusterName input={0} \
                 expected={1} event(s)".format(test_input, expected))
@@ -216,6 +216,30 @@ def test_host(setup, test_input, expected):
     host = ' host!=""' if test_input == "dummy_host" else ' host=""'
     search_query = "index=" + index_logging + host
     events = check_events_from_splunk(start_time="-24h@h",
+                                  url=setup["splunkd_url"],
+                                  user=setup["splunk_user"],
+                                  query=["search {0}".format(search_query)],
+                                  password=setup["splunk_password"])
+    logging.getLogger().info("Splunk received %s events in the last minute",
+                         len(events))
+    assert len(events) >= expected
+
+@pytest.mark.parametrize("test_input,expected", [
+    ("pod", 1),
+    ("namespace", 1),
+    ("container_name", 1),
+    ("container_id", 1)
+])
+def test_default_fields(setup, test_input, expected):
+    '''
+    Test that default fields are attached as a metadata to all the logs
+    '''
+    logging.getLogger().info("testing test_clusterName input={0} \
+                expected={1} event(s)".format(test_input, expected))
+    default_index = "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else default_index
+    search_query = "index=" + index_logging + " " + test_input + "::*"
+    events = check_events_from_splunk(start_time="-1h@h",
                                   url=setup["splunkd_url"],
                                   user=setup["splunk_user"],
                                   query=["search {0}".format(search_query)],
