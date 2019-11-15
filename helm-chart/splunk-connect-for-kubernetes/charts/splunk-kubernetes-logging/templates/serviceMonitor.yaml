@@ -1,0 +1,31 @@
+{{- if .Values.global.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "splunk-kubernetes-logging.fullname" . }}-headless
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "splunk-kubernetes-logging.name" . }}
+    chart: {{ template "splunk-kubernetes-logging.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if .Values.global.serviceMonitor.additionalLabels }}
+{{ toYaml .Values.global.serviceMonitor.additionalLabels | indent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "splunk-kubernetes-logging.name" . }}
+      release: {{ .Release.Name }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  endpoints:
+  - port: http-metrics
+    {{- if .Values.global.serviceMonitor.interval }}
+    interval: {{ .Values.global.serviceMonitor.interval }}
+    {{- end }}
+    {{- if .Values.global.serviceMonitor.scrapeTimeout }}
+    scrapeTimeout: {{ .Values.global.serviceMonitor.scrapeTimeout }}
+    {{- end }}
+{{- end }}
