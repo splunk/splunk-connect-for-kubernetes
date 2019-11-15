@@ -44,6 +44,15 @@ global:
     clusterName: "cluster_name"
   prometheus_enabled:
   monitoring_agent_enabled:
+  # deploy a ServiceMonitor object for usage of the PrometheusOperator
+  serviceMonitor:
+    enabled: false
+
+    metricsPort: 24231
+    interval: ""
+    scrapeTimeout: "10s"
+
+    additionalLabels: { }
 
 ## Enabling splunk-kubernetes-logging will install the `splunk-kubernetes-logging` chart to a kubernetes
 ## cluster to collect logs generated in the cluster to a Splunk indexer/indexer cluster.

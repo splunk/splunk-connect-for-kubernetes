@@ -1,0 +1,21 @@
+{{- if .Values.global.serviceMonitor.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "splunk-kubernetes-logging.fullname" . }}-headless
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "splunk-kubernetes-logging.name" . }}
+    chart: {{ template "splunk-kubernetes-logging.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ .Values.global.serviceMonitor.metricsPort }}
+      protocol: TCP
+      name: http-metrics
+  selector:
+    app: {{ template "splunk-kubernetes-logging.name" . }}
+    release: {{ .Release.Name }}
+{{- end }}

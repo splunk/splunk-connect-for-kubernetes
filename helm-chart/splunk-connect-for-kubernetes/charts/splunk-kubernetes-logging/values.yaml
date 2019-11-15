@@ -325,7 +325,7 @@ image:
 environmentVar:
 
 # Pod annotations for daemonset
-podAnnotations: 
+podAnnotations:
 
 # Controls the resources used by the fluentd daemonset
 resources:
@@ -474,3 +474,12 @@ global:
     clusterName: "cluster_name"
   prometheus_enabled: true
   monitoring_agent_enabled: true
+  # deploy a ServiceMonitor object for usage of the PrometheusOperator
+  serviceMonitor:
+    enabled: false
+
+    metricsPort: 24231
+    interval: ""
+    scrapeTimeout: "10s"
+
+    additionalLabels: {}
