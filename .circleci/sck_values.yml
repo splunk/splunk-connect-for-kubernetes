@@ -38,6 +38,7 @@ splunk-kubernetes-objects:
       indexName: circleci_objects
   kubernetes:
     insecureSSL: true
+    clusterName: "circleci-k8s-cluster-objects"
   image:
     name:
     pullPolicy: Always
