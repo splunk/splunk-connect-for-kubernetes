@@ -48,8 +48,6 @@ kubernetes:
   secretDir:
   # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
   clusterName:
-  # Add privileged access to containers for openshift compatability
-  openshift: false
 
 # = Object Lists =
 # NOTE: at least one object must be provided.
