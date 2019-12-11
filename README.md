@@ -121,23 +121,16 @@ Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best 
 
 One possible filter option is to enable the processing of multi-line events. This feature is currently experimental and considered to be community supported.
 
-# Namespace to Index Routing
+# Managing SCK Log Ingestion by Using Annotations
 
-Splunk Connect for Kubernetes has the functionality to route logs and metrics from different namespaces to Splunk indexers of the same name. This can be configured by
-using the two configurable parameters `indexRouting` and `indexRoutingDefaultIndex`
+You can easily instruct Splunk Connect for Kubernetes Logging with these supported annotations.
 
-`indexRouting` is a boolean configurable that enables the feature
-`indexRoutingDefaultIndex` is the Splunk index used for the events from the default Kubernetes namespace
+* Use `splunk.com/index` annotation on pod and/or namespace to tell which Splunk index to ingest to. Pod annotation will take precedence over namespace annotation when both are annotated. It requires `splunk.hec.annotationRouting` to be `true` (enabled by default).  
+  ex) `kubectl annotate namespace kube-system splunk.com/index=k8s_events`
+* Set `splunk.com/exclude` annotation to `true` on pod and/or namespace to exclude its logs from ingested to Splunk.
+* Use `splunk.com/sourcetype` annotation on pod to overwrite `sourcetype` field. If not set, it is dynamically generated to be `kube:container:CONTAINER_NAME`. When using this annotation, the sourcetype will be prefixed with `kube:`.
 
-Warning: Before enabling this feature it is essential to have Splunk indexes created which map to your Kubernetes namespaces.
-
-For example:
-Consider the following kubernetes namespace to splunk index topology.
-* (Namespace) -> (Splunk Index)
-* kube-system -> kube-system
-* kube-public -> kube-public
-* default -> indexRoutingDefaultIndex
-For this topology to work appropriately we have to create the splunk indexes "kube-system", "kube-public" and the value of indexRoutingDefaultIndex.
+Regarding excluding container logs: If possible, it is more efficient to exlude it using `fluentd.exclude_path` option.
 
 # Searching for SCK metadata in Splunk
 Splunk Connect for Kubernetes sends events to Splunk which can contain extra meta-data attached to each event. Metadata values such as "pod", "namespace", "container_name","container_id", "cluster_name" will appear as fields when viewing the event data inside Splunk.
