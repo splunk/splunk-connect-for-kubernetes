@@ -31,7 +31,7 @@ def pytest_addoption(parser):
                      default="password")
 
 def pytest_configure():
-    os.system('docker pull rock1017/log-generator:latest && kubectl apply -f test_setup.yaml')
+    os.system('docker pull $CI_DATAGEN_IMAGE && kubectl apply -f test_setup.yaml')
     time.sleep(60)
 
 

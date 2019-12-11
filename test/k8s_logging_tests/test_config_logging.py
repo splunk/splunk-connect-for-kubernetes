@@ -63,18 +63,18 @@ def test_cluster_name(setup, test_input, expected):
     assert len(events) >= expected
 
 
-@pytest.mark.parametrize("test_input,expected", [
-    ("pod-w-index-wo-ns-index", 1),
-    ("pod-wo-index-w-ns-index", 1),
-    ("pod-w-index-w-ns-index", 1)
+@pytest.mark.parametrize("label,index,expected", [
+    ("pod-w-index-wo-ns-index", "pod-anno", 1),
+    ("pod-wo-index-w-ns-index", "ns-anno", 1),
+    ("pod-w-index-w-ns-index", "pod-anno", 1)
 ])
-def test_label_collection(setup, test_input, expected):
+def test_label_collection(setup, label, index, expected):
     '''
-    Test that user specified cluster-name is attached as a metadata to all the logs
+    Test that user specified labels is attached as a metadata to all the logs
     '''
-    logger.info("testing label_app input={0} expected={1} event(s)".format(
-        test_input, expected))
-    search_query = "index=*" + " label_app::" + test_input
+    logger.info("testing label_app label={0} index={1} expected={2} event(s)".format(
+        label, index, expected))
+    search_query = "index=" + index + " label_app::" + label
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
                                       user=setup["splunk_user"],
@@ -166,17 +166,17 @@ def test_sourcetype(setup, test_input, expected):
         events) == expected
 
 
-@pytest.mark.parametrize("test_input,expected", [
-    ("kube:container:pod-wo-index-w-ns-index", 1),
-    ("kube:sourcetype-anno", 1)
+@pytest.mark.parametrize("sourcetype,index,expected", [
+    ("kube:container:pod-wo-index-w-ns-index", "ns-anno", 1),
+    ("kube:sourcetype-anno", "pod-anno", 1)
 ])
-def test_annotation_sourcetype(setup, test_input, expected):
+def test_annotation_sourcetype(setup, sourcetype, index, expected):
     '''
     Test annotation for sourcetype properly overwrites it when set
     '''
-    logger.info("testing for annotation sourcetype of {0} expected={1} event(s)".format(
-        test_input, expected))
-    search_query = "index=*" + ' sourcetype=' + test_input
+    logger.info("testing for annotation sourcetype of {0} index={1] expected={2} event(s)".format(
+        sourcetype, index, expected))
+    search_query = "index=" + index + ' sourcetype=' + sourcetype
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
                                       user=setup["splunk_user"],
@@ -254,6 +254,28 @@ def test_default_fields(setup, test_input, expected):
         test_input, expected))
     index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
     search_query = "index=" + index_logging + " " + test_input + "::*"
+    events = check_events_from_splunk(start_time="-1h@h",
+                                      url=setup["splunkd_url"],
+                                      user=setup["splunk_user"],
+                                      query=["search {0}".format(
+                                          search_query)],
+                                      password=setup["splunk_password"])
+    logger.info("Splunk received %s events in the last minute",
+                len(events))
+    assert len(events) >= expected
+
+@pytest.mark.parametrize("field,value,expected", [
+    ("customfield1", "customvalue1", 1),
+    ("customfield2", "customvalue2", 1)
+])
+def test_custom_metadata_fields(setup, field,value, expected):
+    '''
+    Test user provided custom metadata fields are ingested with log
+    '''
+    logger.info("testing custom metadata field={0} value={1} expected={2} event(s)".format(
+        field,value, expected))
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    search_query = "index=" + index_logging + " " + field + "::" + value
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
                                       user=setup["splunk_user"],

@@ -15,7 +15,7 @@ yq w -i .circleci/performance/perf_test_sck_values.yml global.splunk.hec.token $
 # Modify docker images to be used
 yq w -i .circleci/performance/perf_test_sck_values.yml splunk-kubernetes-logging.image.name splunk/fluentd-hec
 yq w -i .circleci/performance/perf_test_sck_values.yml splunk-kubernetes-logging.image.tag $FLUENTD_HEC_VERSION
-#yq w -i .circleci/performance/perf_test_sck_values.yml splunk-kubernetes-logging.image.name rock1017/fleuntd-log-metadata
+#yq w -i .circleci/performance/perf_test_sck_values.yml splunk-kubernetes-logging.image.name rock1017/fleuntd-log-metadata #this is image with Cisco modified k8s metadata filter
 #yq w -i .circleci/performance/perf_test_sck_values.yml splunk-kubernetes-logging.image.tag latest
 
 yq w -i .circleci/performance/perf_test_sck_values.yml splunk-kubernetes-metrics.image.name splunk/k8s-metrics

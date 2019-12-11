@@ -58,7 +58,7 @@ spec:
       labels:
         app: pod-wo-index-w-ns-index
       annotations:
-        splunk.com/exclude: "notTrue"
+        splunk.com/exclude: "false"
     spec:
       containers:
       - name: pod-wo-index-w-ns-index

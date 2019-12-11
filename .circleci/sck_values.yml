@@ -21,7 +21,11 @@ splunk-kubernetes-logging:
   k8sMetadata:
     podLabels:
       - app
-    
+  customMetadata:
+    - name: customfield1
+      value: customvalue1
+    - name: customfield2
+      value: customvalue2
 
 splunk-kubernetes-metrics:
   kubernetes:

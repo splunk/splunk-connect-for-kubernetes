@@ -27,6 +27,7 @@ jobs:
       CI_INDEX_EVENTS: circleci_events
       CI_INDEX_OBJECTS: circleci_objects
       CI_INDEX_METRICS: circleci_metrics
+      CI_DATAGEN_IMAGE: rock1017/log-generator:latest
     working_directory: ~/repo
     steps:
       - checkout

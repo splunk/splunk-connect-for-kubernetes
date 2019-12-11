@@ -197,7 +197,7 @@ data:
       {{- end }}
 
       # Enrich log with k8s metadata
-      <filter tail.containers.var.log.containers.**.log>
+      <filter tail.containers.**>
         @type kubernetes_metadata
         annotation_match [ "^splunk\.com" ]
         de_dot false
@@ -232,6 +232,11 @@ data:
           label_{{ . }} ${record.dig("kubernetes","labels","{{ . }}")}
           {{- end }}
           blacklist ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
+          {{- if .Values.customMetadata }}
+          {{- range .Values.customMetadata }}
+          {{ .name }} "{{ .value }}"
+          {{- end }}
+          {{- end }}
         </record>
       </filter>
       {{- if or .Values.splunk.hec.annotationRouting .Values.global.splunk.hec.annotationRouting }}
@@ -269,7 +274,7 @@ data:
       {{- if $checks.hasJournald }}
       <filter journald.**>
         @type jq_transformer
-        jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }} |.record'
+        jq '.record.source = "{{ .Values.journalLogPath }}/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record.index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }} {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = "{{ .value }}" {{- end }}{{- end }} |.record'
       </filter>
       {{- end }}
 
@@ -278,14 +283,14 @@ data:
       # extract sourcetype
       <filter tail.file.**>
         @type jq_transformer
-        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record'
+        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record.index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }} {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = "{{ .value }}" {{- end }}{{- end }} | .record'
       </filter>
       {{- end }}
 
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
-        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record"
+        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record.index = \"{{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" }}\" {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = \"{{ .value }}\" {{- end }}{{- end }} | .record"
       </filter>
 
       # = custom filters specified by users =
