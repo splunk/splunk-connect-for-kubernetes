@@ -53,7 +53,7 @@ spec:
           - -c
           - /fluentd/etc/fluent.conf
         env:
-          - name: NODE_NAME
+          - name: K8S_NODE_NAME
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName

@@ -16,6 +16,7 @@ limitations under the License.
 
 import pytest
 import time
+import os
 
 def pytest_addoption(parser):
     parser.addoption("--splunkd-url",
@@ -28,6 +29,11 @@ def pytest_addoption(parser):
     parser.addoption("--splunk-password",
                      help="splunk user password",
                      default="password")
+
+def pytest_configure():
+    os.system('docker pull $CI_DATAGEN_IMAGE && kubectl apply -f test_setup.yaml')
+    time.sleep(60)
+
 
 @pytest.fixture(scope="function")
 def setup(request):

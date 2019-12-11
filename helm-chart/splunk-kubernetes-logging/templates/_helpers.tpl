@@ -123,15 +123,34 @@ def extract_container_info:
 .record | extract_container_info | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
 {{- end -}}
 
+
+{{- define "splunk-kubernetes-logging.set_sourcetype" -}}
+{{- $logs := dict "list" list }}
+{{- range $name, $logDef := .Values.logs }}
+{{- if (and $logDef.from.pod $logDef.sourcetype) }}
+{{- set $logs "list" (append $logs.list (dict "name" $name "from" $logDef.from "sourcetype" $logDef.sourcetype)) | and nil }}
+{{- end }}
+{{- end -}}
+def find_sourcetype(pod; container_name):
+{{- with first $logs.list }}
+container_name + "/" + pod |
+if startswith({{ list (or .from.container .name) .from.pod | join "/" | quote }}) then {{ .sourcetype | quote }}
+{{- end }}
+{{- range rest $logs.list }}
+elif startswith({{ list (or .from.container .name) .from.pod | join "/" | quote }}) then {{ .sourcetype | quote }}
+{{- end }}
+else empty
+end;
+
+.record | .sourcetype = (find_sourcetype(.pod; .container_name) // "kube:container:\(.container_name)")
+{{- end -}}
+
+
 {{/*
 Create the name of the service account to use
 */}}
 {{- define "splunk-kubernetes-logging.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
     {{ default (include "splunk-kubernetes-logging.fullname" .) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
-{{- end -}}
 {{- end -}}
 Create the image name
 */}}

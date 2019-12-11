@@ -27,8 +27,7 @@ jobs:
       CI_INDEX_EVENTS: circleci_events
       CI_INDEX_OBJECTS: circleci_objects
       CI_INDEX_METRICS: circleci_metrics
-      CI_INDEX_NAMESPACE_ROUTING: test-namespace-routing
-      CI_KAFKA_DATAGEN_IMAGE: chaitanyaphalak/kafkadatagen:1.0-4-gca7f6d8
+      CI_DATAGEN_IMAGE: rock1017/log-generator:latest
     working_directory: ~/repo
     steps:
       - checkout
@@ -63,10 +62,10 @@ jobs:
             sudo /opt/splunk/bin/splunk add index $CI_INDEX_EVENTS -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index $CI_INDEX_OBJECTS -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
             sudo /opt/splunk/bin/splunk add index $CI_INDEX_METRICS -datatype metric -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
-            sudo /opt/splunk/bin/splunk add index kube-system -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
-            sudo /opt/splunk/bin/splunk add index kube-public -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
-            sudo /opt/splunk/bin/splunk add index $CI_INDEX_NAMESPACE_ROUTING -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
-            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://$CI_SPLUNK_HOST:$CI_SPLUNK_PORT -name splunk_hec_token -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD -index $CI_INDEX_EVENTS -indexes $CI_INDEX_METRICS,$CI_INDEX_OBJECTS,$CI_INDEX_EVENTS,$CI_INDEX_NAMESPACE_ROUTING,kube-system,kube-public
+            sudo /opt/splunk/bin/splunk add index ns-anno -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk add index pod-anno -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk add index default-events -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD
+            sudo /opt/splunk/bin/splunk http-event-collector update -uri https://$CI_SPLUNK_HOST:$CI_SPLUNK_PORT -name splunk_hec_token -auth $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD -index default-events -indexes default-events,$CI_INDEX_METRICS,$CI_INDEX_OBJECTS,$CI_INDEX_EVENTS,ns-anno,pod-anno
             # Restart Splunk
             sudo /opt/splunk/bin/splunk restart --accept-license --answer-yes --no-prompt
       - run:
@@ -93,7 +92,6 @@ jobs:
           command: |
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash -s -- --version v2.12.3
             helm init -c
-            docker pull $CI_KAFKA_DATAGEN_IMAGE
             pyenv global 3.6.5
             pip install --upgrade pip
             pip install -r test/requirements.txt

@@ -243,7 +243,7 @@ def _get_events(job_id, url="", user="", password=""):
 
     event_job_json = event_job.json()
     events = event_job_json['results']
-    logger.info("Events from get_events method returned %s events",
+    logger.debug("Events from get_events method returned %s events",
                 len(events))
 
     return events

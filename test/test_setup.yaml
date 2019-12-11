@@ -1,0 +1,157 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-w-index
+  annotations:
+    splunk.com/index: ns-anno
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-wo-index
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-w-exclude
+  annotations:
+    splunk.com/index: ns-anno
+    splunk.com/exclude: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-w-index-w-ns-index
+  namespace: ns-w-index
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-w-index-w-ns-index
+  template:
+    metadata:
+      labels:
+        app: pod-w-index-w-ns-index
+      annotations:
+        splunk.com/index: "pod-anno"
+        splunk.com/sourcetype: "sourcetype-anno"
+    spec:
+      containers:
+      - name: pod-w-index-w-ns-index
+        image: rock1017/log-generator:latest
+        args:
+          - "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-wo-index-w-ns-index
+  namespace: ns-w-index
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-wo-index-w-ns-index
+  template:
+    metadata:
+      labels:
+        app: pod-wo-index-w-ns-index
+      annotations:
+        splunk.com/exclude: "false"
+    spec:
+      containers:
+      - name: pod-wo-index-w-ns-index
+        image: rock1017/log-generator:latest
+        args:
+          - "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-w-index-wo-ns-index
+  namespace: ns-wo-index
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-w-index-wo-ns-index
+  template:
+    metadata:
+      labels:
+        app: pod-w-index-wo-ns-index
+      annotations:
+        splunk.com/index: "pod-anno"
+    spec:
+      containers:
+      - name: pod-w-index-wo-ns-index
+        image: rock1017/log-generator:latest
+        args:
+          - "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-w-index-w-ns-exclude
+  namespace: ns-w-exclude
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-w-index-w-ns-exclude
+  template:
+    metadata:
+      labels:
+        app: pod-w-index-w-ns-exclude
+      annotations:
+        splunk.com/index: "pod-anno"
+    spec:
+      containers:
+      - name: pod-w-index-w-ns-exclude
+        image: rock1017/log-generator:latest
+        args:
+          - "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-w-exclude-wo-ns-exclude
+  namespace: ns-w-index
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-w-index-w-ns-exclude
+  template:
+    metadata:
+      labels:
+        app: pod-w-index-w-ns-exclude
+      annotations:
+        splunk.com/exclude: "true"
+    spec:
+      containers:
+      - name: pod-w-index-w-ns-exclude
+        image: rock1017/log-generator:latest
+        args:
+          - "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-wo-index-wo-ns-index
+  namespace: ns-wo-index
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-wo-index-wo-ns-index
+  template:
+    metadata:
+      labels:
+        app: pod-wo-index-wo-ns-index
+    spec:
+      containers:
+      - name: pod-wo-index-wo-ns-index
+        image: rock1017/log-generator:latest
+        args:
+          - "1"
