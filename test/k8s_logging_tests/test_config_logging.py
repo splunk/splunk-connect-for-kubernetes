@@ -174,7 +174,7 @@ def test_annotation_sourcetype(setup, sourcetype, index, expected):
     '''
     Test annotation for sourcetype properly overwrites it when set
     '''
-    logger.info("testing for annotation sourcetype of {0} index={1] expected={2} event(s)".format(
+    logger.info("testing for annotation sourcetype of {0} index={1} expected={2} event(s)".format(
         sourcetype, index, expected))
     search_query = "index=" + index + ' sourcetype=' + sourcetype
     events = check_events_from_splunk(start_time="-1h@h",
