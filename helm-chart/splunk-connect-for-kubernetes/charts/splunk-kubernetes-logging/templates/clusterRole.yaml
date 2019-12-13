@@ -1,6 +1,5 @@
----
-kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
 metadata:
   name: k8s-metadata-query-logging
   labels:
@@ -9,12 +8,12 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 rules:
-  - apiGroups:
-      - ""
-    resources: 
-      - "namespaces"
-      - "pods"
-    verbs:
-      - "list"
-      - "get" 
-      - "watch" 
+- apiGroups:
+    - ""
+  resources: 
+    - "namespaces"
+    - "pods"
+  verbs:
+    - "list"
+    - "get" 
+    - "watch" 
