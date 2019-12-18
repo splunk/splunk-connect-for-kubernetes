@@ -2,35 +2,6 @@
 # This is a YAML-formatted file.
 # Declared variables will be passed into templates.
 
-
-# Global configurations
-# These configurations will be used if the corresponding local configurations are not set.
-# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
-global:
-  logLevel: info
-  # If local splunk configurations are not present, the global ones will be used (if available)
-  splunk:
-    # It has exactly the same configs as splunk.hec does
-    hec:
-      protocol: https
-      insecureSSL: false
-  kubernetes:
-    clusterName: "cluster_name"
-  prometheus_enabled: true
-
-
-  # Override global Fluentd config path and exclude path.
-  # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
-  fluentd:
-    # path of logfiles, default /var/log/containers/*.log
-    path: /var/log/containers/*.log
-    # paths of logfiles to exclude. object type is array as per fluentd specification:
-    # https://docs.fluentd.org/input/tail#exclude_path
-    exclude_path:
-    #  - /var/log/containers/kube-svc-redirect*.log
-    #  - /var/log/containers/tiller*.log
-
-
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
 # * debug
@@ -39,6 +10,16 @@ global:
 # * error
 logLevel:
 
+# This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
+fluentd:
+  # path of logfiles, default /var/log/containers/*.log
+  path: /var/log/containers/*.log
+  # paths of logfiles to exclude. object type is array as per fluentd specification:
+  # https://docs.fluentd.org/input/tail#exclude_path
+  exclude_path:
+  #  - /var/log/containers/kube-svc-redirect*.log
+  #  - /var/log/containers/tiller*.log
+  
 # Configurations for container logs
 containers:
   # Path to root directory of container logs
@@ -51,25 +32,16 @@ containers:
   # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
   logFormat:
 
-# Enriches log record with kubernetes data
-k8sMetadata: 
+# Directory where to read journald logs. (docker daemon logs, kubelet logs, and anyother specified serivce logs)
+journalLogPath: /run/log/journal
+
+# Enriches pod log record with kubernetes data
+k8sMetadata:
   # Pod labels to collect
   podLabels:
     - app
     - k8s-app
     - release
-  
-
-serviceAccount:
-  # Specifies whether a ServiceAccount should be created
-  create: true
-  # The name of the ServiceAccount to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name:
-  # This flag specifies if the user wants to use a secret for creating the serviceAccount,
-  # which will be used to get the images from a private registry
-  usePullSecrets: false
-
 
 # Local splunk configurations
 splunk:
@@ -120,15 +92,20 @@ splunk:
     # debugIngestAPI is a boolean, it indicates whether user wants to debug requests and responses to ingest API. Default is false.
     debugIngestAPI: false
 
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+  # This flag specifies if the user wants to use a secret for creating the serviceAccount,
+  # which will be used to get the images from a private registry
+  usePullSecrets: false
 
 # Create or use existing secret if name is empty default name is used
 secret:
   create: true
   name:
-
-
-# Directory where to read journald logs.
-journalLogPath: /run/log/journal
 
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
 #
@@ -293,7 +270,6 @@ logs:
       format: "%Y-%m-%dT%H:%M:%SZ"
     sourcetype: kube:apiserver-audit
 
-
 # Defines which version of image to use, and how it should be pulled.
 image:
   # The domain of the registry to pull the image from
@@ -309,24 +285,22 @@ image:
   # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullsecretName:
 
-
 # Controls the resources used by the fluentd daemonset
 resources:
   # limits:
   #  cpu: 100m
   #  memory: 200Mi
   requests:
-   cpu: 100m
-   memory: 200Mi
+    cpu: 100m
+    memory: 200Mi
 
-
- # Controls the output buffer for the fluentd daemonset
- # Note that, for memory buffer, if `resources.limits.memory` is set,
- # the total buffer size should not bigger than the memory limit, it should also
- # consider the basic memory usage by fluentd itself.
- # All buffer parameters (except Argument) defined in
- # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
- # can be configured here.
+  # Controls the output buffer for the fluentd daemonset
+  # Note that, for memory buffer, if `resources.limits.memory` is set,
+  # the total buffer size should not bigger than the memory limit, it should also
+  # consider the basic memory usage by fluentd itself.
+  # All buffer parameters (except Argument) defined in
+  # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
+  # can be configured here.
 buffer:
   "@type": memory
   total_limit_size: 600m
@@ -337,26 +311,21 @@ buffer:
   overflow_action: block
   retry_max_times: 3
 
-
 # This default tolerations allow the daemonset to be deployed on master nodes,
 # so that we can also collect logs from those nodes.
 tolerations:
   - key: node-role.kubernetes.io/master
     effect: NoSchedule
 
-
 # Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector:
   beta.kubernetes.io/os: linux
 
-
 # Defines node affinity to restrict pod deployment.
 affinity: {}
 
-
 # Defines priorityClassName to assign a priority class to pods.
 priorityClassName:
-
 
 # = Kubernetes Connection Configs =
 kubernetes:
@@ -407,7 +376,6 @@ customMetadata:
 #     body: jq '.record.cluster_name = "my_awesome_cluster" | .record'
 # ```
 customFilters: {}
-
 
 #
 # You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
