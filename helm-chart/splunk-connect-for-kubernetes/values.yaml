@@ -16,7 +16,6 @@ global:
   kubernetes:
     clusterName: "cluster_name"
 
-
 ## Enabling splunk-kubernetes-logging will install the `splunk-kubernetes-logging` chart to a kubernetes
 ## cluster to collect logs generated in the cluster to a Splunk indexer/indexer cluster.
 splunk-kubernetes-logging:
@@ -27,7 +26,7 @@ splunk-kubernetes-logging:
   # * info (default)
   # * warn
   # * error
-  logLevel:
+  logLevel: 
 
   # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
   fluentd:
@@ -396,7 +395,6 @@ splunk-kubernetes-logging:
   # ```
   customFilters: {}
 
-  #
   # You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
   # The scheme to define an indexed field is:
   #
@@ -423,11 +421,10 @@ splunk-kubernetes-objects:
   # logLevel is to set log level of the object collector. Avaiable values are:
   # * trace
   # * debug
-  # * info
+  # * info (default)
   # * warn
   # * error
-  # Default value: "info"
-  logLevel: "info"
+  logLevel: 
 
   rbac:
     # Specifies whether RBAC resources should be created.
@@ -691,10 +688,9 @@ splunk-kubernetes-metrics:
   enabled: true
   # logLevel is to set log level of the Splunk kubernetes metrics collector. Avaiable values are:
   # * debug
-  # * info
+  # * info (default)
   # * warn
   # * error
-  # Default value: "info"
   logLevel:
 
   rbac:
@@ -787,13 +783,13 @@ splunk-kubernetes-metrics:
       requests:
         cpu: 200m
         memory: 300Mi
-    # Controls the output buffer for fluentd for the metrics pod
-    # Note that, for memory buffer, if `resources.sidecar.limits.memory` is set,
-    # the total buffer size should not bigger than the memory limit, it should also
-    # consider the basic memory usage by fluentd itself.
-    # All buffer parameters (except Argument) defined in
-    # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
-    # can be configured here.
+  # Controls the output buffer for fluentd for the metrics pod
+  # Note that, for memory buffer, if `resources.sidecar.limits.memory` is set,
+  # the total buffer size should not bigger than the memory limit, it should also
+  # consider the basic memory usage by fluentd itself.
+  # All buffer parameters (except Argument) defined in
+  # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
+  # can be configured here.
   buffer:
     "@type": memory
     total_limit_size: 400m
@@ -804,7 +800,7 @@ splunk-kubernetes-metrics:
     overflow_action: block
     retry_max_times: 3
 
-    # Controls the output buffer for fluentd for the metrics aggregator pod
+  # Controls the output buffer for fluentd for the metrics aggregator pod
   aggregatorBuffer:
     "@type": memory
     total_limit_size: 400m
