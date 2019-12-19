@@ -55,12 +55,8 @@ splunk:
     token:
     # protocol has two options: "http" and "https", default is "https"
     protocol:
-    # indexName tells which index to use, this is optional. If it's not present, will use the default one configured in HEC.
+    # indexName tells which index to use, this is optional. If it's not present, will use the "main".
     indexName:
-    # annotationRouting is a boolean, it indicates whether to route logs to the index specified in namespace annotation 'splunk.com/index' or pod annotation 'splunk.com/index'
-    # ie) `kubectl annotate namespace kube-system splunk.com/index=k8s_events`
-    # pod annotation will take precedence over namespace annotation, and namespace annotation over `indexName` value
-    annotationRouting: true
     # insecureSSL is a boolean, it indicates should it allow inscure SSL connection (when protocol is "https"). Default is false.
     insecureSSL:
     # The PEM-format CA certificate for this client.

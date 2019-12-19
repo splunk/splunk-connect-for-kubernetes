@@ -125,7 +125,7 @@ One possible filter option is to enable the processing of multi-line events. Thi
 
 You can easily instruct Splunk Connect for Kubernetes Logging with these supported annotations.
 
-* Use `splunk.com/index` annotation on pod and/or namespace to tell which Splunk index to ingest to. Pod annotation will take precedence over namespace annotation when both are annotated. It requires `splunk.hec.annotationRouting` to be `true` (enabled by default).  
+* Use `splunk.com/index` annotation on pod and/or namespace to tell which Splunk index to ingest to. Pod annotation will take precedence over namespace annotation when both are annotated.
   ex) `kubectl annotate namespace kube-system splunk.com/index=k8s_events`
 * Set `splunk.com/exclude` annotation to `true` on pod and/or namespace to exclude its logs from ingested to Splunk.
 * Use `splunk.com/sourcetype` annotation on pod to overwrite `sourcetype` field. If not set, it is dynamically generated to be `kube:container:CONTAINER_NAME`. When using this annotation, the sourcetype will be prefixed with `kube:`.
