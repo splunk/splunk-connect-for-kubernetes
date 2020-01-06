@@ -36,13 +36,13 @@ sub-chart, or use global.splunk.hec.host and gloabl.splunk.hec.token.
 {{- if not (and $lHost $oHost $mHost) }}
 
 splunk.hec.host is missing for the following charts:
-{{- if .Values.logging.enabled | and (not $lHost) }}
+{{- if index .Values "splunk-kubernetes-logging" "enabled" | and (not $lHost) }}
   * splunk-kubernetes-logging
 {{- end }}
-{{- if .Values.objects.enabled | and (not $oHost) }}
+{{- if index .Values "splunk-kubernetes-objects" "enabled" | and (not $oHost) }}
   * splunk-kubernetes-objects
 {{- end }}
-{{- if .Values.metrics.enabled | and (not $mHost) }}
+{{- if index .Values "splunk-kubernetes-metrics" "enabled" | and (not $mHost) }}
   * splunk-kubernetes-metrics
 {{- end }}
 {{- end }}
@@ -50,13 +50,13 @@ splunk.hec.host is missing for the following charts:
 {{- if not (and $lToken $oToken $mToken) }}
 
 splunk.hec.token is missing for the following charts:
-{{- if .Values.logging.enabled | and (not $lToken) }}
+{{- if index .Values "splunk-kubernetes-logging" "enabled" | and (not $lToken) }}
   * splunk-kubernetes-logging
 {{- end }}
-{{- if .Values.objects.enabled | and (not $oToken) }}
+{{- if index .Values "splunk-kubernetes-objects" "enabled" | and (not $oToken) }}
   * splunk-kubernetes-objects
 {{- end }}
-{{- if .Values.metrics.enabled | and (not $mToken) }}
+{{- if index .Values "splunk-kubernetes-metrics" "enabled" | and (not $mToken) }}
   * splunk-kubernetes-metrics
 {{- end }}
 {{- end }}

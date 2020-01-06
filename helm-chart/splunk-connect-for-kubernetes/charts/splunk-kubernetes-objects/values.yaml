@@ -2,31 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-
-# = Global Configs =
-# Global configs allow parent chart to set values with `global.*`.
-# The purpose for using global configs is to share the same configs with sibling/sub charts.
-#
-# Values defined here are the default values.
-global:
-  logLevel: info
-  splunk:
-    hec:
-      protocol: https
-      port: 8088
-      insecureSSL: false
-      # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name specified by the user using customFilters. Default is false.
-      # If you want to use this feature you will have to set the index key for the record using customFilters.
-      # For example,
-      # customFilters:
-      #   SetIndexFilter:
-      #     tag: tail.containers.**
-      #     type: jq_transformer
-      #     body: jq '.record.index = "my_awesome_index" | .record'
-      indexRouting:
-  kubernetes:
-    clusterName: "cluster_name"
-
 # = Log Level =
 # logLevel is to set log level of the object collector. Avaiable values are:
 # * trace
@@ -38,14 +13,12 @@ global:
 # Default value: "info"
 logLevel:
 
-
 rbac:
   # Specifies whether RBAC resources should be created.
   # This should be set to `false` if either:
   # a) RBAC is not enabled in the cluster, or
   # b) you want to create RBAC resources by yourself.
   create: true
-
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
@@ -56,7 +29,6 @@ serviceAccount:
   # This flag specifies if the user wants to use a secret for creating the serviceAccount,
   # which will be used to get the images from a private registry
   usePullSecrets: false
-
 
 # = Kubernetes Connection Configs =
 kubernetes:
@@ -78,7 +50,6 @@ kubernetes:
   clusterName:
   # Add privileged access to containers for openshift compatability
   openshift: false
-
 
 # = Object Lists =
 # NOTE: at least one object must be provided.
@@ -135,7 +106,6 @@ objects:
       - name: events
         mode: watch
 
-
 # = Checkpoint Configs =
 # defines the checkpoint file used for saving the resourceVersion of watched objects,
 # so that when the fluentd pod restarts, it will continue from where it stopped.
@@ -154,7 +124,6 @@ checkpointFile:
   #           path: /var/data
   #           type: Directory
   volume:
-
 
 # = Configure Splunk HEC connection =
 splunk:
@@ -187,12 +156,10 @@ splunk:
     #     body: jq '.record.index = "my_awesome_index" | .record'
     indexRouting:
 
-
 # Create or use existing secret if name is empty default name is used
 secret:
   create: true
   name:
-
 
 # Defines which version of image to use, and how it should be pulled.
 image:
@@ -209,24 +176,22 @@ image:
   # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullSecretName:
 
-
 # = Resoruce Limitation Configs =
 resources:
   # limits:
   #  cpu: 100m
   #  memory: 200Mi
   requests:
-   cpu: 100m
-   memory: 200Mi
+    cpu: 100m
+    memory: 200Mi
 
-
- # Controls the output buffer for the fluentd daemonset
- # Note that, for memory buffer, if `resources.limits.memory` is set,
- # the total buffer size should not bigger than the memory limit, it should also
- # consider the basic memory usage by fluentd itself.
- # All buffer parameters (except Argument) defined in
- # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
- # can be configured here.
+  # Controls the output buffer for the fluentd daemonset
+  # Note that, for memory buffer, if `resources.limits.memory` is set,
+  # the total buffer size should not bigger than the memory limit, it should also
+  # consider the basic memory usage by fluentd itself.
+  # All buffer parameters (except Argument) defined in
+  # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
+  # can be configured here.
 buffer:
   "@type": memory
   total_limit_size: 600m
@@ -237,20 +202,16 @@ buffer:
   overflow_action: block
   retry_max_times: 3
 
-
 # Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector:
   beta.kubernetes.io/os: linux
-
 
 # This default tolerations allow the daemonset to be deployed on master nodes,
 # so that we can also collect metrics from those nodes.
 tolerations: []
 
-
 # Defines node affinity to restrict pod deployment.
 affinity: {}
-
 
 # `customFilters` defines the custom filters to be used.
 # This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
