@@ -7,6 +7,8 @@ metadata:
     app: splunk-kubernetes-objects
     version: 1.3.0
 spec:
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: splunk-kubernetes-objects

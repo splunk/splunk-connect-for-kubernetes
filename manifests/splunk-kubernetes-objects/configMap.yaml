@@ -47,7 +47,6 @@ data:
       @type splunk_hec
       protocol https
       hec_host MY-SPLUNK-HOST
-      hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
       source_key source

@@ -1,0 +1,18 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8s-metadata-query-logging
+  labels:
+    app: splunk-kubernetes-logging
+    version: 1.3.0
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - namespaces
+  - pods
+  verbs:
+  - list
+  - get
+  - watch
