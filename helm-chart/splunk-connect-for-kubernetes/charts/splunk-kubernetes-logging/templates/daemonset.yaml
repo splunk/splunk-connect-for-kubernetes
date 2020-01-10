@@ -49,9 +49,6 @@ spec:
           privileged: true
           runAsUser: 0
         {{- end }}
-        securityContext:
-          privileged: true
-          runAsUser: 0
         env:
           - name: K8S_NODE_NAME
             valueFrom:

@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
 roleRef:
   kind: ClusterRole
-  name: k8s-metadata-query-logging
+  name: {{ template "splunk-kubernetes-logging.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
 subjects:
 - kind: ServiceAccount
