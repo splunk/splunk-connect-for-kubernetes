@@ -8,6 +8,8 @@ metadata:
     engine: fluentd
     version: 1.3.0
 spec:
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       name: splunk-kubernetes-metrics

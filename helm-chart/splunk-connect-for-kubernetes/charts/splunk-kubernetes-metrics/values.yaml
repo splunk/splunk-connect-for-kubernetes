@@ -69,7 +69,7 @@ image:
   # The name of the image to pull
   name: splunk/k8s-metrics
   # The tag of the image to pull
-  tag: 1.1.1
+  tag: 1.1.2
   # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
   # Indicates if the image should be pulled using authentication from a secret
@@ -84,7 +84,7 @@ imageAgg:
   # The name of the image to pull
   name: splunk/k8s-metrics-aggr
   # The tag of the image to pull
-  tag: 1.1.0
+  tag: 1.1.1
   # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
   # Indicates if the image should be pulled using authentication from a secret
