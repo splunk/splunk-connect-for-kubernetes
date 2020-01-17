@@ -41,7 +41,7 @@ global:
     clusterName: "cluster_name"
     # Add privileged access to containers for openshift compatability
     openshift: false
-  prometheus_enabled: 
+  prometheus_enabled:
 
 ## Enabling splunk-kubernetes-logging will install the `splunk-kubernetes-logging` chart to a kubernetes
 ## cluster to collect logs generated in the cluster to a Splunk indexer/indexer cluster.
@@ -53,7 +53,7 @@ splunk-kubernetes-logging:
   # * info (default)
   # * warn
   # * error
-  logLevel: 
+  logLevel:
 
   # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
   fluentd:
@@ -131,6 +131,8 @@ splunk-kubernetes-logging:
       serviceClientSecretKey:
       # tokenEndpoint is a string, it indicates which endpoint should be used to get the authorization token used to make requests to the ingest API.
       tokenEndpoint:
+      # ingestAuthHost is a string, it indicates which url/hostname should be used to make token auth requests to the ingest API.
+      ingestAuthHost:
       # ingestAPIHost is a string, it indicates which url/hostname should be used to make requests to the ingest API.
       ingestAPIHost:
       # tenant is a string, it indicates which tenant should be used to make requests to the ingest API.
@@ -138,7 +140,7 @@ splunk-kubernetes-logging:
       # eventsEndpoint is a string, it indicates which endpoint should be used to make requests to the ingest API.
       eventsEndpoint:
       # debugIngestAPI is a boolean, it indicates whether user wants to debug requests and responses to ingest API. Default is false.
-      debugIngestAPI: false
+      debugIngestAPI:
 
   # Create or use existing secret if name is empty default name is used
   secret:
@@ -447,7 +449,7 @@ splunk-kubernetes-objects:
   # * info (default)
   # * warn
   # * error
-  logLevel: 
+  logLevel:
 
   rbac:
     # Specifies whether RBAC resources should be created.
