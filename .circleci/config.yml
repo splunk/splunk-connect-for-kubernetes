@@ -95,6 +95,7 @@ jobs:
             pyenv global 3.6.5
             pip install --upgrade pip
             pip install -r test/requirements.txt
+            rvm install 2.4.0
       - run:
           name: Lint helm charts
           command: |

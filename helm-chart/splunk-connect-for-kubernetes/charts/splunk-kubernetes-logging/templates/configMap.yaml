@@ -208,15 +208,11 @@ data:
         <record>
           # set the sourcetype from splunk.com/sourcetype pod annotation or set it to "kube:container:CONTAINER_NAME"
           sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? "kube:"+record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "kube:container:"+record.dig("kubernetes","container_name")}
-          # set the container field to the kubernetes container_name metadata
           container_name ${record.dig("kubernetes","container_name")}
-          # set the namespace field to the kubernetes namespace_name metadata
           namespace ${record.dig("kubernetes","namespace_name")}
-          # set the pod field to the kubernetes pod_name metadata
           pod ${record.dig("kubernetes","pod_name")}
-          # set the container_id field to the docker container_id metadata
           container_id ${record.dig("docker","container_id")}
-          # set the container_image field to the kubernetes container_image metadata
+          pod_uid ${record.dig("kubernetes","pod_id")}
           container_image ${record.dig("kubernetes","container_image")}
           # set the cluster_name field to the configured value, or default to "cluster_name"
           {{- with or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}
@@ -360,16 +356,15 @@ data:
           # metadata to parse out pod, namespace, container_name, container_id.
           # this may be resolved in the future by this issue: https://github.com/kubernetes/kubernetes/issues/58638#issuecomment-385126031
           {{- if eq .Values.containers.logFormatType "cri"}}
-          pod_uid
-          container_name
           container_retry
           {{- else }}
-          pod
-          namespace
-          container_name
-          container_id
           container_image
           {{- end }}
+          pod_uid
+          pod
+          container_name
+          namespace
+          container_id
           {{- if or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName }}
           cluster_name
           {{- end }}
