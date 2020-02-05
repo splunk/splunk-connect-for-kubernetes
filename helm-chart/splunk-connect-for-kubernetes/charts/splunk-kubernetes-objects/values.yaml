@@ -30,6 +30,13 @@ serviceAccount:
   # which will be used to get the images from a private registry
   usePullSecrets: false
 
+podSecurityPolicy:
+  # Specifies whether Pod Security Policy resources should be created.
+  # This should be set to `false` if either:
+  # a) Pod Security Policies is not enabled in the cluster, or
+  # b) you want to create Pod Security Policy resources by yourself.
+  create: false
+
 # = Kubernetes Connection Configs =
 kubernetes:
   # the URL for calling kubernetes API, by default it will be read from the environment variables
@@ -48,8 +55,6 @@ kubernetes:
   secretDir:
   # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
   clusterName:
-  # Add privileged access to containers for openshift compatability
-  openshift: false
 
 # = Object Lists =
 # NOTE: at least one object must be provided.
