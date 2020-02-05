@@ -95,9 +95,6 @@ jobs:
             pyenv global 3.6.5
             pip install --upgrade pip
             pip install -r test/requirements.txt
-            source /home/circleci/.bash_profile
-            rvm install 2.4.0
-            rvm use 2.4.0
       - run:
           name: Lint helm charts
           command: |
@@ -111,6 +108,9 @@ jobs:
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             export CI_SPLUNK_HEC_HOST_PERF=$(hostname -i)
+            source /home/circleci/.bash_profile
+            rvm install 2.4.0
+            rvm use 2.4.0
             .circleci/update_sck_config.sh
       - run:
           name: Deploy k8s connector
