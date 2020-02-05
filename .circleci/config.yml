@@ -95,7 +95,6 @@ jobs:
             pyenv global 3.6.5
             pip install --upgrade pip
             pip install -r test/requirements.txt
-            bash --login
             source /home/circleci/.bash_profile
             rvm install 2.4.0
             rvm use 2.4.0
