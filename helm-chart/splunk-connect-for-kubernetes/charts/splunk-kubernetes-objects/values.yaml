@@ -2,6 +2,30 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# = Global Configs =
+# Global configs allow parent chart to set values with `global.*`.
+# The purpose for using global configs is to share the same configs with sibling/sub charts.
+#
+# Values defined here are the default values.
+global:
+  logLevel: info
+  splunk:
+    hec:
+      protocol: https
+      port: 8088
+      insecureSSL: false
+      # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name specified by the user using customFilters. Default is false.
+      # If you want to use this feature you will have to set the index key for the record using customFilters.
+      # For example,
+      # customFilters:
+      #   SetIndexFilter:
+      #     tag: tail.containers.**
+      #     type: jq_transformer
+      #     body: jq '.record.index = "my_awesome_index" | .record'
+      indexRouting:
+  kubernetes:
+    clusterName: "cluster_name"
+
 # = Log Level =
 # logLevel is to set log level of the object collector. Avaiable values are:
 # * trace

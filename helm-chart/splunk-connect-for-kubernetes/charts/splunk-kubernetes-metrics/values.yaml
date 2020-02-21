@@ -2,6 +2,21 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
+global:
+  logLevel: info
+  # If local splunk configurations are not present, the global ones will be used (if available)
+  splunk:
+    # It has exactly the same configs as splunk.hec does
+    hec:
+      port: 8088
+      protocol: https
+      insecureSSL: false
+  kubernetes:
+    clusterName: "cluster_name"
+
 # = Log Level =
 # logLevel is to set log level of the Splunk kubernetes metrics collector. Avaiable values are:
 # * debug

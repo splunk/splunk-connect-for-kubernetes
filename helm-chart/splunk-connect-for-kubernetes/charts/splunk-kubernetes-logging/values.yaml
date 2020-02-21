@@ -2,6 +2,25 @@
 # This is a YAML-formatted file.
 # Declared variables will be passed into templates.
 
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
+global:
+  logLevel: info
+  # If local splunk configurations are not present, the global ones will be used (if available)
+  splunk:
+    # It has exactly the same configs as splunk.hec does
+    hec:
+      protocol: https
+      insecureSSL: false
+      # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name same as the namespace. Default is false.
+      indexRouting:
+      # indexRoutingDefaultIndex tells which index to use for the default kubernetes namespace. Used with indexRouting. This value is required when using indexRouting. Default is main if indexRoutingDefaultIndex is not specified.
+      indexRoutingDefaultIndex:
+  kubernetes:
+    clusterName: "cluster_name"
+  prometheus_enabled: true
+
 # logLevel is to set log level of the Splunk log collector. Avaiable values are:
 # * trace
 # * debug
