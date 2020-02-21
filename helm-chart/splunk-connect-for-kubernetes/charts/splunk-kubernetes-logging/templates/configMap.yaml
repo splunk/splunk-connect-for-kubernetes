@@ -179,7 +179,6 @@ data:
 
   output.conf: |-
     <label @SPLUNK>
-
       # = filters for container logs =
       {{- range $name, $logDef := .Values.logs }}
       {{- if and $logDef.from.pod $logDef.multiline }}
@@ -206,7 +205,7 @@ data:
         @type record_transformer
         enable_ruby
         <record>
-          # set the sourcetype from splunk.com/sourcetype pod annotation or set it to "kube:container:CONTAINER_NAME"
+          # set the sourcetype from splunk.com/sourcetype pod annotation or set it to kube:container:CONTAINER_NAME
           sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? "kube:"+record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "kube:container:"+record.dig("kubernetes","container_name")}
           container_name ${record.dig("kubernetes","container_name")}
           namespace ${record.dig("kubernetes","namespace_name")}
@@ -231,7 +230,6 @@ data:
           {{- end }}
         </record>
       </filter>
-
       <filter tail.containers.**>
         # Exclude all logs that are blacklisted
         @type grep
