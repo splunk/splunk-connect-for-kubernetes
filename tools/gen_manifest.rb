@@ -7,24 +7,26 @@ name_prefix = "#{release_name}-splunk-kubernetes-"
 
 def sanitize_yaml(yaml)
   yaml = YAML.load(yaml)
-  %w[chart release heritage].each { |label|
-    yaml['metadata']['labels'].delete label
+  if yaml != false
+    %w[chart release heritage].each { |label|
+      yaml['metadata']['labels'].delete label
+      spec = yaml.fetch('spec', {})
+      spec.fetch('selector', {}).fetch('matchLabels', {}).delete(label)
+      spec.fetch('template', {}).fetch('metadata', {}).fetch('labels', {}).delete(label)
+    }
 
-    spec = yaml.fetch('spec', {})
-    spec.fetch('selector', {}).fetch('matchLabels', {}).delete(label)
-    spec.fetch('template', {}).fetch('metadata', {}).fetch('labels', {}).delete(label)
-  }
+    %w[checksum/config checksum/helpers].each { |a|
+      yaml.fetch('spec', {}).fetch('template', {}).fetch('metadata', {}).fetch('annotations', {}).delete(a)
+    }
 
-  %w[checksum/config checksum/helpers].each { |a|
-    yaml.fetch('spec', {}).fetch('template', {}).fetch('metadata', {}).fetch('annotations', {}).delete(a)
-  }
-
-  yaml['metadata']['labels']['version'] = @version
-  yaml.fetch('spec', {}).tap { |spec|
-    spec.fetch('template', {}).fetch('metadata', {}).fetch('labels', {})['version'] = @version
-  }
-
-  YAML.dump yaml
+    yaml['metadata']['labels']['version'] = @version
+    yaml.fetch('spec', {}).tap { |spec|
+      spec.fetch('template', {}).fetch('metadata', {}).fetch('labels', {})['version'] = @version
+    }
+    YAML.dump yaml
+  else
+    return ""
+  end
 end
 
 def write_file
