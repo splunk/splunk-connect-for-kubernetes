@@ -296,7 +296,7 @@ data:
 
       # = output =
       <match **>
-        {{- if .Values.splunk.hec }}
+        {{- if .Values.splunk.hec.host }}
         @type splunk_hec
         {{- with or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
         protocol {{ . }}
