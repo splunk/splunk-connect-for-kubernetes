@@ -45,9 +45,9 @@ To learn more about using and modifying charts, see:
 ## Configuration variables for Helm
 
 To learn more about using and modifying charts, see:
-* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-logging/values.yaml)
-* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics/values.yaml)
-* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects/values.yaml)
+* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-logging/values.yaml)
+* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-metrics/values.yaml)
+* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-objects/values.yaml)
 
 ## Deploy using YAML
 
