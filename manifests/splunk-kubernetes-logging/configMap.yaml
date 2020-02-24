@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.3.0
+    version: 1.4.0
 data:
   fluent.conf: |-
     @include system.conf
@@ -213,8 +213,8 @@ data:
     | .record.sourcetype = \\\"fluentd:monitor-agent\\\" | .record.cluster_name =
     \\\"cluster_name\\\" | .record.index = \\\"main\\\" | .record\"\n  </filter>\n\n
     \ # = custom filters specified by users =\n\n  # = output =\n  <match **>\n    @type
-    splunk_hec\n    protocol https\n    hec_host MY-SPLUNK-HOST\n    hec_port 8088\n
-    \   hec_token \"#{ENV['SPLUNK_HEC_TOKEN']}\"\n    index_key index\n    insecure_ssl
+    splunk_hec\n    protocol https\n    hec_host \"MY-SPLUNK-HOST\"\n    hec_port
+    8088\n    hec_token \"#{ENV['SPLUNK_HEC_TOKEN']}\"\n    index_key index\n    insecure_ssl
     true\n    \n    host \"#{ENV['K8S_NODE_NAME']}\"\n    source_key source\n    sourcetype_key
     sourcetype\n    <fields>\n      # currently CRI does not produce log paths with
     all the necessary\n      # metadata to parse out pod, namespace, container_name,

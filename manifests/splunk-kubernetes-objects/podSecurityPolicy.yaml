@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.3.0
+    version: 1.4.0
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: runtime/default
     apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default
