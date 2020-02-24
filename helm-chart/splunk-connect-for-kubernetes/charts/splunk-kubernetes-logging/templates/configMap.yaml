@@ -302,7 +302,7 @@ data:
         protocol {{ . }}
         {{- end }}
         {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
-        hec_host {{ . }}
+        hec_host {{ . | quote }}
         {{- end }}
         {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
         hec_port {{ . }}
