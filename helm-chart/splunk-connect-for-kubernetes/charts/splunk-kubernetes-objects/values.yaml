@@ -292,15 +292,6 @@ global:
       clientCert:
       clientKey:
       caFile:
-    ingest_api:
-      serviceClientIdentifier:
-      serviceClientSecretKey:
-      tokenEndpoint:
-      ingestAuthHost:
-      ingestAPIHost:
-      tenant:
-      eventsEndpoint:
-      debugIngestAPI:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true
