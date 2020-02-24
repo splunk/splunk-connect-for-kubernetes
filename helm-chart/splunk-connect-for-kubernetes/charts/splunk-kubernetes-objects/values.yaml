@@ -2,30 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# = Global Configs =
-# Global configs allow parent chart to set values with `global.*`.
-# The purpose for using global configs is to share the same configs with sibling/sub charts.
-#
-# Values defined here are the default values.
-global:
-  logLevel: info
-  splunk:
-    hec:
-      protocol: https
-      port: 8088
-      insecureSSL: false
-      # indexRouting is a boolean, it indicates whether user wants to route logs to the index with name specified by the user using customFilters. Default is false.
-      # If you want to use this feature you will have to set the index key for the record using customFilters.
-      # For example,
-      # customFilters:
-      #   SetIndexFilter:
-      #     tag: tail.containers.**
-      #     type: jq_transformer
-      #     body: jq '.record.index = "my_awesome_index" | .record'
-      indexRouting:
-  kubernetes:
-    clusterName: "cluster_name"
-
 # = Log Level =
 # logLevel is to set log level of the object collector. Avaiable values are:
 # * trace
@@ -297,3 +273,34 @@ customFilters: {}
 # ```
 # WARNING: The fields being used here must be available inside the fluentd record.
 indexFields: []
+
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
+global:
+  logLevel: info
+  # If local splunk configurations are not present, the global ones will be used (if available)
+  splunk:
+    # It has exactly the same configs as splunk.hec does
+    hec:
+      host:
+      port: 8088
+      token:
+      protocol: https
+      indexName:
+      insecureSSL: false
+      clientCert:
+      clientKey:
+      caFile:
+    ingest_api:
+      serviceClientIdentifier:
+      serviceClientSecretKey:
+      tokenEndpoint:
+      ingestAuthHost:
+      ingestAPIHost:
+      tenant:
+      eventsEndpoint:
+      debugIngestAPI:
+  kubernetes:
+    clusterName: "cluster_name"
+  prometheus_enabled: true
