@@ -94,7 +94,7 @@ data:
       metric_value_key value
       protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
       {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
-      hec_host {{ . }}
+      hec_host {{ . | quote }}
       {{- end }}
       {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
       hec_port {{ . }}

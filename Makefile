@@ -39,6 +39,9 @@ manifests: main-chart
 	   --set splunk-kubernetes-logging.image.tag=$(FLUENTD_HEC_VERSION) \
 	   --set splunk-kubernetes-metrics.image.tag=$(K8S_METRICS_VERISION) \
 	   --set splunk-kubernetes-metrics.imageAgg.tag=$(K8S_METRICS_AGGR_VERSION) \
+	   --set splunk-kubernetes-logging.podSecurityPolicy.create=true \
+	   --set splunk-kubernetes-metrics.podSecurityPolicy.create=true \
+	   --set splunk-kubernetes-objects.podSecurityPolicy.create=true \
 	   $$(ls build/splunk-connect-for-kubernetes-*.tgz) \
 	   | ruby tools/gen_manifest.rb manifests
 

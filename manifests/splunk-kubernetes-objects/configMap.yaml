@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.3.0
+    version: 1.4.0
 data:
   fluent.conf: |
     <system>
@@ -46,7 +46,8 @@ data:
     <match kube.**>
       @type splunk_hec
       protocol https
-      hec_host MY-SPLUNK-HOST
+      hec_host "MY-SPLUNK-HOST"
+      hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
       source_key source

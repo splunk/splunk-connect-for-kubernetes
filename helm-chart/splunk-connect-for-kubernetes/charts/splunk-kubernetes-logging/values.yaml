@@ -402,3 +402,25 @@ customFilters: {}
 # ```
 # WARNING: The fields being used here must be available inside the fluentd record.
 indexFields: []
+
+# Global configurations
+# These configurations will be used if the corresponding local configurations are not set.
+# For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
+global:
+  logLevel: info
+  # If local splunk configurations are not present, the global ones will be used (if available)
+  splunk:
+    # It has exactly the same configs as splunk.hec does
+    hec:
+      host:
+      port: 8088
+      token:
+      protocol: https
+      indexName:
+      insecureSSL: false
+      clientCert:
+      clientKey:
+      caFile:
+  kubernetes:
+    clusterName: "cluster_name"
+  prometheus_enabled: true

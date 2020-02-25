@@ -9,7 +9,7 @@ metadata:
     heritage: {{ .Release.Service }}
     engine: fluentd
 spec:
-  strategy:
+  updateStrategy:
     type: RollingUpdate
   selector:
     matchLabels:
