@@ -1,0 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ template "splunk-kubernetes-logging.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-logging.name" . }}
+    chart: {{ template "splunk-kubernetes-logging.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+{{- if .Values.podSecurityPolicy.create }}
+- apiGroups:      ['extensions']
+  resources:      ['podsecuritypolicies']
+  verbs:          ['use']
+  resourceNames:  [{{ template "splunk-kubernetes-logging.fullname" . }}]
+{{- end }}
+- apiGroups:
+    - ""
+  resources:
+    - "namespaces"
+    - "pods"
+  verbs:
+    - "list"
+    - "get"
+    - "watch"

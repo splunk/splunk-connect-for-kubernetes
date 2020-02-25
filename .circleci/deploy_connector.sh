@@ -14,7 +14,7 @@ else
    helm delete --purge $(helm ls --short)
 fi
 echo "Deploying k8s-connect with latest changes"
-helm install --name=ci-$CIRCLE_SHA1 -f .circleci/sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
+helm install --name=ci-sck -f .circleci/sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
 #wait for deployment to finish
 until kubectl get pod | grep Running | [[ $(wc -l) == 4 ]]; do
    sleep 1;

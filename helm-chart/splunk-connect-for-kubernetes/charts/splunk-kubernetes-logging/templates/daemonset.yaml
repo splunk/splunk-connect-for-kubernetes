@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ template "splunk-kubernetes-logging.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-logging.name" . }}
+    chart: {{ template "splunk-kubernetes-logging.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    engine: fluentd
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "splunk-kubernetes-logging.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "splunk-kubernetes-logging.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        {{- if .Values.global.prometheus_enabled }}
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '24231'
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "splunk-kubernetes-logging.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      containers:
+      - name: splunk-fluentd-k8s-logs
+        image: {{ template "splunk-kubernetes-logging.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if or .Values.global.kubernetes.securityContext .Values.kubernetes.securityContext }}
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        {{- end }}
+        env:
+          - name: K8S_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: SPLUNK_HEC_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "splunk-kubernetes-logging.secret" . }}
+                key: splunk_hec_token
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        volumeMounts:
+        - name: varlog
+          mountPath: {{ .Values.containers.path }}
+        - name: varlogdest
+          mountPath: {{ .Values.containers.pathDest }}
+          readOnly: true
+        - name: journallogpath
+          mountPath: {{ .Values.journalLogPath | quote }}
+          readOnly: true
+        - name: conf-configmap
+          mountPath: /fluentd/etc
+        - name: secrets
+          mountPath: /fluentd/etc/splunk
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: {{ .Values.containers.path }}
+      - name: varlogdest
+        hostPath:
+          path: {{ .Values.containers.pathDest }}
+      - name: journallogpath
+        hostPath:
+          path: {{ .Values.journalLogPath | quote }}
+      - name: conf-configmap
+        configMap:
+          name: {{ template "splunk-kubernetes-logging.fullname" . }}
+      - name: secrets
+        secret:
+          secretName: {{ template "splunk-kubernetes-logging.secret" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}

@@ -45,9 +45,9 @@ To learn more about using and modifying charts, see:
 ## Configuration variables for Helm
 
 To learn more about using and modifying charts, see:
-* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-logging/values.yaml)
-* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-metrics/values.yaml)
-* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-objects/values.yaml)
+* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-logging/values.yaml)
+* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics/values.yaml)
+* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects/values.yaml)
 
 ## Deploy using YAML
 
@@ -121,23 +121,25 @@ Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best 
 
 One possible filter option is to enable the processing of multi-line events. This feature is currently experimental and considered to be community supported.
 
-# Namespace to Index Routing
+# Managing SCK Log Ingestion by Using Annotations
 
-Splunk Connect for Kubernetes has the functionality to route logs and metrics from different namespaces to Splunk indexers of the same name. This can be configured by
-using the two configurable parameters `indexRouting` and `indexRoutingDefaultIndex`
+You can easily instruct Splunk Connect for Kubernetes Logging with these supported annotations.
 
-`indexRouting` is a boolean configurable that enables the feature
-`indexRoutingDefaultIndex` is the Splunk index used for the events from the default Kubernetes namespace
+* Use `splunk.com/index` annotation on pod and/or namespace to tell which Splunk index to ingest to. Pod annotation will take precedence over namespace annotation when both are annotated.
+  ex) `kubectl annotate namespace kube-system splunk.com/index=k8s_events`
+* Set `splunk.com/exclude` annotation to `true` on pod and/or namespace to exclude its logs from ingested to Splunk.
+* Use `splunk.com/sourcetype` annotation on pod to overwrite `sourcetype` field. If not set, it is dynamically generated to be `kube:container:CONTAINER_NAME`. When using this annotation, the sourcetype will be prefixed with `kube:`.
 
-Warning: Before enabling this feature it is essential to have Splunk indexes created which map to your Kubernetes namespaces.
+Regarding excluding container logs: If possible, it is more efficient to exlude it using `fluentd.exclude_path` option.
 
-For example:
-Consider the following kubernetes namespace to splunk index topology.
-* (Namespace) -> (Splunk Index)
-* kube-system -> kube-system
-* kube-public -> kube-public
-* default -> indexRoutingDefaultIndex
-For this topology to work appropriately we have to create the splunk indexes "kube-system", "kube-public" and the value of indexRoutingDefaultIndex.
+# Searching for SCK metadata in Splunk
+Splunk Connect for Kubernetes sends events to Splunk which can contain extra meta-data attached to each event. Metadata values such as "pod", "namespace", "container_name","container_id", "cluster_name" will appear as fields when viewing the event data inside Splunk.
+There are two solutions for running searches in Splunk on meta-data.
+
+* Modify search to use`fieldname::value` instead of `fieldname=value`.
+* Configure `fields.conf` on your downstream Splunk system to have your meta-data fields available to be searched using `fieldname=value`. Example: [fields.conf.example](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/fields.conf.example)
+
+For more information on index time field extraction please view this [guide](https://docs.splunk.com/Documentation/Splunk/latest/Data/Configureindex-timefieldextraction#Where_to_put_the_configuration_changes_in_a_distributed_environment).
 
 # Sending logs to ingest API
 Splunk Connect for Kubernetes can be used to send events to [Splunk Ingest API](https://sdc.splunkbeta.com/reference/api/ingest/v1beta2). In the ingest_api section of the yaml file you are using to deploy, the following configuration options have to be configured:</br>

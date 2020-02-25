@@ -1,29 +1,31 @@
 include PLUGIN_VERSIONS.sh
 export $(shell sed 's/=.*//' PLUGIN_VERSIONS.sh)
 
-connect-chart: logging-chart objects-chart metrics-chart
-	@sed -i.bak -E -e 's/^([[:space:]]+repository:[[:space:]]+).+$$/\1local/' helm-chart/splunk-connect-for-kubernetes/requirements.yaml
-	@mv helm-chart/splunk-connect-for-kubernetes/requirements.yaml.bak .
-	@mkdir -p helm-chart/splunk-connect-for-kubernetes/charts
-	@cp build/splunk-kubernetes-*.tgz helm-chart/splunk-connect-for-kubernetes/charts
-	@helm package -d build helm-chart/splunk-connect-for-kubernetes
-	@mv requirements.yaml.bak helm-chart/splunk-connect-for-kubernetes/requirements.yaml
-	@rm -rf helm-chart/splunk-connect-for-kubernetes/charts
-
-logging-chart: build
-	@helm package -d build helm-chart/splunk-kubernetes-logging
-
-objects-chart: build
-	@helm package -d build helm-chart/splunk-kubernetes-objects
-
-metrics-chart: build
-	@helm package -d build helm-chart/splunk-kubernetes-metrics
-
-build:
+create-dir:
 	@mkdir -p build
 
+main-chart: create-dir
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes
+
+logging-chart: create-dir
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-logging
+
+objects-chart: create-dir
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects
+
+metrics-chart: create-dir
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics
+
+all-charts: create-dir
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-logging
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects
+	@helm package -d build helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics
+
+build: all-charts
+
 .PHONY: manifests
-manifests: connect-chart
+manifests: main-chart
 	@./tools/update_charts_version.sh
 	@helm template \
 	   --set global.splunk.hec.host=MY-SPLUNK-HOST \
@@ -37,6 +39,9 @@ manifests: connect-chart
 	   --set splunk-kubernetes-logging.image.tag=$(FLUENTD_HEC_VERSION) \
 	   --set splunk-kubernetes-metrics.image.tag=$(K8S_METRICS_VERISION) \
 	   --set splunk-kubernetes-metrics.imageAgg.tag=$(K8S_METRICS_AGGR_VERSION) \
+	   --set splunk-kubernetes-logging.podSecurityPolicy.create=true \
+	   --set splunk-kubernetes-metrics.podSecurityPolicy.create=true \
+	   --set splunk-kubernetes-objects.podSecurityPolicy.create=true \
 	   $$(ls build/splunk-connect-for-kubernetes-*.tgz) \
 	   | ruby tools/gen_manifest.rb manifests
 

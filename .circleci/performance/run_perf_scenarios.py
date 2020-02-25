@@ -40,15 +40,15 @@ DATAGEN_PERF_CASES = [
     #    'eps': 100,
     #    'sleep_duration': 1800
     #},
-    #{
-    #    'deployment_name': 'perf-test-datagen',
-    #    'namespace': 'default',
-    #    'number_of_datagen': 10,
-    #   'message_count': 100000,
-    #    'message_size': 1024,
-    #    'eps': 100,
-    #    'sleep_duration': 1800
-    # },
+    {
+       'deployment_name': 'perf-test-datagen',
+       'namespace': 'default',
+       'number_of_datagen': 20,
+       'message_count': 100000,
+       'message_size': 256,
+       'eps': 100,
+       'sleep_duration': 1200
+    },
     #{
     #     'deployment_name': 'perf-test-datagen',
     #     'namespace': 'default',
@@ -148,15 +148,15 @@ DATAGEN_PERF_CASES = [
     #     'eps': 250,
     #     'sleep_duration': 3600
     # },
-     {
-         'deployment_name': 'perf-test-datagen',
-         'namespace': 'default',
-         'number_of_datagen': 10,
-         'message_count': 1000 ,
-         'message_size': 1024,
-         'eps': 100,
-         'sleep_duration': 3600
-     }
+    #  {
+    #      'deployment_name': 'perf-test-datagen',
+    #      'namespace': 'default',
+    #      'number_of_datagen': 10,
+    #      'message_count': 1000 ,
+    #      'message_size': 1024,
+    #      'eps': 10,
+    #      'sleep_duration': 5400
+    #  }
 ]
 
 # Lookup configurables for fluent and kubernetes

@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.3.0
+    version: 1.4.0
 data:
   fluent.conf: |
     # system wide configurations
@@ -58,7 +58,7 @@ data:
       metric_name_key metric_name
       metric_value_key value
       protocol https
-      hec_host MY-SPLUNK-HOST
+      hec_host "MY-SPLUNK-HOST"
       hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"

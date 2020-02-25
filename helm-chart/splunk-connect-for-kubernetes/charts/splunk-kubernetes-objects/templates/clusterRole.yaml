@@ -1,0 +1,57 @@
+{{- if .Values.rbac.create }}
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "splunk-kubernetes-objects.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-objects.name" . }}
+    chart: {{ template "splunk-kubernetes-objects.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+  {{- if .Values.podSecurityPolicy.create }}
+  - apiGroups:      ['extensions']
+    resources:      ['podsecuritypolicies']
+    verbs:          ['use']
+    resourceNames:  [{{ template "splunk-kubernetes-objects.fullname" . }}]
+  {{- end -}}
+  {{/* create a map for generating the rules */}}
+  {{- $groupedObjects := dict }}
+  {{- range $apiGroup, $apiVersions := .Values.objects }}
+  {{- $lists := dict "pull" list "watch" list }}
+  {{- range $apiVersion, $objects := $apiVersions }}
+  {{- range $objects }}
+  {{- if eq (.mode | default "pull" | lower) "watch" }}
+  {{- set $lists "watch" (append $lists.watch .name) | and nil }}
+  {{- else }}
+  {{- set $lists "pull" (append $lists.pull .name) | and nil }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- $groupName := or (and (ne $apiGroup "core") $apiGroup) "" }}
+  {{- set $groupedObjects $groupName $lists | and nil }}
+  {{- end }}
+  {{/* generating the content */}}
+  {{- range $apiGroup, $lists := $groupedObjects }}
+  {{- if $lists.pull }}
+  - apiGroups: [
+    {{- $apiGroup | quote -}}
+  ]
+    resources:
+    {{- range $lists.pull }}
+    - {{ . | replace "_" "" }}
+    {{- end }}
+    verbs: ["get", "list"]
+  {{- end }}
+  {{- if $lists.watch }}
+  - apiGroups: [
+    {{- $apiGroup | quote -}}
+  ]
+    resources:
+    {{- range $lists.watch }}
+    - {{ . | replace "_" "" }}
+    {{- end }}
+    verbs: ["watch"]
+  {{- end }}
+  {{- end }}
+{{- end -}}
