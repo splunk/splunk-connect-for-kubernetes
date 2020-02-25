@@ -1,5 +1,6 @@
 {{- $token := or .Values.splunk.hec.token .Values.global.splunk.hec.token }}
 {{- $host := or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
+{{- $ingestapihost := .Values.splunk.ingest_api.ingestAPIHost }}
 {{- if and $token $host }}
 
 ███████╗██████╗ ██╗     ██╗   ██╗███╗   ██╗██╗  ██╗██╗    
@@ -16,15 +17,17 @@ After a few minutes, you should see logs being indexed in your Splunk.
 
 If you get stuck, we're here to help.
 Look for answers here: http://docs.splunk.com
+{{- else if $ingestapihost }}
 {{- else }}
 #########################################################
-####   ERROR: You did not set splunk.hec correctly   ####
+####   ERROR: You did not set splunk info correctly  ####
 #########################################################
 
 This deployment will be incomplete until you correctly configure Splunk
-HEC connection. You must set splunk.hec.host and splunk.hec.token. Follow
+HEC connection or Ingest API connection. You must set either splunk.hec section or 
+splunk.ingest_api section.  
+to set up HTTP Event Collector on your Splunk, follow
 http://docs.splunk.com/Documentation/Splunk/latest/Data/AboutHEC
-to set up HTTP Event Collector on your Splunk.
 
 Once set up run:
 

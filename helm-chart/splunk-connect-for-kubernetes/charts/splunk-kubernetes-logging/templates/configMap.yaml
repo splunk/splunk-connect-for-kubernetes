@@ -319,7 +319,7 @@ data:
         {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
         ca_file /fluentd/etc/splunk/hec_ca_file
         {{- end }}
-        {{ else }}
+        {{- else }}
         @type splunk_ingest_api
         {{- with or .Values.splunk.ingest_api.serviceClientIdentifier }}
         service_client_identifier {{ . }}
