@@ -170,7 +170,6 @@ data:
     {{- end }}
 
   {{- if .Values.global.monitoring_agent_enabled }}
-
   monit.conf: |-
     <source>
       @id fluentd-monitor-agent
@@ -390,9 +389,12 @@ data:
         {{- end }}
         </buffer>
         {{- end }}
+
+        {{- if .Values.global.monitoring_agent_enabled }}
         <format monitor_agent>
           @type json
         </format>
+        {{- end }}
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value
