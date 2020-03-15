@@ -64,6 +64,10 @@ splunk-kubernetes-logging:
     exclude_path:
     #  - /var/log/containers/kube-svc-redirect*.log
     #  - /var/log/containers/tiller*.log
+    checkpointFile:
+    # the name of the checkpoint file.
+      path: /var/log/fluentd
+
 
   # Configurations for container logs
   containers:
