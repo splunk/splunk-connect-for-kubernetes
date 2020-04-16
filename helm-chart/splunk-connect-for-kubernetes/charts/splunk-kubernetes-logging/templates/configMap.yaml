@@ -73,7 +73,7 @@ data:
     <source>
       @id containers.log
       @type tail
-      @label @SPLUNK
+      @label @CONCAT
       tag tail.containers.*
       path {{ .Values.fluentd.path | default "/var/log/containers/*.log" }}
       {{- if .Values.fluentd.exclude_path }}
@@ -106,7 +106,7 @@ data:
     <source>
       @id tail.file.{{ $name }}
       @type tail
-      @label @SPLUNK
+      @label @CONCAT
       tag tail.file.{{ or $logDef.sourcetype $name }}
       path {{ $logDef.from.file.path }}
       pos_file /var/log/splunk-fluentd-{{ $name }}.pos
@@ -149,7 +149,7 @@ data:
     <source>
       @id journald-{{ $name }}
       @type systemd
-      @label @SPLUNK
+      @label @CONCAT
       tag journald.{{ or $logDef.sourcetype $name }}
       path {{ $.Values.journalLogPath | quote }}
       matches [{ "_SYSTEMD_UNIT": {{ $logDef.from.journald.unit | quote }} }]
@@ -178,7 +178,8 @@ data:
 
 
   output.conf: |-
-    <label @SPLUNK>
+    #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
+    <label @CONCAT>
       # = filters for container logs =
       {{- range $name, $logDef := .Values.logs }}
       {{- if and $logDef.from.pod $logDef.multiline }}
@@ -189,12 +190,30 @@ data:
         stream_identity_key stream
         multiline_start_regexp {{ $logDef.multiline.firstline }}
         flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
-        separator ""
+        separator {{ $logDef.multiline.separator | default "" | quote }}
         use_first_timestamp true
       </filter>
       {{- end }}
       {{- end }}
-
+      # = filters for journald logs =
+      {{- range $name, $logDef := .Values.logs }}
+      {{- if and $logDef.from.journald $logDef.multiline }}
+      <filter journald.{{ or $logDef.sourcetype $name }}>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        multiline_start_regexp {{ $logDef.multiline.firstline }}
+        flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
+      </filter>
+      {{- end }}
+      {{- end }}
+      # Events are relabeled then emitted to the SPLUNK label
+      <match **>
+        @type relabel
+        @label @SPLUNK
+      </match>
+    </label>
+    <label @SPLUNK>
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
@@ -246,19 +265,6 @@ data:
       </filter>
       {{- end }}
 
-      # = filters for journald logs =
-      {{- range $name, $logDef := .Values.logs }}
-      {{- if and $logDef.from.journald $logDef.multiline }}
-      <filter journald.{{ or $logDef.sourcetype $name }}>
-        @type concat
-        key log
-        timeout_label @SPLUNK
-        multiline_start_regexp {{ $logDef.multiline.firstline }}
-        flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
-      </filter>
-      {{- end }}
-      {{- end }}
-
       # create source and sourcetype
       {{- if $checks.hasJournald }}
       <filter journald.**>
@@ -288,7 +294,7 @@ data:
       <filter {{ $filterDef.tag }}>
         @type {{ $filterDef.type }}
         {{- if $filterDef.body }}
-        {{ $filterDef.body }}
+        {{ $filterDef.body | indent 8 }}
         {{- end }}
       </filter>
       {{- end }}

@@ -274,7 +274,7 @@ logs:
     timestampExtraction:
       format: "%Y-%m-%dT%H:%M:%SZ"
     sourcetype: kube:apiserver-audit
-
+  
 # Defines which version of image to use, and how it should be pulled.
 image:
   # The domain of the registry to pull the image from

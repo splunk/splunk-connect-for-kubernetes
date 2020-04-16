@@ -15,8 +15,8 @@ jobs:
       MINIKUBE_WANTREPORTERRORPROMPT: false
       SKAFFOLD_VERSION: v0.33.0
       GO111MODULE: "on"
-      CI_SPLUNK_VERSION: "7.3.2"
-      CI_SPLUNK_FILENAME: splunk-7.3.2-c60db69f8e32-linux-2.6-amd64.deb
+      CI_SPLUNK_VERSION: "8.0.3"
+      CI_SPLUNK_FILENAME: splunk-8.0.3-a6754d8441bf-linux-2.6-amd64.deb
       CI_SPLUNK_HOST: 127.0.0.1
       CI_SPLUNK_PORT: 8089
       CI_SPLUNK_USERNAME: admin

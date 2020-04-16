@@ -65,7 +65,7 @@ data:
     <source>
       @id containers.log
       @type tail
-      @label @SPLUNK
+      @label @CONCAT
       tag tail.containers.*
       path /var/log/containers/*.log
       pos_file /var/log/splunk-fluentd-containers.log.pos
@@ -84,7 +84,7 @@ data:
     <source>
       @id tail.file.kube-audit
       @type tail
-      @label @SPLUNK
+      @label @CONCAT
       tag tail.file.kube:apiserver-audit
       path /var/log/kube-apiserver-audit.log
       pos_file /var/log/splunk-fluentd-kube-audit.pos
@@ -103,7 +103,7 @@ data:
     <source>
       @id journald-docker
       @type systemd
-      @label @SPLUNK
+      @label @CONCAT
       tag journald.kube:docker
       path "/run/log/journal"
       matches [{ "_SYSTEMD_UNIT": "docker.service" }]
@@ -121,7 +121,7 @@ data:
     <source>
       @id journald-kubelet
       @type systemd
-      @label @SPLUNK
+      @label @CONCAT
       tag journald.kube:kubelet
       path "/run/log/journal"
       matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
@@ -144,7 +144,8 @@ data:
       tag monitor_agent
     </source>
   output.conf: |-
-    <label @SPLUNK>
+    #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
+    <label @CONCAT>
       # = filters for container logs =
       <filter tail.containers.var.log.containers.dns-controller*dns-controller*.log>
         @type concat
@@ -236,7 +237,21 @@ data:
         separator ""
         use_first_timestamp true
       </filter>
-
+      # = filters for journald logs =
+      <filter journald.kube:kubelet>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
+        flush_interval 5s
+      </filter>
+      # Events are relabeled then emitted to the SPLUNK label
+      <match **>
+        @type relabel
+        @label @SPLUNK
+      </match>
+    </label>
+    <label @SPLUNK>
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
@@ -274,15 +289,6 @@ data:
         </exclude>
       </filter>
       # extract pod_uid and container_name for CRIO runtime
-
-      # = filters for journald logs =
-      <filter journald.kube:kubelet>
-        @type concat
-        key log
-        timeout_label @SPLUNK
-        multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
-      </filter>
 
       # create source and sourcetype
       <filter journald.**>
