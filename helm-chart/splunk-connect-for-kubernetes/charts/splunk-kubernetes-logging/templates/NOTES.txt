@@ -2,7 +2,7 @@
 {{- $host := or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
 {{- if and $token $host }}
 
-Splunk> The IT Search Engine.
+Splunk> The Data-to-Everything(tm) Platform
 
 Listen to your data.
 
