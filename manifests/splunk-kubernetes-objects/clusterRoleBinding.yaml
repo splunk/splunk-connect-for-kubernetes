@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.0
+    version: 1.4.1
 roleRef:
   kind: ClusterRole
   name: splunk-kubernetes-objects
