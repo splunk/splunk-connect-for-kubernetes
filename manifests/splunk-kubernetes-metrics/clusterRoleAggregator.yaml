@@ -5,7 +5,7 @@ metadata:
   name: kube-api-aggregator
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.0
+    version: 1.4.1
 rules:
 - apiGroups:
   - extensions
