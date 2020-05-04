@@ -420,7 +420,7 @@ splunk-kubernetes-logging:
   # ```
   customFilters: {}
 
-  # You can find more information on indexed fields here - http://dev.splunk.com/view/event-collector/SP-CAAAFB6
+  # You can find more information on indexed fields here - https://dev.splunk.com/enterprise/docs/dataapps/httpeventcollector
   # The scheme to define an indexed field is:
   #
   # ```
