@@ -394,11 +394,17 @@ data:
         <format monitor_agent>
           @type json
         </format>
+        {{- if .Values.output_json_format }}
+        <format>
+          @type json
+        </format>
+        {{- else }}
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value
           message_key log
           add_newline false
         </format>
+        {{- end }}
       </match>
     </label>

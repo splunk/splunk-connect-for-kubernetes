@@ -403,6 +403,10 @@ customFilters: {}
 # WARNING: The fields being used here must be available inside the fluentd record.
 indexFields: []
 
+# Default to false ( in the global ) and this will keep the raw logs, not the structure created by docker or journald
+# Set to true if you want use json format for outout.
+output_json_format: 
+
 # Global configurations
 # These configurations will be used if the corresponding local configurations are not set.
 # For example, if `global.logLevel` is set and `logLevel` is not set, `global.logLevel` will be used; if `logLevel` is set, it will be used regardless `global.logLevel` is set or not.
@@ -424,3 +428,4 @@ global:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true
+  output_json_format: false
