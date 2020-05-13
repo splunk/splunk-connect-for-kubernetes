@@ -31,6 +31,8 @@ containers:
   # Specify the log format for "cri" logFormatType
   # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
   logFormat:
+  # Specify the interval of refreshing the list of watch file. 
+  refreshInterval:
 
 # Directory where to read journald logs. (docker daemon logs, kubelet logs, and anyother specified serivce logs)
 journalLogPath: /run/log/journal

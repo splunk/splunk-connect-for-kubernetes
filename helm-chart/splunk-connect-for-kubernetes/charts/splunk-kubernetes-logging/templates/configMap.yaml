@@ -94,6 +94,7 @@ data:
         time_key time
         time_type string
         localtime false
+        refresh_interval {{ .Values.containers.refreshInterval | default 60 }}
       </parse>
     </source>
 
