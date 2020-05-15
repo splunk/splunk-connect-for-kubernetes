@@ -166,6 +166,8 @@ kubernetes:
   kubeletAddress:
   # The port that kubelet is listening on. Default is 10250
   kubeletPort:
+  # The port that is used to get the metrics using apiserver proxy using ssl for the metrics aggregator
+  kubeletPortAggregator:
   # This option is used to get the metrics from summary api on each kubelet using ssl
   useRestClientSSL: true
   # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false

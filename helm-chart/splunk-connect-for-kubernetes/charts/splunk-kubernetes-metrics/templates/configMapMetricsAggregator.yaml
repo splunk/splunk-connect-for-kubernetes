@@ -16,7 +16,7 @@ data:
     <source>
       @type kubernetes_metrics_aggregator
       tag kube.*
-      {{- with .Values.kubernetes.kubeletPort }}
+      {{- with .Values.kubernetes.kubeletPortAggregator }}
       kubelet_port {{ . }}
       {{- end }}
       {{- with .Values.kubernetes.clusterName }}
