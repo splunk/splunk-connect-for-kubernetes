@@ -18,7 +18,9 @@ data:
     {{- if .Values.global.prometheus_enabled }}
     @include prometheus.conf
     {{- end }}
-
+    {{- if .Values.user_custom_match.enabled }}
+    @include user_custom_match.conf
+    {{- end }}
   system.conf: |-
     # system wide configurations
     <system>
@@ -302,6 +304,7 @@ data:
       {{- end }}
 
       # = output =
+      {{- if not .Values.user_custom_match.enabled }}
       <match **>
         {{- if or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
         @type splunk_hec
@@ -402,4 +405,13 @@ data:
           add_newline false
         </format>
       </match>
+      {{- else }}
+      # to use byo custom match conf
+      @include user_custom_match.conf
+      {{- end }}
     </label>
+
+  {{- if .Values.user_custom_match.enabled }}
+  user_custom_match.conf: |-
+    {{ .Values.user_custom_match.conf | indent 4 }}
+  {{- end }}
