@@ -62,6 +62,9 @@ Store this `fluent.conf` in an S3 bucket to be used in the next step.
 Add the above container definition alongside your application container definition. The following options should be configured and updated appropriately:<br/>
 * Set the `image` to the relevant Splunk's firelens log router container
 * Set the `config-file-value` to the location of your fluent.conf file in s3
+* For AWS Fargate the `config-file-type` will be `file` and `config-file-value` is the full path of the configuration file that exists either in the container image or on a volume that is mounted in the container.
+* More information for Fargate can be found [on AWS guide for using firelens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html) 
+* For using volumes with Fargate please refer [AWS Fargate Documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_data_volumes.html)
 
 
 ### 3. Configure the application container
