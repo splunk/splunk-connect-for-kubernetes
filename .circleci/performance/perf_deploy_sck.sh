@@ -29,7 +29,7 @@ function deploy_sck ()
     print_msg "Deploying SCK"
     setup_kubeclient || true
     print_msg "Installing the SCK build artifacts on the kubernetes cluster"
-    helm install --name=perf-test -f .circleci/performance/perf_test_sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
+    helm install perf-test -f .circleci/performance/perf_test_sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
 }
 
 function clean_sck ()
@@ -38,7 +38,7 @@ function clean_sck ()
     if [ "`helm ls`" == "" ]; then
        print_msg "Nothing to clean, ready for deployment"
     else
-       helm delete --purge $(helm ls --short)
+       helm delete $(helm ls --short)
     fi
 }
 
