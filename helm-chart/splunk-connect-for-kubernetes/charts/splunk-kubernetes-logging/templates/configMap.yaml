@@ -79,7 +79,7 @@ data:
       {{- if .Values.fluentd.exclude_path }}
       exclude_path {{ .Values.fluentd.exclude_path | toJson }}
       {{- end }}
-      pos_file /var/log/splunk-fluentd-containers.log.pos
+      pos_file {{ .Values.containers.path }}/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
       <parse>

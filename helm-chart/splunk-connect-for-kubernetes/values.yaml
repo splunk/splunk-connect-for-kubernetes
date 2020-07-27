@@ -64,6 +64,7 @@ splunk-kubernetes-logging:
     exclude_path:
     #  - /var/log/containers/kube-svc-redirect*.log
     #  - /var/log/containers/tiller*.log
+    #  - /var/log/containers/*_kube-system_*.log (to exclude `kube-system` namespace)
 
   # Configurations for container logs
   containers:
@@ -86,6 +87,13 @@ splunk-kubernetes-logging:
       - app
       - k8s-app
       - release
+
+  rbac:
+    # Specifies whether RBAC resources should be created.
+    # This should be set to `false` if either:
+    # a) RBAC is not enabled in the cluster, or
+    # b) you want to create RBAC resources by yourself.
+    create: true
 
   serviceAccount:
     # Specifies whether a ServiceAccount should be created
@@ -349,12 +357,13 @@ splunk-kubernetes-logging:
   buffer:
     "@type": memory
     total_limit_size: 600m
-    chunk_limit_size: 200m
+    chunk_limit_size: 20m
     chunk_limit_records: 100000
     flush_interval: 5s
     flush_thread_count: 1
     overflow_action: block
-    retry_max_times: 3
+    retry_max_times: 5
+    retry_type: periodic
 
   # This default tolerations allow the daemonset to be deployed on master nodes,
   # so that we can also collect logs from those nodes.
