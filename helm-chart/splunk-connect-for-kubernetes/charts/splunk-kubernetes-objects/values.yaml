@@ -173,7 +173,7 @@ image:
   # The name of the image to pull
   name: splunk/kube-objects
   # The tag of the image to pull
-  tag: 1.1.3
+  tag: 1.1.4
   # The policy that specifies when the user wants the images to be pulled
   pullPolicy: Always
   # Indicates if the image should be pulled using authentication from a secret

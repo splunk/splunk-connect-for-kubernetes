@@ -26,4 +26,4 @@ rules:
   verbs:
   - get
   - list
-{{- end -}}
+{{- end }}

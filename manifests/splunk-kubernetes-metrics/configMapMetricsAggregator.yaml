@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.1
+    version: 1.4.2
 data:
   fluent.conf: |
     # system wide configurations
@@ -75,11 +75,12 @@ data:
       <buffer>
         @type memory
         chunk_limit_records 10000
-        chunk_limit_size 100m
+        chunk_limit_size 10m
         flush_interval 5s
         flush_thread_count 1
         overflow_action block
-        retry_max_times 3
+        retry_max_times 5
+        retry_type periodic
         total_limit_size 400m
       </buffer>
     </match>

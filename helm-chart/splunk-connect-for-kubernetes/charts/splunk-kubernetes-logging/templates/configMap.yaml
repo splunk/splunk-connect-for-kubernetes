@@ -79,7 +79,7 @@ data:
       {{- if .Values.fluentd.exclude_path }}
       exclude_path {{ .Values.fluentd.exclude_path | toJson }}
       {{- end }}
-      pos_file /var/log/splunk-fluentd-containers.log.pos
+      pos_file {{ .Values.containers.path }}/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
       <parse>
@@ -110,7 +110,7 @@ data:
       @label @CONCAT
       tag tail.file.{{ or $logDef.sourcetype $name }}
       path {{ $logDef.from.file.path }}
-      pos_file /var/log/splunk-fluentd-{{ $name }}.pos
+      pos_file {{ $.Values.containers.path }}/splunk-fluentd-{{ $name }}.pos
       read_from_head true
       path_key source
       {{- if $logDef.multiline }}
@@ -158,7 +158,7 @@ data:
       <storage>
         @type local
         persistent true
-        path /var/log/splunkd-fluentd-journald-{{ $name }}.pos.json
+        path {{ $.Values.containers.path }}/splunkd-fluentd-journald-{{ $name }}.pos.json
       </storage>
       <entry>
         field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}

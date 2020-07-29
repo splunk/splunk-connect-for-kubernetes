@@ -24,4 +24,4 @@ rules:
   - "nodes/metrics"
   verbs:
   - "get"
-{{- end -}}
+{{- end }}

@@ -13,7 +13,6 @@ splunk-kubernetes-logging:
     clusterName: "circleci-k8s-cluster"
   splunk:
     hec:
-      annotationRouting: true
       indexName: circleci_events
   image:
     name:
