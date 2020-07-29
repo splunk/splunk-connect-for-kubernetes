@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.1
+    version: 1.4.2
 data:
   fluent.conf: |-
     @include system.conf
@@ -77,6 +77,7 @@ data:
         time_key time
         time_type string
         localtime false
+        refresh_interval 60
       </parse>
     </source>
   source.files.conf: |-
@@ -341,11 +342,12 @@ data:
         <buffer>
           @type memory
           chunk_limit_records 100000
-          chunk_limit_size 200m
+          chunk_limit_size 20m
           flush_interval 5s
           flush_thread_count 1
           overflow_action block
-          retry_max_times 3
+          retry_max_times 5
+          retry_type periodic
           total_limit_size 600m
         </buffer>
         <format monitor_agent>

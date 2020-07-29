@@ -37,14 +37,14 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
+      {{- if .Values.imageAgg.usePullSecret }}
+      imagePullSecret:
+      - name: {{ .Values.imageAgg.pullsecretName}}
+      {{- end }}
       containers:
       - name: splunk-fluentd-k8s-metrics-agg
         image: {{ template "splunk-kubernetes-metrics.imageAgg" . }}
         imagePullPolicy: {{ .Values.imageAgg.pullPolicy }}
-      {{- if .Values.imageAgg.usePullSecret -}}
-      imagePullSecret:
-      - name: {{ .Values.imageAgg.pullsecretName}}
-      {{- end -}}
         env:
           - name: SPLUNK_HEC_TOKEN
             valueFrom:

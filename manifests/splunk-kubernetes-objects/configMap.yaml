@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.1
+    version: 1.4.2
 data:
   fluent.conf: |
     <system>
@@ -59,11 +59,12 @@ data:
       <buffer>
         @type memory
         chunk_limit_records 10000
-        chunk_limit_size 200m
-        flush_interval 3s
+        chunk_limit_size 20m
+        flush_interval 5s
         flush_thread_count 1
         overflow_action block
-        retry_max_times 3
+        retry_max_times 5
+        retry_type periodic
         total_limit_size 600m
       </buffer>
     </match>
