@@ -38,7 +38,7 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       {{- if .Values.imageAgg.usePullSecret }}
-      imagePullSecret:
+      imagePullSecrets:
       - name: {{ .Values.imageAgg.pullsecretName}}
       {{- end }}
       containers:
