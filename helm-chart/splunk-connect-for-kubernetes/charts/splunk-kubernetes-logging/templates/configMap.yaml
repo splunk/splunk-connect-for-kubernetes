@@ -190,7 +190,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp {{ $logDef.multiline.firstline }}
-        flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
+        flush_interval {{ $logDef.multiline.flushInterval | default 5 }}
         separator {{ $logDef.multiline.separator | default "" | quote }}
         use_first_timestamp true
       </filter>
@@ -204,7 +204,7 @@ data:
         key log
         timeout_label @SPLUNK
         multiline_start_regexp {{ $logDef.multiline.firstline }}
-        flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
+        flush_interval {{ $logDef.multiline.flushInterval | default 5 }}
       </filter>
       {{- end }}
       {{- end }}

@@ -1,7 +1,7 @@
 include PLUGIN_VERSIONS.sh
 export $(shell sed 's/=.*//' PLUGIN_VERSIONS.sh)
 
-create-dir: version-update
+create-dir: 
 	@mkdir -p build
 	@rm build/*
 
