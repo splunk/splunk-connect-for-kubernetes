@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.2
+    version: 1.4.3
 data:
   fluent.conf: |-
     @include system.conf
@@ -154,7 +154,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -164,7 +164,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -174,7 +174,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -184,7 +184,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -194,7 +194,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -204,7 +204,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -214,7 +214,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -224,7 +224,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -234,7 +234,7 @@ data:
         timeout_label @SPLUNK
         stream_identity_key stream
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
         separator ""
         use_first_timestamp true
       </filter>
@@ -244,7 +244,7 @@ data:
         key log
         timeout_label @SPLUNK
         multiline_start_regexp /^\w[0-1]\d[0-3]\d/
-        flush_interval 5s
+        flush_interval 5
       </filter>
       # Events are relabeled then emitted to the SPLUNK label
       <match **>

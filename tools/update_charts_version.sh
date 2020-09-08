@@ -3,10 +3,9 @@ set -e
 
 VERSION=`cat VERSION`
 
-if [ -f "/usr/local/bin/yq" ]; then
-    echo "yq already installed"    
-else 
-    echo "please install yq first"
+if ! command -v yq &> /dev/null
+then
+    echo "yq could not be found. Please install yq first"
     exit 1
 fi
 
