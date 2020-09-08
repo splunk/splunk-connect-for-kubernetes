@@ -75,7 +75,7 @@ data:
       @type tail
       @label @CONCAT
       tag tail.containers.*
-      path {{ .Values.fluentd.path | default "/var/log/containers/*.log" }}
+      path {{ .Values.fluentd.path | default "/var/log/containers/*.log" | toJson }}
       {{- if .Values.fluentd.exclude_path }}
       exclude_path {{ .Values.fluentd.exclude_path | toJson }}
       {{- end }}
