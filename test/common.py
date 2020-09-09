@@ -276,7 +276,6 @@ def _requests_retry_session(
     retry = Retry(
         total=int(retries),
         backoff_factor=backoff_factor,
-        method_whitelist=frozenset(['GET', 'POST']),
         status_forcelist=status_forcelist,
     )
     adapter = HTTPAdapter(max_retries=retry)

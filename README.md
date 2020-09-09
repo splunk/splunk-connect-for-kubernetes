@@ -30,24 +30,24 @@ If you do not configure these indexes, Kubernetes Connect for Splunk uses the de
 
 ## Deploy with Helm
 
-Helm, maintained by the CNCF, allows the Kubernetes administrator to install, upgrade, and manage the applications running in their Kubernetes clusters.  For more information on how to use and configure Helm Charts, please the the Helm [site](https://helm.sh/) and [repository](https://github.com/kubernetes/helm) for tutorials and product documentation. Helm is the   only method that Splunk supports for installing Splunk Connect for Kubernetes.
+Helm, maintained by the CNCF, allows the Kubernetes administrator to install, upgrade, and manage the applications running in their Kubernetes clusters.  For more information on how to use and configure Helm Charts, please the the Helm [site](https://helm.sh/) and [repository](https://github.com/kubernetes/helm) for tutorials and product documentation. Helm is the only method that Splunk supports for installing Splunk Connect for Kubernetes.
 
 To install and configure defaults with Helm:
 
 ```
-$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.2/splunk-connect-for-kubernetes-1.4.2.tgz
+$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.3/splunk-connect-for-kubernetes-1.4.3.tgz
 ```
 
 To learn more about using and modifying charts, see:
-* https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart
+* https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart
 * https://docs.helm.sh/using_helm/#using-helm.
 
 ## Configuration variables for Helm
 
 To learn more about using and modifying charts, see:
-* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-logging/values.yaml)
-* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics/values.yaml)
-* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects/values.yaml)
+* [The values file for logging](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-logging/values.yaml)
+* [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics/values.yaml)
+* [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects/values.yaml)
 
 ## Deploy using YAML
 
@@ -157,4 +157,4 @@ The current maintainers of this project are the DataEdge team at Splunk. You can
 
 # License
 
-See [LICENSE](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/LICENSE).
+See [LICENSE](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/LICENSE).

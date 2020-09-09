@@ -125,79 +125,6 @@ jobs:
             sleep 30
             .circleci/run_functional_tests.sh
 
-  perf-test:
-    docker:
-      - image: circleci/ruby:2.6.1-node-browsers
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - setup_remote_docker:
-          reusable: true
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
-            sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
-            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
-            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash -s -- --version v2.12.3
-            helm init -c
-            echo "Installing aws cli..."
-            sudo pip install awscli > /dev/null 2>&1
-      - run:
-          name: Update configurables to build artifacts
-          command: |
-            .circleci/update_sck_config.sh
-      - run:
-          name: Build SCK artifacts
-          command: |
-            .circleci/build_sck_artifacts.sh
-      - run:
-          name:  Deploy k8s connector for perf-tests
-          command: |
-            python .circleci/performance/run_perf_scenarios.py
-
-  release:
-    docker:
-      - image: circleci/ruby:2.6.1-node-browsers
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - setup_remote_docker:
-          reusable: true
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev > /dev/null 2>&1
-            sudo apt-get install python3-pip python3-dev > /dev/null 2>&1
-            sudo apt-get install -y python-pip libpython-dev > /dev/null 2>&1
-            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
-            helm init -c
-      - run:
-          name: Build SCK artifacts
-          command: |
-            .circleci/build_sck_artifacts_for_release.sh
-      - run:
-          name: Push SCK artifacts to Github Release
-          command: |
-            .circleci/push_sck_release.sh
-
-  check_version:
-    docker:
-      - image: circleci/ruby:2.6.1-node-browsers
-    working_directory: ~/repo
-    steps:
-      - attach_workspace:
-          at: /tmp
-      - checkout          
-      - setup_remote_docker:
-          reusable: true
-      - run:
-          name: Check VERSION file for change
-          command: |
-            .circleci/check_version_trigger_release.sh
-
 workflows:
   version: 2
   build_test:
@@ -206,28 +133,5 @@ workflows:
           filters:
             branches:
               ignore: 
-                - perf-testing
                 - /^release\/.*/
-                - master
-      - check_version:
-          requires:
-            - build_test
-          filters:
-            branches:
-              only: develop
-  perf-test:
-    jobs:
-      - perf-test:
-          filters:
-            branches:
-              only: perf-testing
-  release:
-    jobs:
-      - build_test:
-          filters:
-            branches:
-              only: 
-                - master
-      - release:
-          requires:
-            - build_test
+                - main
