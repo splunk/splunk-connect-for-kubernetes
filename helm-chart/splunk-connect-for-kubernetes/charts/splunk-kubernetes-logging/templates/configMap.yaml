@@ -211,7 +211,12 @@ data:
         key log
         timeout_label @SPLUNK
         stream_identity_key stream
+        {{- if $logDef.multiline.firstline }}
         multiline_start_regexp {{ $logDef.multiline.firstline }}
+        {{- end }}
+        {{- if $logDef.multiline.endline }}
+        multiline_end_regexp {{ $logDef.multiline.endline }}
+        {{- end }}
         flush_interval {{ $logDef.multiline.flushInterval | default 5 }}
         separator {{ $logDef.multiline.separator | default "" | quote }}
         use_first_timestamp true
