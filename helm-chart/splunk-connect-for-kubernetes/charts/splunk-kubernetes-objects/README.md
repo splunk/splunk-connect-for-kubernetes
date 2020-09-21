@@ -4,7 +4,7 @@
 
 The deployment runs [fluentd](https://www.fluentd.org/) with the [kubernetes objects input plugin](https://github.com/splunk/fluent-plugin-kubernetes-objects) and the [Splunk HEC output plugin](https://github.com/splunk/fluent-plugin-splunk-hec) to collect objects and send them via [Splunk HEC](http://docs.splunk.com/Documentation/Splunk/7.1.0/Data/AboutHEC).
 
-For more details on how object data are collected, check the [README](https://github.com/splunk/fluent-plugin-kubernetes-objects/blob/master/README.md) of the kubernetes objects input plugin.
+For more details on how object data are collected, check the [README](https://github.com/splunk/fluent-plugin-kubernetes-objects/blob/main/README.md) of the kubernetes objects input plugin.
 
 Although it works well by itself, this chart is a part of [`splunk-connect-for-kubernetes`](https://github.com/splunk/splunk-connect-for-kubernetes). If you want a full Splunk monitoring solution for kubernetes, check it out.
 
@@ -17,7 +17,7 @@ First, prepare a values file. You can also check the [examples](examples) for qu
 Once you have a values file, you can simply install the chart with a release name (optional) by running
 
 ```bash
-$ helm install --name my-splunk-objects -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.2/splunk-kubernetes-objects-1.4.2.tgz
+$ helm install --name my-splunk-objects -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.3/splunk-kubernetes-objects-1.4.3.tgz
 ```
 
 ## Uninstall ##

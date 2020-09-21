@@ -242,7 +242,7 @@ data:
           {{- range .Values.k8sMetadata.podLabels }}
           label_{{ . }} ${record.dig("kubernetes","labels","{{ . }}")}
           {{- end }}
-          blacklist ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
+          exclude_list ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
           {{- if .Values.customMetadata }}
           {{- range .Values.customMetadata }}
           {{ .name }} "{{ .value }}"
@@ -251,10 +251,10 @@ data:
         </record>
       </filter>
       <filter tail.containers.**>
-        # Exclude all logs that are blacklisted
+        # Exclude all logs that are marked
         @type grep
         <exclude>
-          key blacklist
+          key exclude_list
           pattern /^true$/
         </exclude>
       </filter>

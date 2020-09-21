@@ -3,9 +3,9 @@ version: 1.4.3
 appVersion: 1.4.3
 name: splunk-kubernetes-logging
 description: Collect logs with Splunk.
-home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging
+home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart/charts/splunk-kubernetes-logging
 sources:
-- https://github.com/splunk/splunk-connect-for-kubernetes/tree/master/helm-chart/charts/splunk-kubernetes-logging
+- https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart/charts/splunk-kubernetes-logging
 - https://github.com/splunk/fluent-plugin-splunk-hec
 keywords:
 - splunk

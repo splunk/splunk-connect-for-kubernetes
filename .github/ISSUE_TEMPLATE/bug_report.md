@@ -26,4 +26,5 @@ Please do not report security vulnerabilities with public GitHub issue reports. 
 - Ruby version (use `ruby --version`):
 - OS (e.g: `cat /etc/os-release`):
 - Splunk version:
+- Splunk Connect for Kubernetes helm chart version:
 - Others:
