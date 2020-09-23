@@ -40,6 +40,10 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
+      {{ if .Values.image.usePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecretName }}
+      {{ end }}
       containers:
       - name: splunk-fluentd-k8s-logs
         image: {{ template "splunk-kubernetes-logging.image" . }}

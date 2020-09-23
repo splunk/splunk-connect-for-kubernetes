@@ -41,6 +41,10 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
+      {{- if .Values.image.usePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pullsecretName}}
+      {{- end }}
       containers:
       - name: splunk-fluentd-k8s-metrics
         image: {{ template "splunk-kubernetes-metrics.image" . }}
