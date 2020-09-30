@@ -17,7 +17,7 @@ First, prepare a Values file. Check the Values files in each sub-chart for detai
 Once you have a Values file, you can simply install the chart with a release name (optional) by running
 
 ```bash
-$ helm install --name my-splunk-connect -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.2/splunk-connect-for-kubernetes-1.4.2.tgz
+$ helm install --name my-splunk-connect -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.3/splunk-connect-for-kubernetes-1.4.3.tgz
 ```
 
 ## Uninstall ##
@@ -41,10 +41,10 @@ This chart does not contain any configurable parameters for itself. The Values f
 
 See also:
 * [Overriding Values from a Parent Chart](https://docs.helm.sh/chart_template_guide/#overriding-values-from-a-parent-chart) for how to configure sub-charts in the parent chart.
-* [charts/splunk-kubernetes-logging/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-logging/values.yaml) for configurable parameters for `splunk-kubernetes-logging`.
-* [charts/splunk-kubernetes-objects/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-objects/values.yaml) for configurable parameters for `splunk-kubernetes-objects`.
-* [charts/splunk-kubernetes-metrics/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-kubernetes-metrics/values.yaml) for configurable parameters for `splunk-kubernetes-metrics`.
+* [charts/splunk-kubernetes-logging/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-logging/values.yaml) for configurable parameters for `splunk-kubernetes-logging`.
+* [charts/splunk-kubernetes-objects/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects/values.yaml) for configurable parameters for `splunk-kubernetes-objects`.
+* [charts/splunk-kubernetes-metrics/values.yaml](https://github.com/splunk/splunk-connect-for-kubernetes/blob/master/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics/values.yaml) for configurable parameters for `splunk-kubernetes-metrics`.
 
 ## License ##
 
-See [LICENSE.md](LICENSE.md).
+See [LICENSE](../../LICENSE).

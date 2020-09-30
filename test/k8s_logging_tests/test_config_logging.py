@@ -116,11 +116,11 @@ def test_annotation_routing(setup, container_name, index, expected):
     ("pod-w-index-w-ns-exclude", 0),
     ("pod-w-exclude-wo-ns-exclude", 0)
 ])
-def test_annotation_blacklisting(setup, container_name, expected):
+def test_annotation_excluding(setup, container_name, expected):
     '''
-    Test annotation blacklisting feature. 
+    Test annotation excluding feature. 
     '''
-    logger.info("testing test_annotation_blacklisting pod={0} expected={1} event(s)".format(
+    logger.info("testing test_annotation_excluding pod={0} expected={1} event(s)".format(
         container_name, expected))
     search_query = "index=*" + " container_name::" + container_name
     events = check_events_from_splunk(start_time="-1h@h",
