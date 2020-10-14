@@ -30,12 +30,27 @@ If you do not configure these indexes, Kubernetes Connect for Splunk uses the de
 
 ## Deploy with Helm
 
-Helm, maintained by the CNCF, allows the Kubernetes administrator to install, upgrade, and manage the applications running in their Kubernetes clusters.  For more information on how to use and configure Helm Charts, please the the Helm [site](https://helm.sh/) and [repository](https://github.com/kubernetes/helm) for tutorials and product documentation. Helm is the only method that Splunk supports for installing Splunk Connect for Kubernetes.
+Helm, maintained by the CNCF, allows the Kubernetes administrator to install, upgrade, and manage the applications running in their Kubernetes clusters.  For more information on how to use and configure Helm Charts, please read the Helm [site](https://helm.sh/) and [repository](https://github.com/kubernetes/helm) for tutorials and product documentation. Helm is the only method that Splunk supports for installing Splunk Connect for Kubernetes.
 
 To install and configure defaults with Helm:
 
+* Add Splunk chart repo 
+
+`helm repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/`
+
+* Get values file in your working directory 
+
+`helm show values splunk/splunk-connect-for-kubernetes > values.yaml`
+
+* Prepare this Values file. Once you have a Values file, you can simply install the chart with by running
+
+Helm 2
+```bash
+$ helm install --name my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
 ```
-$ helm install --name my-release -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.3/splunk-connect-for-kubernetes-1.4.3.tgz
+Helm 3
+```bash
+helm install my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
 ```
 
 To learn more about using and modifying charts, see:
@@ -152,8 +167,8 @@ Splunk Connect for Kubernetes can be used to send events to [Splunk Ingest API](
 * debugIngestAPI - Set to True if you want to debug requests and responses to ingest API.
 
 # Maintenance And Support
-Splunk Connect For Kubernetes is supported through Splunk Support assuming the customer has a current Splunk support entitlement. For customers that do not have a current Splunk support entitlement, please file an issue at create a new issue at [Create a new issue in splunk connect for kubernetes project](https://github.com/splunk/splunk-connect-for-kubernetes/issues/new)
-The current maintainers of this project are the DataEdge team at Splunk. You can reach us at [DataEdge@splunk.com](mailto:DataEdge@splunk.com).
+Splunk Connect For Kubernetes is supported through Splunk Support assuming the customer has a current Splunk support entitlement ([Splunk Support](https://www.splunk.com/en_us/about-splunk/contact-us.html#tabs/tab_parsys_tabs_CustomerSupport_4)). For customers that do not have a current Splunk support entitlement, please search [open and closed issues](https://github.com/splunk/splunk-connect-for-kubernetes/issues?q=is%3Aissue) and create a new issue if not already there.
+The current maintainers of this project are the DataEdge team at Splunk.
 
 # License
 
