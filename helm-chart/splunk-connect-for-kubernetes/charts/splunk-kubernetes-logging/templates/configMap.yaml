@@ -256,6 +256,11 @@ data:
           {{ .name }} "{{ .value }}"
           {{- end }}
           {{- end }}
+          {{- if .Values.customMetadataAnnotations }}
+          {{- range .Values.customMetadataAnnotations }}
+          {{ .name }} ${record.dig("kubernetes","annotations","{{ .annotation }}") ? record.dig("kubernetes","annotations","{{ .annotation }}") : record.dig("kubernetes","namespace_annotations","{{ .annotation }}")}
+          {{- end }}
+          {{- end }}
         </record>
       </filter>
       <filter tail.containers.**>
@@ -383,6 +388,11 @@ data:
           {{- end }}
           {{- if .Values.customMetadata }}
           {{- range .Values.customMetadata }}
+          {{ .name }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.customMetadataAnnotations }}
+          {{- range .Values.customMetadataAnnotations }}
           {{ .name }}
           {{- end }}
           {{- end }}
