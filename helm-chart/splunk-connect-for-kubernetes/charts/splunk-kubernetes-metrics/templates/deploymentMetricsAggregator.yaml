@@ -55,6 +55,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
         resources:
 {{ toYaml .Values.resources.fluent | indent 12 }}
         volumeMounts:

@@ -287,20 +287,22 @@ def test_custom_metadata_fields(setup, field,value, expected):
     assert len(events) >= expected
 
 
-@pytest.mark.parametrize("label,value,expected", [
-    ("pod-w-index-wo-ns-index", "pod-value-2", 1),
-    ("pod-wo-index-w-ns-index", "ns-value", 1),
-    ("pod-w-index-w-ns-index", "pod-value-1", 1)
+
+@pytest.mark.parametrize("label,index,value,expected", [
+    ("pod-w-index-wo-ns-index", "pod-anno", "pod-value-2", 1),
+    ("pod-wo-index-w-ns-index", "ns-anno", "ns-value", 1),
+    ("pod-w-index-w-ns-index", "pod-anno", "pod-value-1", 1)
 ])
-def test_custom_metadata_fields_annotations(setup, label, value, expected):
+def test_custom_metadata_fields_annotations(setup, label, index, value, expected):
+
     '''
     Test that user specified labels are resolved from the user specified annotations and attached as a metadata
     to all the logs
     '''
     logger.info("testing custom metadata annotation label={0} value={1} expected={2} event(s)".format(
         label, value, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
-    search_query = "index=" + index_logging + " label_app::" + label + " custom_field::" + value
+    search_query = "index=" + index + " label_app::" + label + " custom_field::" + value
+
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
                                       user=setup["splunk_user"],

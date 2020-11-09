@@ -82,6 +82,7 @@ data:
       pos_file {{ .Values.containers.path }}/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
+      refresh_interval {{ .Values.containers.refreshInterval | default 60 }}
       <parse>
       {{- if eq .Values.containers.logFormatType "cri" }}
         @type regexp
@@ -94,7 +95,6 @@ data:
         time_key time
         time_type string
         localtime false
-        refresh_interval {{ .Values.containers.refreshInterval | default 60 }}
       </parse>
     </source>
 
@@ -215,6 +215,14 @@ data:
       </match>
     </label>
     <label @SPLUNK>
+      # filter to  remove empty lines
+      <filter tail.containers.**>
+        @type grep
+        <exclude>
+         key log
+         pattern ^$
+        </exclude>
+      </filter>
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
@@ -300,7 +308,7 @@ data:
       <filter {{ $filterDef.tag }}>
         @type {{ $filterDef.type }}
         {{- if $filterDef.body }}
-        {{ $filterDef.body | indent 8 }}
+        {{- toYaml $filterDef.body | indent 8 }}
         {{- end }}
       </filter>
       {{- end }}
