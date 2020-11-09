@@ -394,6 +394,11 @@ splunk-kubernetes-logging:
   #  - name: "cloud_account_id"
   #    value: "1234567890"
 
+  # List of annotation metadata you would like to enrich log data with
+  customMetadataAnnotations:
+  #  - name: custom_field
+  #    annotaion: splunk.com/custom_field
+
   # `customFilters` defines the custom filters to be used.
   # This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
   # Its also possible to use other filters like https://www.fluentd.org/plugins#filter
