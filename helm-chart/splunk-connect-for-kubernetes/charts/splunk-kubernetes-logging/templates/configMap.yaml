@@ -13,7 +13,9 @@ data:
     @include source.containers.conf
     @include source.files.conf
     @include source.journald.conf
+    {{- if .Values.global.monitoring_agent_enabled }}
     @include monit.conf
+    {{- end }}
     @include output.conf
     {{- if .Values.global.prometheus_enabled }}
     @include prometheus.conf
@@ -168,7 +170,7 @@ data:
     {{- end }}
     {{- end }}
 
-
+  {{- if .Values.global.monitoring_agent_enabled }}
   monit.conf: |-
     <source>
       @id fluentd-monitor-agent
@@ -176,6 +178,7 @@ data:
       @label @SPLUNK
       tag monitor_agent
     </source>
+  {{- end }}
 
 
   output.conf: |-
@@ -295,13 +298,13 @@ data:
         jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record.index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }} {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = "{{ .value }}" {{- end }}{{- end }} | .record'
       </filter>
       {{- end }}
-
+      {{- if .Values.global.monitoring_agent_enabled }}
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record.index = \"{{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" }}\" {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = \"{{ .value }}\" {{- end }}{{- end }} | .record"
       </filter>
-
+      {{- end }}
       # = custom filters specified by users =
       {{- range $name, $filterDef := .Values.customFilters }}
       {{- if and $filterDef.tag $filterDef.type }}
@@ -410,9 +413,11 @@ data:
         {{- end }}
         </buffer>
         {{- end }}
+        {{- if .Values.global.monitoring_agent_enabled }}
         <format monitor_agent>
           @type json
         </format>
+        {{- end }}
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value

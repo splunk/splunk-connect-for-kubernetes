@@ -239,3 +239,4 @@ global:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true
+  monitoring_agent_enabled: true

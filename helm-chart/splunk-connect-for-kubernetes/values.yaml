@@ -42,6 +42,7 @@ global:
     # Add privileged access to containers for openshift compatability
     openshift: false
   prometheus_enabled:
+  monitoring_agent_enabled:
 
 ## Enabling splunk-kubernetes-logging will install the `splunk-kubernetes-logging` chart to a kubernetes
 ## cluster to collect logs generated in the cluster to a Splunk indexer/indexer cluster.
