@@ -34,6 +34,10 @@ then
     TRIG_REPO="$(echo $TRIG_REPO | sed 's/git\@github\.com\:/https\:\/\/github.com\//g')"
     git clone $TRIG_REPO
     cd $TRIG_PROJECT
+    # handle triggered pipeline by PR's from forked repo 
+    if [[ $TRIG_BRANCH = pull/* ]]; then
+        git fetch --force origin $TRIG_BRANCH/head:$TRIG_BRANCH
+    fi
     git checkout $TRIG_BRANCH
     source docker/build.sh $TRIG_BRANCH
     cd ~/repo
