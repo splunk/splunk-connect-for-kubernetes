@@ -49,7 +49,7 @@ splunk:
     protocol:
     # indexName tells which index to use, OPTIONAL. If it's not present, the default index configured in HEC will be used.
     indexName:
-    # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default value: false
+    # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false
     insecureSSL:
     # The PEM-format CA certificate for this client.
     # NOTE: The content of the certificate itself should be used here, not the file path.
@@ -239,3 +239,4 @@ global:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true
+  monitoring_agent_enabled: true
