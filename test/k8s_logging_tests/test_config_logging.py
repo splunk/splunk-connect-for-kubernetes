@@ -167,7 +167,7 @@ def test_sourcetype(setup, test_input, expected):
 
 @pytest.mark.parametrize("sourcetype,index,expected", [
     ("kube:container:pod-wo-index-w-ns-index", "ns-anno", 1),
-    ("kube:sourcetype-anno", "pod-anno", 1)
+    ("sourcetype-anno", "pod-anno", 1)
 ])
 def test_annotation_sourcetype(setup, sourcetype, index, expected):
     '''
