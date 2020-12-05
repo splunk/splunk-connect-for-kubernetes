@@ -310,8 +310,8 @@ data:
       {{- if and $filterDef.tag $filterDef.type }}
       <filter {{ $filterDef.tag }}>
         @type {{ $filterDef.type }}
-        {{- if $filterDef.body }}
-        {{- toYaml $filterDef.body | indent 8 }}
+        {{- with $filterDef.body }}
+        {{ . | nindent 8 }}
         {{- end }}
       </filter>
       {{- end }}
@@ -418,11 +418,13 @@ data:
           @type json
         </format>
         {{- end }}
+        {{- if .Values.sendAllMetadata }}
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value
           message_key log
           add_newline false
         </format>
+        {{- end }}
       </match>
     </label>
