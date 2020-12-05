@@ -337,6 +337,9 @@ buffer:
   retry_max_times: 5
   retry_type: periodic
 
+# set to true to keep the structure created by docker or journald
+sendAllMetadata: false
+
 # This default tolerations allow the daemonset to be deployed on master nodes,
 # so that we can also collect logs from those nodes.
 tolerations:
