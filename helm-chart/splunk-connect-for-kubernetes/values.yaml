@@ -17,10 +17,12 @@ global:
       # token is required and should be provided by user
       token:
       # protocol has two options: "http" and "https", default is "https"
+      # For self signed certficate leave this field blank
       protocol:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
       # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default is false.
+      # For a self signed certficate this value should be true
       insecureSSL:
       # The PEM-format CA certificate for this client.
       # NOTE: The content of the certificate itself should be used here, not the file path.
@@ -33,6 +35,7 @@ global:
       # The PEM-format CA certificate file.
       # NOTE: The content of the file itself should be used here, not the file path.
       #       The file will be stored as a secret in kubernetes.
+      # For self signed certficate leave this field blank
       caFile:
       # For object and metrics
       indexRouting:
