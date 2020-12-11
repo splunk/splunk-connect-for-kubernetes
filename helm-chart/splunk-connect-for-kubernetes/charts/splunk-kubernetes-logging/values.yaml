@@ -46,6 +46,8 @@ k8sMetadata:
     - k8s-app
     - release
 
+sourcetypePrefix: "kube:"
+
 # Local splunk configurations
 splunk:
   # Configurations for HEC (HTTP Event Collector)

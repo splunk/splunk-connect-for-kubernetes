@@ -89,6 +89,8 @@ splunk-kubernetes-logging:
       - k8s-app
       - release
 
+  sourcetypePrefix: "kube:"
+  
   rbac:
     # Specifies whether RBAC resources should be created.
     # This should be set to `false` if either:

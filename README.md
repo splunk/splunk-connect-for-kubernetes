@@ -143,7 +143,7 @@ You can easily instruct Splunk Connect for Kubernetes Logging with these support
 * Use `splunk.com/index` annotation on pod and/or namespace to tell which Splunk index to ingest to. Pod annotation will take precedence over namespace annotation when both are annotated.
   ex) `kubectl annotate namespace kube-system splunk.com/index=k8s_events`
 * Set `splunk.com/exclude` annotation to `true` on pod and/or namespace to exclude its logs from ingested to Splunk.
-* Use `splunk.com/sourcetype` annotation on pod to overwrite `sourcetype` field. If not set, it is dynamically generated to be `kube:container:CONTAINER_NAME`.
+* Use `splunk.com/sourcetype` annotation on pod to overwrite `sourcetype` field. If not set, it is dynamically generated to be `container:CONTAINER_NAME`. Note that the sourcetype will be prefixed with `.Values.sourcetypePrefix` (default: `kube:`).
 
 Regarding excluding container logs: If possible, it is more efficient to exclude it using `fluentd.exclude_path` option.
 
