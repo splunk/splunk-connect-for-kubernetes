@@ -46,7 +46,7 @@ k8sMetadata:
     - k8s-app
     - release
 
-sourcetypePrefix: "kube:"
+sourcetypePrefix: "kube"
 
 # Local splunk configurations
 splunk:

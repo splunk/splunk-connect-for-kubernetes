@@ -237,7 +237,7 @@ data:
         enable_ruby
         <record>
           # set the sourcetype from splunk.com/sourcetype pod annotation or set it to kube:container:CONTAINER_NAME
-          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "{{ .Values.sourcetypePrefix }}container:"+record.dig("kubernetes","container_name")}
+          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "{{ .Values.sourcetypePrefix }}:container:"+record.dig("kubernetes","container_name")}
           container_name ${record.dig("kubernetes","container_name")}
           namespace ${record.dig("kubernetes","namespace_name")}
           pod ${record.dig("kubernetes","pod_name")}
@@ -278,7 +278,7 @@ data:
       {{- if eq .Values.containers.logFormatType "cri" }}
       <filter tail.containers.var.log.pods.**>
         @type jq_transformer
-        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("{{ .Values.sourcetypePrefix }}container:" + .container_name) | .index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }}'
+        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("{{ .Values.sourcetypePrefix }}:container:" + .container_name) | .index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }}'
       </filter>
       {{- end }}
 
