@@ -39,6 +39,7 @@ then
         git fetch --force origin $TRIG_BRANCH/head:$TRIG_BRANCH
     fi
     git checkout $TRIG_BRANCH
+    TRIG_BRANCH=${TRIG_BRANCH//\/} # remove '/' to be a valid docker image tag
     source docker/build.sh $TRIG_BRANCH
     cd ~/repo
     case $TRIG_PROJECT in
