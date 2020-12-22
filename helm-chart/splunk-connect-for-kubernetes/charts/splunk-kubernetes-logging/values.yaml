@@ -46,6 +46,8 @@ k8sMetadata:
     - k8s-app
     - release
 
+sourcetypePrefix: "kube"
+
 # Local splunk configurations
 splunk:
   # Configurations for HEC (HTTP Event Collector)
@@ -294,7 +296,7 @@ image:
   # The tag of the image to pull
   tag: 1.2.4
   # The policy that specifies when the user wants the images to be pulled
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Indicates if the image should be pulled using authentication from a secret
   usePullSecret: false
   # The name of the pull secret to attach to the respective serviceaccount used to pull the image

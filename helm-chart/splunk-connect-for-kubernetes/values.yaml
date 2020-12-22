@@ -89,6 +89,8 @@ splunk-kubernetes-logging:
       - k8s-app
       - release
 
+  sourcetypePrefix: "kube"
+  
   rbac:
     # Specifies whether RBAC resources should be created.
     # This should be set to `false` if either:
@@ -333,7 +335,7 @@ splunk-kubernetes-logging:
     # The tag of the image to pull
     tag: 1.2.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
@@ -625,7 +627,7 @@ splunk-kubernetes-objects:
     # The tag of the image to pull
     tag: 1.1.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
@@ -796,7 +798,7 @@ splunk-kubernetes-metrics:
     # The tag of the image to pull
     tag: 1.1.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
@@ -811,7 +813,7 @@ splunk-kubernetes-metrics:
     # The tag of the image to pull
     tag: 1.1.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
