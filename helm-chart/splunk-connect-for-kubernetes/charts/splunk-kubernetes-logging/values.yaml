@@ -118,6 +118,12 @@ podSecurityPolicy:
   # a) Pod Security Policies is not enabled in the cluster, or
   # b) you want to create Pod Security Policy resources by yourself.
   create: false
+  # Specifies whether AppArmor profile should be applied.
+  # if set to true, this will add two annotations to PodSecurityPolicy:
+  # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+  # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+  # set to false if AppArmor is not available
+  apparmor_security: true
 
 # Create or use existing secret if name is empty default name is used
 secret:

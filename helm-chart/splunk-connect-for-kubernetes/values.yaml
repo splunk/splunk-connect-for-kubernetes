@@ -108,6 +108,19 @@ splunk-kubernetes-logging:
     # which will be used to get the images from a private registry
     usePullSecrets: false
 
+  podSecurityPolicy:
+    # Specifies whether Pod Security Policy resources should be created.
+    # This should be set to `false` if either:
+    # a) Pod Security Policies is not enabled in the cluster, or
+    # b) you want to create Pod Security Policy resources by yourself.
+    create: false
+    # Specifies whether AppArmor profile should be applied.
+    # if set to true, this will add two annotations to PodSecurityPolicy:
+    # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+    # set to false if AppArmor is not available
+    apparmor_security: true
+
   # Local splunk configurations
   splunk:
     # Configurations for HEC (HTTP Event Collector)
@@ -487,6 +500,19 @@ splunk-kubernetes-objects:
     # which will be used to get the images from a private registry
     usePullSecrets: false
 
+  podSecurityPolicy:
+    # Specifies whether Pod Security Policy resources should be created.
+    # This should be set to `false` if either:
+    # a) Pod Security Policies is not enabled in the cluster, or
+    # b) you want to create Pod Security Policy resources by yourself.
+    create: false
+    # Specifies whether AppArmor profile should be applied.
+    # if set to true, this will add two annotations to PodSecurityPolicy:
+    # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+    # set to false if AppArmor is not available
+    apparmor_security: true
+
   # = Kubernetes Connection Configs =
   kubernetes:
     # the URL for calling kubernetes API, by default it will be read from the environment variables
@@ -754,6 +780,19 @@ splunk-kubernetes-metrics:
     # This flag specifies if the user wants to use a secret for creating the serviceAccount,
     # which will be used to get the images from a private registry
     usePullSecrets: false
+
+  podSecurityPolicy:
+    # Specifies whether Pod Security Policy resources should be created.
+    # This should be set to `false` if either:
+    # a) Pod Security Policies is not enabled in the cluster, or
+    # b) you want to create Pod Security Policy resources by yourself.
+    create: false
+    # Specifies whether AppArmor profile should be applied.
+    # if set to true, this will add two annotations to PodSecurityPolicy:
+    # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+    # set to false if AppArmor is not available
+    apparmor_security: true
 
   # = Splunk HEC Connection =
   splunk:
