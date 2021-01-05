@@ -60,6 +60,7 @@ helm install --name my-splunk-connect -f my_values.yaml splunk/splunk-connect-fo
 Helm 3
 ```bash
 helm install my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
+
 ```
 
 To learn more about using and modifying charts, see:
