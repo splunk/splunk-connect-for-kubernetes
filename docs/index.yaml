@@ -2,8 +2,34 @@ apiVersion: v1
 entries:
   splunk-connect-for-kubernetes:
   - apiVersion: v1
+    appVersion: 1.4.4
+    created: "2021-01-05T15:06:44.904736-08:00"
+    description: Collect logs, objects (metadata), and metrics with Splunk.
+    digest: 357da9b7fa2d5418fb34cd0ef44685b15c87bee53b39544eb5c8cf883fe92787
+    home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart
+    keywords:
+    - splunk
+    - monitoring
+    - logging
+    - metrics
+    - metadata
+    - objects
+    maintainers:
+    - email: DataEdge@splunk.com
+      name: Splunk Inc.
+    name: splunk-connect-for-kubernetes
+    sources:
+    - https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart
+    - https://github.com/splunk/fluent-plugin-splunk-hec
+    - https://github.com/splunk/fluent-plugin-kubernetes-metrics
+    - https://github.com/splunk/fluent-plugin-k8s-metrics-agg
+    - https://github.com/splunk/fluent-plugin-kubernetes-objects
+    urls:
+    - splunk-connect-for-kubernetes-1.4.4.tgz
+    version: 1.4.4
+  - apiVersion: v1
     appVersion: 1.4.3
-    created: "2020-09-30T23:28:16.904657-07:00"
+    created: "2021-01-05T15:06:44.90254-08:00"
     description: Collect logs, objects (metadata), and metrics with Splunk.
     digest: b521f6edb2bd7805b3270e60f1a655cda2e1f0cc10cff196bebcf0bad594fd59
     home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart
@@ -27,4 +53,4 @@ entries:
     urls:
     - splunk-connect-for-kubernetes-1.4.3.tgz
     version: 1.4.3
-generated: "2020-09-30T23:28:16.900899-07:00"
+generated: "2021-01-05T15:06:44.89826-08:00"

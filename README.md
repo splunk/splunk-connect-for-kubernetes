@@ -35,18 +35,27 @@ Helm, maintained by the CNCF, allows the Kubernetes administrator to install, up
 To install and configure defaults with Helm:
 
 * Add Splunk chart repo 
-
-`helm repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/`
+```bash
+helm repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/
+```
 
 * Get values file in your working directory 
 
-`helm show values splunk/splunk-connect-for-kubernetes > values.yaml`
+Helm 2
+```bash
+helm inspect values splunk/splunk-connect-for-kubernetes > values.yaml
+```
+Helm 3
+```bash
+helm show values splunk/splunk-connect-for-kubernetes > values.yaml
+```
+``
 
 * Prepare this Values file. Once you have a Values file, you can simply install the chart with by running
 
 Helm 2
 ```bash
-$ helm install --name my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
+helm install --name my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
 ```
 Helm 3
 ```bash

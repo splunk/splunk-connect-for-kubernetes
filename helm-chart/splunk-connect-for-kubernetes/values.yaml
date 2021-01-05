@@ -88,6 +88,8 @@ splunk-kubernetes-logging:
       - app
       - k8s-app
       - release
+    watch: true
+    cache_ttl: 3600
 
   sourcetypePrefix: "kube"
   

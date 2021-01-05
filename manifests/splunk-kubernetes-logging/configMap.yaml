@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.3
+    version: 1.4.4
 data:
   fluent.conf: |-
     @include system.conf
@@ -71,13 +71,13 @@ data:
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
+      refresh_interval 60
       <parse>
         @type json
         time_format %Y-%m-%dT%H:%M:%S.%NZ
         time_key time
         time_type string
         localtime false
-        refresh_interval 60
       </parse>
     </source>
   source.files.conf: |-
@@ -253,6 +253,14 @@ data:
       </match>
     </label>
     <label @SPLUNK>
+      # filter to  remove empty lines
+      <filter tail.containers.**>
+        @type grep
+        <exclude>
+         key log
+         pattern ^$
+        </exclude>
+      </filter>
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
@@ -264,7 +272,7 @@ data:
         enable_ruby
         <record>
           # set the sourcetype from splunk.com/sourcetype pod annotation or set it to kube:container:CONTAINER_NAME
-          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? "kube:"+record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "kube:container:"+record.dig("kubernetes","container_name")}
+          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "kube:container:"+record.dig("kubernetes","container_name")}
           container_name ${record.dig("kubernetes","container_name")}
           namespace ${record.dig("kubernetes","namespace_name")}
           pod ${record.dig("kubernetes","pod_name")}
@@ -278,14 +286,14 @@ data:
           label_app ${record.dig("kubernetes","labels","app")}
           label_k8s-app ${record.dig("kubernetes","labels","k8s-app")}
           label_release ${record.dig("kubernetes","labels","release")}
-          blacklist ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
+          exclude_list ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
         </record>
       </filter>
       <filter tail.containers.**>
-        # Exclude all logs that are blacklisted
+        # Exclude all logs that are marked
         @type grep
         <exclude>
-          key blacklist
+          key exclude_list
           pattern /^true$/
         </exclude>
       </filter>
@@ -303,13 +311,11 @@ data:
         @type jq_transformer
         jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "cluster_name" | .record.index = "main" | .record'
       </filter>
-
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"cluster_name\" | .record.index = \"main\" | .record"
       </filter>
-
       # = custom filters specified by users =
 
       # = output =
