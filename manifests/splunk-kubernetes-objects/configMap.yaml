@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.3
+    version: 1.4.4
 data:
   fluent.conf: |
     <system>
