@@ -71,6 +71,8 @@ spec:
               secretKeyRef:
                 name: {{ template "splunk-kubernetes-logging.secret" . }}
                 key: splunk_hec_token
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         volumeMounts:

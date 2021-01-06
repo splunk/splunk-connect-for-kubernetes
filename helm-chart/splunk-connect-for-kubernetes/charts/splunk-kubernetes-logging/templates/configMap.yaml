@@ -13,7 +13,9 @@ data:
     @include source.containers.conf
     @include source.files.conf
     @include source.journald.conf
+    {{- if .Values.global.monitoring_agent_enabled }}
     @include monit.conf
+    {{- end }}
     @include output.conf
     {{- if .Values.global.prometheus_enabled }}
     @include prometheus.conf
@@ -82,6 +84,7 @@ data:
       pos_file {{ .Values.containers.path }}/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
+      refresh_interval {{ .Values.containers.refreshInterval | default 60 }}
       <parse>
       {{- if eq .Values.containers.logFormatType "cri" }}
         @type regexp
@@ -94,7 +97,6 @@ data:
         time_key time
         time_type string
         localtime false
-        refresh_interval {{ .Values.containers.refreshInterval | default 60 }}
       </parse>
     </source>
 
@@ -168,7 +170,7 @@ data:
     {{- end }}
     {{- end }}
 
-
+  {{- if .Values.global.monitoring_agent_enabled }}
   monit.conf: |-
     <source>
       @id fluentd-monitor-agent
@@ -176,6 +178,7 @@ data:
       @label @SPLUNK
       tag monitor_agent
     </source>
+  {{- end }}
 
 
   output.conf: |-
@@ -215,6 +218,14 @@ data:
       </match>
     </label>
     <label @SPLUNK>
+      # filter to  remove empty lines
+      <filter tail.containers.**>
+        @type grep
+        <exclude>
+         key log
+         pattern ^$
+        </exclude>
+      </filter>
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
@@ -226,7 +237,7 @@ data:
         enable_ruby
         <record>
           # set the sourcetype from splunk.com/sourcetype pod annotation or set it to kube:container:CONTAINER_NAME
-          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? "kube:"+record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "kube:container:"+record.dig("kubernetes","container_name")}
+          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "{{ .Values.sourcetypePrefix }}:container:"+record.dig("kubernetes","container_name")}
           container_name ${record.dig("kubernetes","container_name")}
           namespace ${record.dig("kubernetes","namespace_name")}
           pod ${record.dig("kubernetes","pod_name")}
@@ -248,6 +259,11 @@ data:
           {{ .name }} "{{ .value }}"
           {{- end }}
           {{- end }}
+          {{- if .Values.customMetadataAnnotations }}
+          {{- range .Values.customMetadataAnnotations }}
+          {{ .name }} ${record.dig("kubernetes","annotations","{{ .annotation }}") ? record.dig("kubernetes","annotations","{{ .annotation }}") : record.dig("kubernetes","namespace_annotations","{{ .annotation }}")}
+          {{- end }}
+          {{- end }}
         </record>
       </filter>
       <filter tail.containers.**>
@@ -262,7 +278,7 @@ data:
       {{- if eq .Values.containers.logFormatType "cri" }}
       <filter tail.containers.var.log.pods.**>
         @type jq_transformer
-        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("kube:container:" + .container_name) | .index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }}'
+        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("{{ .Values.sourcetypePrefix }}:container:" + .container_name) | .index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }}'
       </filter>
       {{- end }}
 
@@ -282,20 +298,20 @@ data:
         jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record.index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }} {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = "{{ .value }}" {{- end }}{{- end }} | .record'
       </filter>
       {{- end }}
-
+      {{- if .Values.global.monitoring_agent_enabled }}
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record.index = \"{{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" }}\" {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = \"{{ .value }}\" {{- end }}{{- end }} | .record"
       </filter>
-
+      {{- end }}
       # = custom filters specified by users =
       {{- range $name, $filterDef := .Values.customFilters }}
       {{- if and $filterDef.tag $filterDef.type }}
       <filter {{ $filterDef.tag }}>
         @type {{ $filterDef.type }}
         {{- if $filterDef.body }}
-        {{ $filterDef.body | indent 8 }}
+        {{- toYaml $filterDef.body | indent 8 }}
         {{- end }}
       </filter>
       {{- end }}
@@ -378,6 +394,11 @@ data:
           {{ .name }}
           {{- end }}
           {{- end }}
+          {{- if .Values.customMetadataAnnotations }}
+          {{- range .Values.customMetadataAnnotations }}
+          {{ .name }}
+          {{- end }}
+          {{- end }}
           {{- range .Values.indexFields }}
           {{ . }}
           {{- end }}
@@ -392,9 +413,11 @@ data:
         {{- end }}
         </buffer>
         {{- end }}
+        {{- if .Values.global.monitoring_agent_enabled }}
         <format monitor_agent>
           @type json
         </format>
+        {{- end }}
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value

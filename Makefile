@@ -2,8 +2,8 @@ include PLUGIN_VERSIONS.sh
 export $(shell sed 's/=.*//' PLUGIN_VERSIONS.sh)
 
 create-dir: 
+	@rm -rf build/
 	@mkdir -p build
-	@rm build/*
 
 main-chart: create-dir
 	@helm package -d build helm-chart/splunk-connect-for-kubernetes

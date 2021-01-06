@@ -20,7 +20,7 @@ global:
       protocol:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
-      # insecureSSL is a boolean, it indicates should it allow inscure SSL connection (when protocol is "https"). Default is false.
+      # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default is false.
       insecureSSL:
       # The PEM-format CA certificate for this client.
       # NOTE: The content of the certificate itself should be used here, not the file path.
@@ -39,9 +39,10 @@ global:
   kubernetes:
     # The cluster name used to tag logs. Default is cluster_name
     clusterName: "cluster_name"
-    # Add privileged access to containers for openshift compatability
+    # Add privileged access to containers for openshift compatibility
     openshift: false
   prometheus_enabled:
+  monitoring_agent_enabled:
 
 ## Enabling splunk-kubernetes-logging will install the `splunk-kubernetes-logging` chart to a kubernetes
 ## cluster to collect logs generated in the cluster to a Splunk indexer/indexer cluster.
@@ -77,7 +78,7 @@ splunk-kubernetes-logging:
     # Specify the log format for "cri" logFormatType
     # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
     logFormat:
-    # Specify the interval of refreshing the list of watch file. 
+    # Specify the interval of refreshing the list of watch file.
     refreshInterval:
 
   # Enriches log record with kubernetes data
@@ -87,7 +88,11 @@ splunk-kubernetes-logging:
       - app
       - k8s-app
       - release
+    watch: true
+    cache_ttl: 3600
 
+  sourcetypePrefix: "kube"
+  
   rbac:
     # Specifies whether RBAC resources should be created.
     # This should be set to `false` if either:
@@ -105,6 +110,19 @@ splunk-kubernetes-logging:
     # which will be used to get the images from a private registry
     usePullSecrets: false
 
+  podSecurityPolicy:
+    # Specifies whether Pod Security Policy resources should be created.
+    # This should be set to `false` if either:
+    # a) Pod Security Policies is not enabled in the cluster, or
+    # b) you want to create Pod Security Policy resources by yourself.
+    create: false
+    # Specifies whether AppArmor profile should be applied.
+    # if set to true, this will add two annotations to PodSecurityPolicy:
+    # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+    # set to false if AppArmor is not available
+    apparmor_security: true
+
   # Local splunk configurations
   splunk:
     # Configurations for HEC (HTTP Event Collector)
@@ -119,7 +137,7 @@ splunk-kubernetes-logging:
       protocol:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
-      # insecureSSL is a boolean, it indicates should it allow inscure SSL connection (when protocol is "https"). Default is false.
+      # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default is false.
       insecureSSL:
       # The PEM-format CA certificate for this client.
       # NOTE: The content of the certificate itself should be used here, not the file path.
@@ -332,7 +350,7 @@ splunk-kubernetes-logging:
     # The tag of the image to pull
     tag: 1.2.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
@@ -385,7 +403,7 @@ splunk-kubernetes-logging:
   kubernetes:
     # The cluster name used to tag logs. Default is cluster_name
     clusterName:
-    # Add privileged access to containers for openshift compatability
+    # Add privileged access to containers for openshift compatibility
     openshift: false
 
   # List of key/value pairs for metadata purpse.
@@ -393,6 +411,11 @@ splunk-kubernetes-logging:
   customMetadata:
   #  - name: "cloud_account_id"
   #    value: "1234567890"
+
+  # List of annotation metadata you would like to enrich log data with
+  customMetadataAnnotations:
+  #  - name: custom_field
+  #    annotaion: splunk.com/custom_field
 
   # `customFilters` defines the custom filters to be used.
   # This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
@@ -479,6 +502,19 @@ splunk-kubernetes-objects:
     # which will be used to get the images from a private registry
     usePullSecrets: false
 
+  podSecurityPolicy:
+    # Specifies whether Pod Security Policy resources should be created.
+    # This should be set to `false` if either:
+    # a) Pod Security Policies is not enabled in the cluster, or
+    # b) you want to create Pod Security Policy resources by yourself.
+    create: false
+    # Specifies whether AppArmor profile should be applied.
+    # if set to true, this will add two annotations to PodSecurityPolicy:
+    # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+    # set to false if AppArmor is not available
+    apparmor_security: true
+
   # = Kubernetes Connection Configs =
   kubernetes:
     # the URL for calling kubernetes API, by default it will be read from the environment variables
@@ -497,7 +533,7 @@ splunk-kubernetes-objects:
     secretDir:
     # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
     clusterName:
-    # Add privileged access to containers for openshift compatability
+    # Add privileged access to containers for openshift compatibility
     openshift: false
 
   # = Object Lists =
@@ -585,7 +621,7 @@ splunk-kubernetes-objects:
       protocol:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
-      # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default value: false.
+      # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false.
       insecureSSL:
       # The *content* of a PEM-format CA certificate for this client.
       clientCert:
@@ -619,7 +655,7 @@ splunk-kubernetes-objects:
     # The tag of the image to pull
     tag: 1.1.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
@@ -747,6 +783,19 @@ splunk-kubernetes-metrics:
     # which will be used to get the images from a private registry
     usePullSecrets: false
 
+  podSecurityPolicy:
+    # Specifies whether Pod Security Policy resources should be created.
+    # This should be set to `false` if either:
+    # a) Pod Security Policies is not enabled in the cluster, or
+    # b) you want to create Pod Security Policy resources by yourself.
+    create: false
+    # Specifies whether AppArmor profile should be applied.
+    # if set to true, this will add two annotations to PodSecurityPolicy:
+    # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+    # set to false if AppArmor is not available
+    apparmor_security: true
+
   # = Splunk HEC Connection =
   splunk:
     # Configurations for HEC (HTTP Event Collector)
@@ -761,7 +810,7 @@ splunk-kubernetes-metrics:
       protocol:
       # indexName tells which index to use, OPTIONAL. If it's not present, will use "main".
       indexName:
-      # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default value: false
+      # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false
       insecureSSL:
       # The PEM-format CA certificate for this client.
       # NOTE: The content of the certificate itself should be used here, not the file path.
@@ -790,7 +839,7 @@ splunk-kubernetes-metrics:
     # The tag of the image to pull
     tag: 1.1.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
@@ -805,7 +854,7 @@ splunk-kubernetes-metrics:
     # The tag of the image to pull
     tag: 1.1.4
     # The policy that specifies when the user wants the images to be pulled
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
@@ -894,7 +943,7 @@ splunk-kubernetes-metrics:
     secretDir:
     # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
     clusterName:
-    # Add privileged access to containers for openshift compatability
+    # Add privileged access to containers for openshift compatibility
     openshift: false
 
   # `customFilters` defines the custom filters to be used.
