@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.4
+    version: 1.4.5
 data:
   fluent.conf: |-
     @include system.conf
@@ -266,6 +266,8 @@ data:
         @type kubernetes_metadata
         annotation_match [ "^splunk\.com" ]
         de_dot false
+        watch true
+        cache_ttl 3600
       </filter>
       <filter tail.containers.**>
         @type record_transformer
@@ -281,8 +283,8 @@ data:
           container_image ${record.dig("kubernetes","container_image")}
           # set the cluster_name field to the configured value, or default to "cluster_name"
           cluster_name cluster_name
-          # set the index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
-          index ${record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("main")}
+          # set the splunk_index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
+          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("main")}
           label_app ${record.dig("kubernetes","labels","app")}
           label_k8s-app ${record.dig("kubernetes","labels","k8s-app")}
           label_release ${record.dig("kubernetes","labels","release")}
@@ -302,7 +304,7 @@ data:
       # create source and sourcetype
       <filter journald.**>
         @type jq_transformer
-        jq '.record.source = "/run/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "cluster_name" | .record.index = "main" |.record'
+        jq '.record.source = "/run/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "cluster_name" | .record.splunk_index = "main" |.record'
       </filter>
 
       # = filters for non-container log files =
@@ -314,7 +316,7 @@ data:
       # = filters for monitor agent =
       <filter monitor_agent>
         @type jq_transformer
-        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"cluster_name\" | .record.index = \"main\" | .record"
+        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"cluster_name\" | .record.splunk_index = \"main\" | .record"
       </filter>
       # = custom filters specified by users =
 
@@ -325,7 +327,7 @@ data:
         hec_host "MY-SPLUNK-HOST"
         hec_port 8088
         hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-        index_key index
+        index_key splunk_index
         insecure_ssl true
         host "#{ENV['K8S_NODE_NAME']}"
         source_key source

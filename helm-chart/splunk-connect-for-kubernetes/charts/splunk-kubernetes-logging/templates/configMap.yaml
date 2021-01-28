@@ -420,7 +420,7 @@ data:
           @type json
         </format>
         {{- end }}
-        {{- if .Values.sendAllMetadata }}
+        {{- if not .Values.sendAllMetadata }}
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value
