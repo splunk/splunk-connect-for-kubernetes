@@ -137,6 +137,8 @@ data:
         {{ . }}
         {{- end }}
       </fields>
+      app_name {{ .Chart.Name }}
+      app_version {{ .Chart.Version }}
       {{- with .Values.buffer }}
       <buffer>
       {{- range $parameter, $value := . }}
