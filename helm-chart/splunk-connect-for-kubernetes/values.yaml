@@ -39,8 +39,6 @@ global:
   kubernetes:
     # The cluster name used to tag logs. Default is cluster_name
     clusterName: "cluster_name"
-    # Add privileged access to containers for openshift compatibility
-    openshift: false
   prometheus_enabled:
   monitoring_agent_enabled:
 
@@ -406,8 +404,9 @@ splunk-kubernetes-logging:
   kubernetes:
     # The cluster name used to tag logs. Default is cluster_name
     clusterName:
-    # Add privileged access to containers for openshift compatibility
-    openshift: false
+    # This flag specifies if the user wants to use a security context for creating the pods, which will be used to run privileged pods
+    securityContext: false
+
 
   # List of key/value pairs for metadata purpse.
   # Can be used to define things such as cloud_account_id, cloud_account_region, etc.

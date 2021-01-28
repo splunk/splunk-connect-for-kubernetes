@@ -361,8 +361,7 @@ kubernetes:
   # The cluster name used to tag logs. Default is cluster_name
   clusterName:
   # This flag specifies if the user wants to use a security context for creating the pods, which will be used to run privileged pods
-  # This currently applies to the logging component
-  securityContext: true
+  securityContext: false
 
 # List of key/value pairs for metadata purpse.
 # Can be used to define things such as cloud_account_id, cloud_account_region, etc.

@@ -48,11 +48,9 @@ spec:
       - name: splunk-fluentd-k8s-logs
         image: {{ template "splunk-kubernetes-logging.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if or .Values.global.kubernetes.securityContext .Values.kubernetes.securityContext }}
         securityContext:
-          privileged: true
           runAsUser: 0
-        {{- end }}
+          privileged: {{ .Values.kubernetes.securityContext }}
         env:
           - name: K8S_NODE_NAME
             valueFrom:
