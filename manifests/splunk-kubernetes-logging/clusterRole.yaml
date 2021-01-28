@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.4
+    version: 1.4.5
 rules:
 - apiGroups:
   - extensions

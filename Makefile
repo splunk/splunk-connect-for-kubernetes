@@ -30,7 +30,7 @@ build: all-charts
 
 .PHONY: manifests
 manifests: main-chart
-	@helm template \
+	@helm template -n default \
 	   --set global.splunk.hec.host=MY-SPLUNK-HOST \
 	   --set global.splunk.hec.token=MY-SPLUNK-TOKEN \
 	   --set global.splunk.hec.insecureSSL=true \
