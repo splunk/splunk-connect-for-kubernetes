@@ -73,8 +73,9 @@ splunk-kubernetes-logging:
     pathDest: /var/lib/docker/containers
     # Log format type, "json" or "cri"
     logFormatType: json
-    # Specify the log format for "cri" logFormatType
-    # It can be "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift and "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
+    # Specify the logFormat for "cri" logFormatType - provide time format
+    # For example "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift, "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS 
+    # Default for "cri": "%Y-%m-%dT%H:%M:%S.%N%:z"
     logFormat:
     # Specify the interval of refreshing the list of watch file.
     refreshInterval:
