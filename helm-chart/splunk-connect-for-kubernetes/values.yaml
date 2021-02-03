@@ -552,8 +552,6 @@ splunk-kubernetes-objects:
     secretDir:
     # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
     clusterName:
-    # Add privileged access to containers for openshift compatibility
-    openshift: false
 
   # = Object Lists =
   # NOTE: at least one object must be provided.
@@ -973,8 +971,6 @@ splunk-kubernetes-metrics:
     secretDir:
     # The cluster name used to tag cluster metrics from the aggregator. Default is cluster_name
     clusterName:
-    # Add privileged access to containers for openshift compatibility
-    openshift: false
 
   # `customFilters` defines the custom filters to be used.
   # This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
