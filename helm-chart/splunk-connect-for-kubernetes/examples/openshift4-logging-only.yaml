@@ -1,0 +1,55 @@
+#
+# Deploy the logging component to OpenShift.
+#
+# Additionally the system:openshift:scc:privileged ClusterRoleBinding for
+# the fluentd pod ServiceAccount needs to be created manually.
+#
+---
+global:
+  splunk:
+    hec:
+      token: hec-token
+      host: splunk
+      port: 8443 
+      indexName: openshift 
+  kubernetes:
+    clusterName: my-cluster
+
+splunk-kubernetes-logging:
+  enabled: true
+  kubernetes:
+    # the next actually sets .securityContext.privileged
+    # privileged is required, due to SELinux preventing
+    # write access for the *.pos files of fluentd.
+    securityContext: true
+  containers:
+    logFormatType: cri
+    logFormat: "%Y-%m-%dT%H:%M:%S.%N%:z"
+  logs:
+    # The `kube-audit` file has another path on OpenShift
+    kube-audit:
+      from:
+        file:
+          path: /var/log/kube-apiserver/audit.log
+    # Next 2 logfiles are specific to OpenShift
+    openshift-audit:
+      from:
+        file:
+          path: /var/log/openshift-apiserver/audit.log
+      timestampExtraction:
+        format: "%Y-%m-%dT%H:%M:%SZ"
+      sourcetype: kube:openshift-apiserver-audit
+    oauth-audit:
+      from:
+        file:
+          path: /var/log/oauth-apiserver/audit.log
+      timestampExtraction:
+        format: "%Y-%m-%dT%H:%M:%SZ"
+      sourcetype: kube:oauth-apiserver-audit
+
+splunk-kubernetes-metrics:
+  enabled: false
+
+splunk-kubernetes-objects:
+  enabled: false
+
