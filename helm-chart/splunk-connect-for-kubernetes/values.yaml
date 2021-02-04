@@ -97,6 +97,11 @@ splunk-kubernetes-logging:
     # a) RBAC is not enabled in the cluster, or
     # b) you want to create RBAC resources by yourself.
     create: true
+    # If you are on OpenShift and you want to run the a privileged pod
+    # you need to have a ClusterRoleBinding for the system:openshift:scc:privileged
+    # ClusterRole. Set to `true` to create the ClusterRoleBinding resource
+    # for the ServiceAccount.
+    openshiftPrivilegedSccBinding: false
 
   serviceAccount:
     # Specifies whether a ServiceAccount should be created
