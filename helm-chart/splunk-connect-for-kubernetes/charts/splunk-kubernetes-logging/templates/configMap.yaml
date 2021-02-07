@@ -88,7 +88,7 @@ data:
       <parse>
       {{- if eq .Values.containers.logFormatType "cri" }}
         @type regexp
-        expression /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
+        expression /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
         time_format  {{ .Values.containers.logFormat | default "%Y-%m-%dT%H:%M:%S.%N%:z" }}
       {{- else if eq .Values.containers.logFormatType "json" }}
         @type json
@@ -192,6 +192,16 @@ data:
       </filter>
       {{- end }}
       # = filters for container logs =
+      {{- if eq .Values.containers.logFormatType "cri" }}
+      <filter tail.containers.var.log.containers.**>
+        @type concat
+        key log
+        partial_key logtag
+        partial_value P
+        separator ''
+        timeout_label @SPLUNK
+      </filter>
+      {{- end }}
       {{- range $name, $logDef := .Values.logs }}
       {{- if and $logDef.from.pod $logDef.multiline }}
       <filter tail.containers.var.log.containers.{{ $logDef.from.pod }}*{{ or $logDef.from.container $name }}*.log>
