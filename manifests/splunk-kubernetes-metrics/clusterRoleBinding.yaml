@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.5
+    version: 1.4.6
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -13,4 +13,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: splunk-kubernetes-metrics
-  namespace: playground
+  namespace: user-rbaek
