@@ -69,6 +69,8 @@ spec:
             value: /fluentd/etc/splunk/hec_ca_file
         resources:
 {{ toYaml .Values.resources | indent 10 }}
+        securityContext:
+          runAsNonRoot: false
         volumeMounts:
         - name: conf-configmap
           mountPath: /fluentd/etc
