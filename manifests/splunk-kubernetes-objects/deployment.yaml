@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.5
+    version: 1.4.6
 spec:
   strategy:
     type: RollingUpdate
@@ -19,7 +19,7 @@ spec:
       labels:
         app: splunk-kubernetes-objects
         engine: fluentd
-        version: 1.4.5
+        version: 1.4.6
       annotations: {}
     spec:
       serviceAccountName: splunk-kubernetes-objects

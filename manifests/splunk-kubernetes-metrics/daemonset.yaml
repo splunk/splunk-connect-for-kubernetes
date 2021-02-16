@@ -6,7 +6,7 @@ metadata:
   labels:
     app: splunk-kubernetes-metrics
     engine: fluentd
-    version: 1.4.5
+    version: 1.4.6
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -20,7 +20,7 @@ spec:
         name: splunk-kubernetes-metrics
         app: splunk-kubernetes-metrics
         engine: fluentd
-        version: 1.4.5
+        version: 1.4.6
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:

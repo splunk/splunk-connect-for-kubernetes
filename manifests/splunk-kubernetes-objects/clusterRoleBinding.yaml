@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.5
+    version: 1.4.6
 roleRef:
   kind: ClusterRole
   name: splunk-kubernetes-objects
@@ -13,4 +13,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: splunk-kubernetes-objects
-  namespace: playground
+  namespace: user-rbaek

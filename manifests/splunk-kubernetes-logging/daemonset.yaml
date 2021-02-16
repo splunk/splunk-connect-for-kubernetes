@@ -6,7 +6,7 @@ metadata:
   labels:
     app: splunk-kubernetes-logging
     engine: fluentd
-    version: 1.4.5
+    version: 1.4.6
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         app: splunk-kubernetes-logging
-        version: 1.4.5
+        version: 1.4.6
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '24231'

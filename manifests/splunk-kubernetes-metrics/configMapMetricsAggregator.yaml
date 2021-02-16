@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.5
+    version: 1.4.6
 data:
   fluent.conf: |
     # system wide configurations
