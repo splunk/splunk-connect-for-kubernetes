@@ -126,6 +126,8 @@ splunk-kubernetes-logging:
     # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
     # set to false if AppArmor is not available
     apparmor_security: true
+    # apiGroup can be set to "extensions" for Kubernetes < 1.10.
+    apiGroup: policy
 
   # Local splunk configurations
   splunk:
@@ -535,6 +537,8 @@ splunk-kubernetes-objects:
     # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
     # set to false if AppArmor is not available
     apparmor_security: true
+    # apiGroup can be set to "extensions" for Kubernetes < 1.10.
+    apiGroup: policy
 
   # = Kubernetes Connection Configs =
   kubernetes:
@@ -816,6 +820,8 @@ splunk-kubernetes-metrics:
     # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
     # set to false if AppArmor is not available
     apparmor_security: true
+    # apiGroup can be set to "extensions" for Kubernetes < 1.10.
+    apiGroup: policy
 
   # = Splunk HEC Connection =
   splunk:
