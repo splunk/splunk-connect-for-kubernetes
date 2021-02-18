@@ -264,7 +264,7 @@ data:
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
-        annotation_match [ "^splunk\.com" ]
+        annotation_match [ ".*" ]
         de_dot false
         watch true
         cache_ttl 3600
