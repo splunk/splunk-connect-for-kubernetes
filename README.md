@@ -154,9 +154,9 @@ Some parameters used with Splunk Connect for Kubernetes can have an impact on ov
 
 Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best address capacity needs, Splunk recommends that you monitor the HEC throughput and back pressure on Splunk Connect for Kubernetes deployments and be prepared to add additional nodes as needed.
 
-# Processing Multi-Line Logs
+# Processing multiline Logs
 
-One possible filter option is to enable the processing of multi-line events. This feature is currently experimental and considered to be community supported.
+One possible filter option is to enable the processing of multiline events. This feature is currently experimental and considered to be community supported.
 
 # Configuring multiline fluentd filters to line break multiline logs
 
