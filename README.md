@@ -156,6 +156,30 @@ Splunk Connect for Kubernetes can exceed the default throughput of HEC. To best 
 
 One possible filter option is to enable the processing of multi-line events. This feature is currently experimental and considered to be community supported.
 
+# Configuring multiline fluentd filters to line break multiline logs
+
+Configure apache tomcat multiline logs using the following steps:
+
+
+1. Develop a multiline filter with the proper regex and test the regex using a site such as https://rubular.com/
+
+```bash
+<filter tail.containers.var.log.containers.toolbox*toolbox*.log>
+        @type concat
+        key log
+        timeout_label @SPLUNK
+        stream_identity_key stream
+        multiline_start_regexp /^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}|^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}|^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\s-\s-/
+        multiline_end_regexp /\\n$/
+        separator ""
+        flush_interval 5s
+</filter>
+```
+
+2. Add the multiline filter to your deployment's [logging configmap.](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/manifests/splunk-kubernetes-logging/configMap.yaml)
+
+3. Save your changes.
+
 # Managing SCK Log Ingestion by Using Annotations
 
 Manage Splunk Connect for Kubernetes Logging with these supported annotations.
