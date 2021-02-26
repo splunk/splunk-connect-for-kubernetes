@@ -73,6 +73,8 @@ data:
     # CRI Log Example (not supported):
     # 2016-02-17T00:04:05.931087621Z stdout [info:2016-02-16T16:04:05.930-08:00] Some log text here
     <source>
+      encoding UTF-8
+      from_encoding UTF-8
       @id containers.log
       @type tail
       @label @CONCAT
