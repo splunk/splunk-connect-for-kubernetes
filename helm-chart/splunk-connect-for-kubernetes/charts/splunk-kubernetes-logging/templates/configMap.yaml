@@ -184,6 +184,13 @@ data:
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
     <label @CONCAT>
+      {{- if .Values.charEncodingUtf8 }}
+      # = set strings to uft-8 encoding =
+      <filter **>
+        @type record_modifier
+        char_encoding utf-8
+      </filter>
+      {{- end }}
       # = filters for container logs =
       {{- range $name, $logDef := .Values.logs }}
       {{- if and $logDef.from.pod $logDef.multiline }}
