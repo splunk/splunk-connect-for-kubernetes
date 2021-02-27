@@ -132,6 +132,13 @@ secret:
   create: true
   name:
 
+# Set to true, to change the encoding of all strings to utf-8.
+#
+# By default fluentd uses ASCII-8BIT encoding. If you have 2-byte chars in your logs
+# you need to set the encoding to UTF-8 instead.
+#
+charEncodingUtf8: false
+
 # `logs` defines the source of logs, multiline support, and their sourcetypes.
 #
 # The scheme to define a log is:
