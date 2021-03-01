@@ -84,7 +84,9 @@ To learn more about using and modifying charts, see:
 * [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics/values.yaml)
 * [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects/values.yaml)
 
-## Deploy using YAML
+## Deploy using YAML (unsupported)
+
+> Only deploying by Helm is supported by Splunk.
 
 You can grab the manifest YAML files and use them to create the Kubernetes objects needed to deploy Splunk Connect for Kubernetes. Please note that installation and debugging for Splunk Connect for Kubernetes through YAML is community-supported only.
 
