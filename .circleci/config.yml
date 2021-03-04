@@ -28,6 +28,7 @@ jobs:
       CI_INDEX_OBJECTS: circleci_objects
       CI_INDEX_METRICS: circleci_metrics
       CI_DATAGEN_IMAGE: rock1017/log-generator:latest
+      #CI_RUBY_VERSION: 2.7.2, populated from CircleCI project config
     working_directory: ~/repo
     steps:
       - checkout
@@ -108,8 +109,8 @@ jobs:
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             export CI_SPLUNK_HEC_HOST_PERF=$(hostname -i)
             source /home/circleci/.bash_profile
-            rvm install 2.4.0
-            rvm use 2.4.0
+            rvm install $CI_RUBY_VERSION
+            rvm use $CI_RUBY_VERSION
             .circleci/update_sck_config.sh
       - run:
           name: Deploy k8s connector

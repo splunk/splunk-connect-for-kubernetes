@@ -63,8 +63,13 @@ spec:
               secretKeyRef:
                 name: {{ template "splunk-kubernetes-metrics.secret" . }}
                 key: splunk_hec_token
+          {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
           - name: SSL_CERT_FILE
             value: /fluentd/etc/splunk/hec_ca_file
+          {{- end }}
+          {{- if .Values.environmentVar }}
+          {{- toYaml .Values.environmentVar | nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.resources.fluent | indent 12 }}
         volumeMounts:

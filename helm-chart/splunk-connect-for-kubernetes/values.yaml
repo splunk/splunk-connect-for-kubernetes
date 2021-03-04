@@ -367,10 +367,7 @@ splunk-kubernetes-logging:
     pullsecretName:
 
   # Environment variable for daemonset
-  # Remove SSL_CERT_FILE environment variable when using OS CA file
   environmentVar:
-  - name: SSL_CERT_FILE
-    value: /fluentd/etc/splunk/hec_ca_file
 
   # Controls the resources used by the fluentd daemonset
   resources:
@@ -681,6 +678,9 @@ splunk-kubernetes-objects:
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
     pullSecretName:
 
+  # Environment variable for metrics daemonset
+  environmentVar:
+
   # = Resoruce Limitation Configs =
   resources:
     # limits:
@@ -880,6 +880,12 @@ splunk-kubernetes-metrics:
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
     pullsecretName:
 
+  # Environment variable for metrics daemonset
+  environmentVar:
+
+  # Environment variable for metrics aggregator pod
+  environmentVarAgg:
+      
   # Controls the resources used by the fluentd daemonset
   resources:
     fluent:
