@@ -187,6 +187,9 @@ image:
   # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullSecretName:
 
+# Environment variable for metrics daemonset
+environmentVar:
+    
 # = Resoruce Limitation Configs =
 resources:
   # limits:

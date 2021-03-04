@@ -105,6 +105,12 @@ imageAgg:
   # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullsecretName:
 
+# Environment variable for metrics daemonset
+environmentVar:
+
+# Environment variable for metrics aggregator pod
+environmentVarAgg:
+
 # Controls the resources used by the fluentd daemonset
 resources:
   fluent:

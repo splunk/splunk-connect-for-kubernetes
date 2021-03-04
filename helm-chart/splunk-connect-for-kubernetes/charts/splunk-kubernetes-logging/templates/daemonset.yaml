@@ -40,10 +40,10 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{ if .Values.image.usePullSecret }}
+      {{- if .Values.image.usePullSecret }}
       imagePullSecrets:
       - name: {{ .Values.image.pullSecretName }}
-      {{ end }}
+      {{- end }}
       containers:
       - name: splunk-fluentd-k8s-logs
         image: {{ template "splunk-kubernetes-logging.image" . }}
@@ -69,9 +69,15 @@ spec:
               secretKeyRef:
                 name: {{ template "splunk-kubernetes-logging.secret" . }}
                 key: splunk_hec_token
-          {{ toYaml .Values.environmentVar | nindent 10 }}
+          {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
+          {{- end }}
+          {{- if .Values.environmentVar }}
+          {{- toYaml .Values.environmentVar | nindent 10 }}
+          {{- end }}
         resources:
-          {{ toYaml .Values.resources | nindent 12 }}
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
         - name: varlog
           mountPath: {{ .Values.containers.path }}
