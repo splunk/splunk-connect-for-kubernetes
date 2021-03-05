@@ -24,6 +24,9 @@ spec:
         engine: fluentd
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-objects.serviceAccountName" . }}
       terminationGracePeriodSeconds: 30

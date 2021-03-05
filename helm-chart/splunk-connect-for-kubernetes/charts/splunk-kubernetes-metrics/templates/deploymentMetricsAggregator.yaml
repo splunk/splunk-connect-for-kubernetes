@@ -23,6 +23,9 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         checksum/config: {{ include (print $.Template.BasePath "/configMapMetricsAggregator.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotationsAgg }}
+{{ toYaml .Values.podAnnotationsAgg | indent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-metrics.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
