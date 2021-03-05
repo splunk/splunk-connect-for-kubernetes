@@ -189,7 +189,10 @@ image:
 
 # Environment variable for metrics daemonset
 environmentVar:
-    
+
+# Pod annotations for metrics daemonset
+podAnnotations: 
+
 # = Resoruce Limitation Configs =
 resources:
   # limits:

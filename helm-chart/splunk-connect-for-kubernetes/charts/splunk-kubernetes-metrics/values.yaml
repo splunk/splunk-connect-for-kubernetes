@@ -111,6 +111,12 @@ environmentVar:
 # Environment variable for metrics aggregator pod
 environmentVarAgg:
 
+# Pod annotations for metrics daemonset
+podAnnotations: 
+
+# Pod annotations for metrics aggregator pod
+podAnnotationsAgg: 
+
 # Controls the resources used by the fluentd daemonset
 resources:
   fluent:

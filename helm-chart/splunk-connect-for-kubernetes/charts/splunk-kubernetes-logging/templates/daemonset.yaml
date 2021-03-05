@@ -26,6 +26,9 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '24231'
         {{- end }}
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-logging.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
