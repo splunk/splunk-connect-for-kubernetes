@@ -178,7 +178,7 @@ Configure apache tomcat multiline logs using the following steps:
 </filter>
 ```
 
-2. Add the multiline filter to your deployment's [logging configmap.](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/manifests/splunk-kubernetes-logging/configMap.yaml)
+2. Add the multiline filter to your deployment's [logging configmap](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/manifests/splunk-kubernetes-logging/configMap.yaml) using the [customFilters](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/helm-chart/splunk-connect-for-kubernetes/values.yaml#L440) parameter.
 
 3. Save your changes.
 
