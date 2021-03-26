@@ -25,7 +25,7 @@ After a few minutes, you should see data being indexed in your Splunk.
 If you get stuck, we're here to help.
 Look for answers here: http://docs.splunk.com
 {{ if or $lHec.insecureSSL $oHec.insecureSSL $mHec.insecureSSL $gHec.insecureSSL }}
-Warning: Allowing insecure SSL connection might make your data vulnerable for MiTM attacks.
+Warning: Disabling TLS will send the data unencrypted and will be vulnerable to MiTM attacks
 {{- end }}
 
 {{- else }}
