@@ -92,6 +92,12 @@ spec:
         - name: secrets
           mountPath: /fluentd/etc/splunk
           readOnly: true
+        {{- if .Values.global.prometheus_enabled }}
+        ports:
+        - containerPort: 24231
+          name: metrics
+          protocol: TCP
+        {{- end }}
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog
@@ -109,12 +115,6 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-logging.secret" . }}
-      {{- if .Values.global.prometheus_enabled }}
-      ports:
-      - containerPort: 24231
-        name: metrics
-        protocol: TCP
-      {{- end }}
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}
