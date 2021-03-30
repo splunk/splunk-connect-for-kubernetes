@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.6
+    version: 1.4.7
 data:
   fluent.conf: |
     # system wide configurations
@@ -72,6 +72,8 @@ data:
       host "#{ENV['NODE_NAME']}"
       source source
       insecure_ssl true
+      app_name splunk-kubernetes-metrics
+      app_version 1.4.7
       <buffer>
         @type memory
         chunk_limit_records 10000

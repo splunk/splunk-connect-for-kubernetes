@@ -5,10 +5,10 @@ metadata:
   name: kubelet-summary-api-read
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.6
+    version: 1.4.7
 rules:
 - apiGroups:
-  - extensions
+  - policy
   resources:
   - podsecuritypolicies
   verbs:

@@ -5,47 +5,20 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.6
+    version: 1.4.7
 data:
   fluent.conf: |-
     @include system.conf
     @include source.containers.conf
     @include source.files.conf
     @include source.journald.conf
-    @include monit.conf
     @include output.conf
-    @include prometheus.conf
   system.conf: |-
     # system wide configurations
     <system>
       log_level info
       root_dir /tmp/fluentd
     </system>
-  prometheus.conf: |-
-    # input plugin that exports metrics
-    <source>
-      @type prometheus
-    </source>
-
-    <source>
-      @type forward
-    </source>
-
-    # input plugin that collects metrics from MonitorAgent
-    <source>
-      @type prometheus_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
-
-    # input plugin that collects metrics for output plugin
-    <source>
-      @type prometheus_output_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
   source.containers.conf: |-
     # This configuration file for Fluentd / td-agent is used
     # to watch changes to Docker log files. The kubelet creates symlinks that
@@ -138,13 +111,6 @@ data:
         field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
         field_map_strict true
       </entry>
-    </source>
-  monit.conf: |-
-    <source>
-      @id fluentd-monitor-agent
-      @type monitor_agent
-      @label @SPLUNK
-      tag monitor_agent
     </source>
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
@@ -315,11 +281,6 @@ data:
         @type jq_transformer
         jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "cluster_name" | .record.index = "main" | .record'
       </filter>
-      # = filters for monitor agent =
-      <filter monitor_agent>
-        @type jq_transformer
-        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"cluster_name\" | .record.splunk_index = \"main\" | .record"
-      </filter>
       # = custom filters specified by users =
 
       # = output =
@@ -349,6 +310,8 @@ data:
           label_k8s-app
           label_release
         </fields>
+        app_name splunk-kubernetes-logging
+        app_version 1.4.7
         <buffer>
           @type memory
           chunk_limit_records 100000
@@ -360,9 +323,6 @@ data:
           retry_type periodic
           total_limit_size 600m
         </buffer>
-        <format monitor_agent>
-          @type json
-        </format>
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value

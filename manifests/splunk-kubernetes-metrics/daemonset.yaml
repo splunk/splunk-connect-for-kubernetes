@@ -6,7 +6,7 @@ metadata:
   labels:
     app: splunk-kubernetes-metrics
     engine: fluentd
-    version: 1.4.6
+    version: 1.4.7
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -20,7 +20,7 @@ spec:
         name: splunk-kubernetes-metrics
         app: splunk-kubernetes-metrics
         engine: fluentd
-        version: 1.4.6
+        version: 1.4.7
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
@@ -32,7 +32,7 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-metrics
-        image: docker.io/splunk/k8s-metrics:1.1.4
+        image: docker.io/splunk/k8s-metrics:1.1.5
         imagePullPolicy: IfNotPresent
         env:
         - name: KUBERNETES_NODE_IP
@@ -48,8 +48,6 @@ spec:
             secretKeyRef:
               name: splunk-kubernetes-metrics
               key: splunk_hec_token
-        - name: SSL_CERT_FILE
-          value: "/fluentd/etc/splunk/hec_ca_file"
         resources:
           limits:
             cpu: 200m
@@ -57,6 +55,8 @@ spec:
           requests:
             cpu: 200m
             memory: 300Mi
+        securityContext:
+          runAsNonRoot: false
         volumeMounts:
         - name: conf-configmap
           mountPath: "/fluentd/etc"

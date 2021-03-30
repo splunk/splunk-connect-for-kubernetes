@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.6
+    version: 1.4.7
 roleRef:
   kind: ClusterRole
   name: splunk-kubernetes-logging
@@ -13,4 +13,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: splunk-kubernetes-logging
-  namespace: user-rbaek
+  namespace: default

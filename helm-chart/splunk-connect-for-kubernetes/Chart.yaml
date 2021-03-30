@@ -1,7 +1,7 @@
 apiVersion: v1
 name: splunk-connect-for-kubernetes
-version: 1.4.6
-appVersion: 1.4.6
+version: 1.4.7
+appVersion: 1.4.7
 description: Collect logs, objects (metadata), and metrics with Splunk.
 home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart
 sources:
