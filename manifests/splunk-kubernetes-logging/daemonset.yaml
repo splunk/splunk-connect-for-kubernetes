@@ -6,7 +6,7 @@ metadata:
   labels:
     app: splunk-kubernetes-logging
     engine: fluentd
-    version: 1.4.6
+    version: 1.4.7
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -17,10 +17,8 @@ spec:
     metadata:
       labels:
         app: splunk-kubernetes-logging
-        version: 1.4.6
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: '24231'
+        version: 1.4.7
+      annotations: {}
     spec:
       serviceAccountName: splunk-kubernetes-logging
       nodeSelector:
@@ -30,7 +28,7 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-logs
-        image: docker.io/splunk/fluentd-hec:1.2.4
+        image: docker.io/splunk/fluentd-hec:1.2.5
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 0
@@ -53,8 +51,6 @@ spec:
             secretKeyRef:
               name: splunk-kubernetes-logging
               key: splunk_hec_token
-        - name: SSL_CERT_FILE
-          value: "/fluentd/etc/splunk/hec_ca_file"
         resources:
           requests:
             cpu: 100m

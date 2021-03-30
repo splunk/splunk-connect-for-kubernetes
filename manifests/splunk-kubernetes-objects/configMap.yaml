@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.6
+    version: 1.4.7
 data:
   fluent.conf: |
     <system>
@@ -56,6 +56,8 @@ data:
       <fields>
         cluster_name
       </fields>
+      app_name splunk-kubernetes-objects
+      app_version 1.4.7
       <buffer>
         @type memory
         chunk_limit_records 10000

@@ -51,6 +51,6 @@ manifests: main-chart
 cleanup:
 	@rm -rf build
 
-release: version-update manifests
+release: version-update main-chart manifests
 	@cp build/splunk-connect-for-kubernetes-* docs/
 	@helm repo index docs
