@@ -316,7 +316,7 @@ data:
       # extract sourcetype
       <filter tail.file.**>
         @type jq_transformer
-        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record.index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }} {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = "{{ .value }}" {{- end }}{{- end }} | .record'
+        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}" | .record.splunk_index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }} {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = "{{ .value }}" {{- end }}{{- end }} | .record'
       </filter>
       {{- end }}
       {{- if .Values.global.monitoring_agent_enabled }}
