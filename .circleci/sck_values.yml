@@ -25,6 +25,9 @@ splunk-kubernetes-logging:
       value: customvalue1
     - name: customfield2
       value: customvalue2
+  customMetadataAnnotations:
+    - name: custom_field
+      annotation: splunk.com/custom-field
 
 splunk-kubernetes-metrics:
   kubernetes:

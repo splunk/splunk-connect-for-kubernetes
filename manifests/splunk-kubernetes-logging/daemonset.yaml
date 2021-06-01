@@ -6,7 +6,7 @@ metadata:
   labels:
     app: splunk-kubernetes-logging
     engine: fluentd
-    version: 1.4.3
+    version: 1.4.7
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -17,10 +17,8 @@ spec:
     metadata:
       labels:
         app: splunk-kubernetes-logging
-        version: 1.4.3
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: '24231'
+        version: 1.4.7
+      annotations: {}
     spec:
       serviceAccountName: splunk-kubernetes-logging
       nodeSelector:
@@ -30,11 +28,11 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-logs
-        image: docker.io/splunk/fluentd-hec:1.2.4
-        imagePullPolicy: Always
+        image: docker.io/splunk/fluentd-hec:1.2.5
+        imagePullPolicy: IfNotPresent
         securityContext:
-          privileged: true
           runAsUser: 0
+          privileged: false
         env:
         - name: K8S_NODE_NAME
           valueFrom:

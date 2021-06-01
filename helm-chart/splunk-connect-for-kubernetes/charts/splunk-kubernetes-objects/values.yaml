@@ -36,6 +36,12 @@ podSecurityPolicy:
   # a) Pod Security Policies is not enabled in the cluster, or
   # b) you want to create Pod Security Policy resources by yourself.
   create: false
+  # Specifies whether AppArmor profile should be applied.
+  # if set to true, this will add two annotations to PodSecurityPolicy:
+  # apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+  # apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+  # set to false if AppArmor is not available
+  apparmor_security: true
 
 # = Kubernetes Connection Configs =
 kubernetes:
@@ -141,7 +147,7 @@ splunk:
     protocol:
     # indexName tells which index to use, this is optional. If it's not present, the default index configured in HEC will be used.
     indexName:
-    # insecureSSL is a boolean, it indecates should it allow inscure SSL connection (when protocol is "https"). Default value: false.
+    # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false.
     insecureSSL:
     # The *content* of a PEM-format CA certificate for this client.
     clientCert:
@@ -173,14 +179,17 @@ image:
   # The name of the image to pull
   name: splunk/kube-objects
   # The tag of the image to pull
-  tag: 1.1.4
+  tag: 1.1.5
   # The policy that specifies when the user wants the images to be pulled
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Indicates if the image should be pulled using authentication from a secret
   usePullSecret: false
   # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullSecretName:
 
+# Environment variable for metrics daemonset
+environmentVar:
+    
 # = Resoruce Limitation Configs =
 resources:
   # limits:
@@ -295,3 +304,4 @@ global:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true
+  monitoring_agent_enabled: true

@@ -55,8 +55,17 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
+          {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
+          {{- end }}
+          {{- if .Values.environmentVarAgg }}
+          {{- toYaml .Values.environmentVarAgg | nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.resources.fluent | indent 12 }}
+        securityContext:
+          runAsNonRoot: false
         volumeMounts:
           - name: conf-configmap
             mountPath: /fluentd/etc

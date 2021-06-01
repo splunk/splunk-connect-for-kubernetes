@@ -17,6 +17,9 @@ in your Splunk.
 
 If you get stuck, we're here to help.
 Look for answers here: http://docs.splunk.com
+{{ if or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL }}
+Warning: Disabling TLS will send the data unencrypted and will be vulnerable to MiTM attacks
+{{- end }}
 {{- else }}
 #########################################################
 ####   ERROR: You did not set splunk.hec correctly   ####

@@ -5,11 +5,11 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.3
+    version: 1.4.7
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: runtime/default
-    apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default
     seccomp.security.alpha.kubernetes.io/defaultProfileName: runtime/default
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default
     apparmor.security.beta.kubernetes.io/defaultProfileName: runtime/default
 spec:
   privileged: true

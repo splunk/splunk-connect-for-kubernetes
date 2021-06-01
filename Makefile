@@ -2,8 +2,8 @@ include PLUGIN_VERSIONS.sh
 export $(shell sed 's/=.*//' PLUGIN_VERSIONS.sh)
 
 create-dir: 
+	@rm -rf build/
 	@mkdir -p build
-	@rm build/*
 
 main-chart: create-dir
 	@helm package -d build helm-chart/splunk-connect-for-kubernetes
@@ -30,7 +30,7 @@ build: all-charts
 
 .PHONY: manifests
 manifests: main-chart
-	@helm template \
+	@helm template -n default \
 	   --set global.splunk.hec.host=MY-SPLUNK-HOST \
 	   --set global.splunk.hec.token=MY-SPLUNK-TOKEN \
 	   --set global.splunk.hec.insecureSSL=true \
@@ -50,3 +50,7 @@ manifests: main-chart
 
 cleanup:
 	@rm -rf build
+
+release: version-update main-chart manifests
+	@cp build/splunk-connect-for-kubernetes-* docs/
+	@helm repo index docs
