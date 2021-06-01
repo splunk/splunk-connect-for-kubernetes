@@ -250,6 +250,7 @@ splunk-kubernetes-logging:
   # = multiline =
   # `multiline` options provide basic multiline support. Two options:
   # - `firstline`: a Regular Expression used to detect the first line of a multiline log.
+  # - `endline`: a Regular Expression used to detect the end line of a multiline log.
   # - `flushInterval`: The number of seconds after which the last received event log will be flushed, default value: 5s.
   #
   # = sourcetype =
