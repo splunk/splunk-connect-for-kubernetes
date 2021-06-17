@@ -2,3 +2,5 @@ build/
 .DS_Store
 *__pycache__*
 tmp/
+.idea/
+helm-artifacts/*.tgz

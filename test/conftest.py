@@ -18,6 +18,7 @@ import pytest
 import time
 import os
 
+
 def pytest_addoption(parser):
     parser.addoption("--splunkd-url",
                      help="splunkd url used to send test data to. \
@@ -30,10 +31,6 @@ def pytest_addoption(parser):
                      help="splunk user password",
                      default="password")
 
-def pytest_configure():
-    os.system('docker pull $CI_DATAGEN_IMAGE && kubectl apply -f test_setup.yaml')
-    time.sleep(60)
-
 
 @pytest.fixture(scope="function")
 def setup(request):
@@ -41,6 +38,4 @@ def setup(request):
     config["splunkd_url"] = request.config.getoption("--splunkd-url")
     config["splunk_user"] = request.config.getoption("--splunk-user")
     config["splunk_password"] = request.config.getoption("--splunk-password")
-
-
     return config
