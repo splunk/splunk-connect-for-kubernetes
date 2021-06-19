@@ -3,7 +3,7 @@ jobs:
   build_test:
     resource_class: large
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202008-01
     environment:
       CHANGE_MINIKUBE_NONE_USER: true
       GOPATH: /home/circleci/go
@@ -92,7 +92,7 @@ jobs:
           name: Install dependencies
           command: |
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-            pyenv global 3.6.5
+            pyenv global 3.8.5
             pip install --upgrade pip
             pip install -r test/requirements.txt
       - run:
@@ -120,7 +120,6 @@ jobs:
           name: Run functional tests
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
-            pyenv global 3.6.5
             export PYTHONWARNINGS="ignore:Unverified HTTPS request"
             sleep 30
             .circleci/run_functional_tests.sh
