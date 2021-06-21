@@ -3,7 +3,7 @@ jobs:
   build_test:
     resource_class: large
     machine:
-      image: ubuntu-1804
+      image: ubuntu-1604:202007-01
     environment:
       CHANGE_MINIKUBE_NONE_USER: true
       GOPATH: /home/circleci/go
