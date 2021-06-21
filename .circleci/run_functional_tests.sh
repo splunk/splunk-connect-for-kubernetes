@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-pyenv global 3.8.5
 cd test
 #Run pytests
 echo "Running functional tests....."
