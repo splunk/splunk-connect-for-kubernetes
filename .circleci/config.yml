@@ -3,14 +3,14 @@ jobs:
   build_test:
     resource_class: large
     machine:
-      image: ubuntu-1604:202010-01
+      image: ubuntu-1604:201903-01
     environment:
       CHANGE_MINIKUBE_NONE_USER: true
       GOPATH: /home/circleci/go
       KUBECONFIG: /home/circleci/.kube/config
       KUBERNETES_VERSION: v1.15.2
       MINIKUBE_HOME: /home/circleci
-      MINIKUBE_VERSION: v1.20.0
+      MINIKUBE_VERSION: v1.2.0
       MINIKUBE_WANTUPDATENOTIFICATION: false
       MINIKUBE_WANTREPORTERRORPROMPT: false
       SKAFFOLD_VERSION: v0.33.0
@@ -92,7 +92,7 @@ jobs:
           name: Install dependencies
           command: |
             curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-            pyenv global 3.8.6
+            pyenv global 3.6.5
             pip install --upgrade pip
             pip install -r test/requirements.txt
       - run:
@@ -120,7 +120,7 @@ jobs:
           name: Run functional tests
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
-            pyenv global 3.8.6
+            pyenv global 3.6.5
             export PYTHONWARNINGS="ignore:Unverified HTTPS request"
             sleep 30
             .circleci/run_functional_tests.sh
