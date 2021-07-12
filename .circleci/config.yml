@@ -119,7 +119,7 @@ jobs:
       - run:
           name: Deploy log generator
           command: |
-            kubectl apply -f test/test_setup.yaml
+            docker pull rock1017/log-generator:latest && kubectl apply -f test/test_setup.yaml
             sleep 60
       - run:
           name: Run functional tests
