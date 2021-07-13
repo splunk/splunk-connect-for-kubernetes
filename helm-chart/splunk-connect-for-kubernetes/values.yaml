@@ -416,6 +416,10 @@ splunk-kubernetes-logging:
   # Defines node affinity to restrict pod deployment.
   affinity: {}
 
+  # Extra volumes required by pod
+  extraVolumes: []
+  extraVolumeMounts: []
+
   # Defines priorityClassName to assign a priority class to pods.
   priorityClassName:
 

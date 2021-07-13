@@ -90,6 +90,9 @@ spec:
         - name: journallogpath
           mountPath: {{ .Values.journalLogPath | quote }}
           readOnly: true
+        {{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | indent 8 }}
+        {{- end }}
         - name: conf-configmap
           mountPath: /fluentd/etc
         - name: secrets
@@ -112,6 +115,9 @@ spec:
       - name: journallogpath
         hostPath:
           path: {{ .Values.journalLogPath | quote }}
+      {{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | indent 6 }}
+      {{- end }}
       - name: conf-configmap
         configMap:
           name: {{ template "splunk-kubernetes-logging.fullname" . }}
