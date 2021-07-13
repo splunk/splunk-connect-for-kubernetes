@@ -27,6 +27,9 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-metrics.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
@@ -63,8 +66,17 @@ spec:
               secretKeyRef:
                 name: {{ template "splunk-kubernetes-metrics.secret" . }}
                 key: splunk_hec_token
+          {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
+          {{- end }}
+          {{- if .Values.environmentVar }}
+          {{- toYaml .Values.environmentVar | nindent 10 }}
+          {{- end }}
         resources:
 {{ toYaml .Values.resources.fluent | indent 12 }}
+        securityContext:
+          runAsNonRoot: false
         volumeMounts:
           - name: conf-configmap
             mountPath: /fluentd/etc

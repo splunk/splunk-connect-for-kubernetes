@@ -26,6 +26,9 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '24231'
         {{- end }}
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-logging.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
@@ -40,19 +43,17 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{ if .Values.image.usePullSecret }}
+      {{- if .Values.image.usePullSecret }}
       imagePullSecrets:
       - name: {{ .Values.image.pullSecretName }}
-      {{ end }}
+      {{- end }}
       containers:
       - name: splunk-fluentd-k8s-logs
         image: {{ template "splunk-kubernetes-logging.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if or .Values.global.kubernetes.securityContext .Values.kubernetes.securityContext }}
         securityContext:
-          privileged: true
           runAsUser: 0
-        {{- end }}
+          privileged: {{ .Values.kubernetes.securityContext }}
         env:
           - name: K8S_NODE_NAME
             valueFrom:
@@ -71,8 +72,15 @@ spec:
               secretKeyRef:
                 name: {{ template "splunk-kubernetes-logging.secret" . }}
                 key: splunk_hec_token
+          {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
+          {{- end }}
+          {{- if .Values.environmentVar }}
+          {{- toYaml .Values.environmentVar | nindent 10 }}
+          {{- end }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
         - name: varlog
           mountPath: {{ .Values.containers.path }}
@@ -90,6 +98,12 @@ spec:
         - name: secrets
           mountPath: /fluentd/etc/splunk
           readOnly: true
+        {{- if .Values.global.prometheus_enabled }}
+        ports:
+        - containerPort: 24231
+          name: metrics
+          protocol: TCP
+        {{- end }}
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog

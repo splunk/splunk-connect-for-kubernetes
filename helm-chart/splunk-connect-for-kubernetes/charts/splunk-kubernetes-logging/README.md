@@ -18,12 +18,12 @@ Once you have a values file, you can simply install the chart with a release nam
 
 Helm 2
 ```bash
-$ helm install --name my-splunk-logging -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.3/splunk-kubernetes-logging-1.4.3.tgz
+$ helm install --name my-splunk-logging -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.5/splunk-kubernetes-logging-1.4.5.tgz
 ```
 
 Helm 3
 ```bash
-$ helm install my-splunk-logging -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.3/splunk-kubernetes-logging-1.4.3.tgz
+$ helm install my-splunk-logging -f my_values.yaml https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.5/splunk-kubernetes-logging-1.4.5.tgz
 ```
 ## Uninstall ##
 

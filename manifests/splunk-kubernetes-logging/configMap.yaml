@@ -5,47 +5,20 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.3
+    version: 1.4.7
 data:
   fluent.conf: |-
     @include system.conf
     @include source.containers.conf
     @include source.files.conf
     @include source.journald.conf
-    @include monit.conf
     @include output.conf
-    @include prometheus.conf
   system.conf: |-
     # system wide configurations
     <system>
       log_level info
       root_dir /tmp/fluentd
     </system>
-  prometheus.conf: |-
-    # input plugin that exports metrics
-    <source>
-      @type prometheus
-    </source>
-
-    <source>
-      @type forward
-    </source>
-
-    # input plugin that collects metrics from MonitorAgent
-    <source>
-      @type prometheus_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
-
-    # input plugin that collects metrics for output plugin
-    <source>
-      @type prometheus_output_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
   source.containers.conf: |-
     # This configuration file for Fluentd / td-agent is used
     # to watch changes to Docker log files. The kubelet creates symlinks that
@@ -61,7 +34,9 @@ data:
     # Json Log Example:
     # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}
     # CRI Log Example (not supported):
-    # 2016-02-17T00:04:05.931087621Z stdout [info:2016-02-16T16:04:05.930-08:00] Some log text here
+    # 2016-02-17T00:04:05.931087621Z stdout P { 'long': { 'json', 'object output' },
+    # 2016-02-17T00:04:05.931087621Z stdout F 'splitted': 'partial-lines' }
+    # 2016-02-17T00:04:05.931087621Z stdout F [info:2016-02-16T16:04:05.930-08:00] Some log text here
     <source>
       @id containers.log
       @type tail
@@ -71,13 +46,13 @@ data:
       pos_file /var/log/splunk-fluentd-containers.log.pos
       path_key source
       read_from_head true
+      refresh_interval 60
       <parse>
         @type json
         time_format %Y-%m-%dT%H:%M:%S.%NZ
         time_key time
         time_type string
         localtime false
-        refresh_interval 60
       </parse>
     </source>
   source.files.conf: |-
@@ -136,13 +111,6 @@ data:
         field_map {"MESSAGE": "log", "_SYSTEMD_UNIT": "source"}
         field_map_strict true
       </entry>
-    </source>
-  monit.conf: |-
-    <source>
-      @id fluentd-monitor-agent
-      @type monitor_agent
-      @label @SPLUNK
-      tag monitor_agent
     </source>
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
@@ -253,18 +221,28 @@ data:
       </match>
     </label>
     <label @SPLUNK>
+      # filter to  remove empty lines
+      <filter tail.containers.**>
+        @type grep
+        <exclude>
+         key log
+         pattern ^$
+        </exclude>
+      </filter>
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
-        annotation_match [ "^splunk\.com" ]
+        annotation_match [ ".*" ]
         de_dot false
+        watch true
+        cache_ttl 3600
       </filter>
       <filter tail.containers.**>
         @type record_transformer
         enable_ruby
         <record>
           # set the sourcetype from splunk.com/sourcetype pod annotation or set it to kube:container:CONTAINER_NAME
-          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? "kube:"+record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "kube:container:"+record.dig("kubernetes","container_name")}
+          sourcetype ${record.dig("kubernetes", "annotations", "splunk.com/sourcetype") ? record.dig("kubernetes", "annotations", "splunk.com/sourcetype") : "kube:container:"+record.dig("kubernetes","container_name")}
           container_name ${record.dig("kubernetes","container_name")}
           namespace ${record.dig("kubernetes","namespace_name")}
           pod ${record.dig("kubernetes","pod_name")}
@@ -273,19 +251,19 @@ data:
           container_image ${record.dig("kubernetes","container_image")}
           # set the cluster_name field to the configured value, or default to "cluster_name"
           cluster_name cluster_name
-          # set the index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
-          index ${record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("main")}
+          # set the splunk_index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
+          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("main")}
           label_app ${record.dig("kubernetes","labels","app")}
           label_k8s-app ${record.dig("kubernetes","labels","k8s-app")}
           label_release ${record.dig("kubernetes","labels","release")}
-          blacklist ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
+          exclude_list ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
         </record>
       </filter>
       <filter tail.containers.**>
-        # Exclude all logs that are blacklisted
+        # Exclude all logs that are marked
         @type grep
         <exclude>
-          key blacklist
+          key exclude_list
           pattern /^true$/
         </exclude>
       </filter>
@@ -294,7 +272,7 @@ data:
       # create source and sourcetype
       <filter journald.**>
         @type jq_transformer
-        jq '.record.source = "/run/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "cluster_name" | .record.index = "main" |.record'
+        jq '.record.source = "/run/log/journal/" + .record.source | .record.sourcetype = (.tag | ltrimstr("journald.")) | .record.cluster_name = "cluster_name" | .record.splunk_index = "main" |.record'
       </filter>
 
       # = filters for non-container log files =
@@ -303,13 +281,6 @@ data:
         @type jq_transformer
         jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "cluster_name" | .record.index = "main" | .record'
       </filter>
-
-      # = filters for monitor agent =
-      <filter monitor_agent>
-        @type jq_transformer
-        jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"cluster_name\" | .record.index = \"main\" | .record"
-      </filter>
-
       # = custom filters specified by users =
 
       # = output =
@@ -319,7 +290,7 @@ data:
         hec_host "MY-SPLUNK-HOST"
         hec_port 8088
         hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
-        index_key index
+        index_key splunk_index
         insecure_ssl true
         host "#{ENV['K8S_NODE_NAME']}"
         source_key source
@@ -339,6 +310,8 @@ data:
           label_k8s-app
           label_release
         </fields>
+        app_name splunk-kubernetes-logging
+        app_version 1.4.7
         <buffer>
           @type memory
           chunk_limit_records 100000
@@ -350,9 +323,6 @@ data:
           retry_type periodic
           total_limit_size 600m
         </buffer>
-        <format monitor_agent>
-          @type json
-        </format>
         <format>
           # we just want to keep the raw logs, not the structure created by docker or journald
           @type single_value

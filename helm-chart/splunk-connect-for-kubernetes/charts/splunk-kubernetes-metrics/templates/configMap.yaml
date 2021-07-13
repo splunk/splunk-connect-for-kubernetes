@@ -115,6 +115,8 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
+      app_name {{ .Chart.Name }}
+      app_version {{ .Chart.Version }}
       {{- with .Values.buffer }}
       <buffer>
       {{- range $parameter, $value := . }}

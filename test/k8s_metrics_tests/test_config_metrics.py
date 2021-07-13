@@ -19,7 +19,28 @@ from ..common import check_metrics_from_splunk
     ("kube.cluster.cpu.limit"),
     ("kube.cluster.memory.request"),
     ("kube.node.cpu.capacity"),
-    ("kube.node.memory.utilization"),
+    ("kube.node.memory.utilization")
+])
+def test_metric_name_on_mitrics_aggregator(setup, metric):
+    '''
+    This test covers one metric from each endpoint that the metrics plugin covers
+    '''
+    logging.info("testing for presence of metric={0}".format(metric))
+    index_metrics = os.environ["CI_INDEX_METRICS"] if os.environ["CI_INDEX_METRICS"] else "ci_metrics"
+    events = check_metrics_from_splunk(start_time="-24h@h",
+                                  end_time="now",
+                                  url=setup["splunkd_url"],
+                                  user=setup["splunk_user"],
+                                  password=setup["splunk_password"],
+                                  index=index_metrics,
+                                  metric_name=metric)
+    logging.info("Splunk received %s events in the last minute",
+                         len(events))
+    assert len(events) > 0
+
+
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="do not run on Github actions")
+@pytest.mark.parametrize("metric", [
     #Summary Metrics
     ("kube.node.cpu.usage"),
     ("kube.node.memory.usage"),
@@ -58,12 +79,12 @@ from ..common import check_metrics_from_splunk
     ("kube.container.spec.cpu.period"),
     ("kube.container.tasks.state")
 ])
-def test_metric_name(setup, metric):
+def test_metric_name_on_metrics(setup, metric):
     '''
     This test covers one metric from each endpoint that the metrics plugin covers
     '''
     logging.info("testing for presence of metric={0}".format(metric))
-    index_metrics = os.environ["CI_INDEX_METRICS"] if os.environ["CI_INDEX_METRICS"] else "circleci_metrics"
+    index_metrics = os.environ["CI_INDEX_METRICS"] if os.environ["CI_INDEX_METRICS"] else "ci_metrics"
     events = check_metrics_from_splunk(start_time="-24h@h",
                                   end_time="now",
                                   url=setup["splunkd_url"],

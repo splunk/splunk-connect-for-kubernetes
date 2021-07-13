@@ -10,7 +10,7 @@ metadata:
     heritage: {{ .Release.Service }}
 rules:
 {{- if .Values.podSecurityPolicy.create }}
-- apiGroups:      ['extensions']
+- apiGroups:      [{{ .Values.podSecurityPolicy.apiGroup | quote }}]
   resources:      ['podsecuritypolicies']
   verbs:          ['use']
   resourceNames:  [{{ template "splunk-kubernetes-logging.fullname" . }}]

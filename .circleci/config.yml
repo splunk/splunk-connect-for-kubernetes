@@ -28,6 +28,7 @@ jobs:
       CI_INDEX_OBJECTS: circleci_objects
       CI_INDEX_METRICS: circleci_metrics
       CI_DATAGEN_IMAGE: rock1017/log-generator:latest
+      #CI_RUBY_VERSION: 2.7.2, populated from CircleCI project config
     working_directory: ~/repo
     steps:
       - checkout
@@ -108,20 +109,24 @@ jobs:
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             export CI_SPLUNK_HEC_HOST_PERF=$(hostname -i)
             source /home/circleci/.bash_profile
-            rvm install 2.4.0
-            rvm use 2.4.0
+            rvm install $CI_RUBY_VERSION
+            rvm use $CI_RUBY_VERSION
             .circleci/update_sck_config.sh
       - run:
           name: Deploy k8s connector
           command: |
             .circleci/deploy_connector.sh
       - run:
+          name: Deploy log generator
+          command: |
+            docker pull rock1017/log-generator:latest && kubectl apply -f test/test_setup.yaml
+            sleep 60
+      - run:
           name: Run functional tests
           command: |
             export CI_SPLUNK_HEC_HOST=$(hostname -i)
             pyenv global 3.6.5
             export PYTHONWARNINGS="ignore:Unverified HTTPS request"
-            sleep 30
             .circleci/run_functional_tests.sh
 
 workflows:

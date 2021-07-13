@@ -8,7 +8,7 @@
 {{- $oHost  := or $oHec.host  $gHec.host }}
 {{- $mToken := or $mHec.token $gHec.token }}
 {{- $mHost  := or $mHec.host  $gHec.host }}
-{{- if and $lToken $lHost $oToken $oHost $mToken $mHost }}
+{{- if and (index .Values "splunk-kubernetes-logging" "enabled" | not | or $lToken $lHost) (index .Values "splunk-kubernetes-objects" "enabled" | not | or $oToken $oHost) (index .Values "splunk-kubernetes-metrics" "enabled" | not | or $mToken $mHost)}}
 
 ███████╗██████╗ ██╗     ██╗   ██╗███╗   ██╗██╗  ██╗██╗    
 ██╔════╝██╔══██╗██║     ██║   ██║████╗  ██║██║ ██╔╝╚██╗   
@@ -24,6 +24,10 @@ After a few minutes, you should see data being indexed in your Splunk.
 
 If you get stuck, we're here to help.
 Look for answers here: http://docs.splunk.com
+{{ if or $lHec.insecureSSL $oHec.insecureSSL $mHec.insecureSSL $gHec.insecureSSL }}
+Warning: Disabling TLS will send the data unencrypted and will be vulnerable to MiTM attacks
+{{- end }}
+
 {{- else }}
 #########################################################
 ####   ERROR: You did not set splunk.hec correctly   ####
@@ -67,15 +71,14 @@ to set up HTTP Event Collector on your Splunk.
 
 Once set up run:
 
-    helm upgrade {{ .Release.Name }} \
-        --set global.splunk.hec.host=YOUR-HEC-HOST \
-        --set global.splunk.hec.token=YOUR-HEC-TOKEN \
-        https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.2.0/splunk-connect-for-kubernetes-1.2.0.tgz
+    helm upgrade {{ .Release.Name }} -f values.yaml splunk/splunk-connect-for-kubernetes
+
 {{- end }}
 {{- $lInd := or $lHec.indexName $gHec.indexName | default "<default-index>" }}
 {{- $oInd := or $oHec.indexName $gHec.indexName | default "<default-index>" }}
 {{- $mInd := or $mHec.indexName $gHec.indexName | default "<default-index>" }}
 {{- if or (eq $oInd $mInd) (eq $lInd $mInd) }}
+{{- if index .Values "splunk-kubernetes-metrics" "enabled" }}
 
 ##################################################################
 ####   WARN: You did not set splunk.hec.indexName correctly   ####
@@ -92,7 +95,6 @@ to create a Metrics Index in your Splunk.
 
 Then run:
 
-    helm upgrade {{ .Release.Name }} \
-        --set splunk-kubernetes-metrics.splunk.hec.indexName=YOUR-METRICS-INDEX \
-        https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.2.0/splunk-connect-for-kubernetes-1.2.0.tgz
+    helm upgrade {{ .Release.Name }} -f values.yaml splunk/splunk-connect-for-kubernetes
+{{- end }}
 {{- end -}}

@@ -2,7 +2,17 @@
 [![CircleCI](https://circleci.com/gh/git-lfs/git-lfs.svg?style=shield&circle-token=856152c2b02bfd236f54d21e1f581f3e4ebf47ad)](https://circleci.com/gh/splunk/splunk-connect-for-kubernetes)
 # What does Splunk Connect for Kubernetes do?
 
-Splunk Connect for Kubernetes provides a way to import and search your Kubernetes logging, object, and metrics data in Splunk. Now, Splunk Connect for Kubenetes also supports [importing and searching your container logs on AWS ECS and AWS Fargate using firelens.](https://github.com/splunk/splunk-connect-for-kubernetes/tree/develop/firelens) Splunk is a proud contributor to Cloud Native Computing Foundation (CNCF) and Splunk Connect for Kubernetes utilizes and supports multiple CNCF components in the development of these tools to get data into Splunk.
+Splunk Connect for Kubernetes provides a way to import and search your Kubernetes logging, object, and metrics data in your Splunk platform deployment.  Splunk Connect for Kubernetes supports importing and searching your container logs on the following technologies:
+
+
+* [Amazon Web Services (AWS) Elastic Container Service (ECS) and AWS Fargate, using Firelens.](https://github.com/splunk/splunk-connect-for-kubernetes/tree/develop/firelens) 
+* Amazon Elastic Kubernetes Service (Amazon EKS)
+* Azure Kubernetes Service (AKS)
+* Google Kubernetes Engine (GKE)
+* Openshift
+
+
+Splunk Inc. is a proud contributor to the Cloud Native Computing Foundation (CNCF). Splunk Connect for Kubernetes utilizes and supports multiple CNCF components in the development of these tools to get data into Splunk.
 
 
 ## Prerequisites
@@ -11,46 +21,56 @@ Splunk Connect for Kubernetes provides a way to import and search your Kubernete
 * An HEC token. See the following topics for more information:
   * http://docs.splunk.com/Documentation/Splunk/7.2.4/Data/UsetheHTTPEventCollector
   * http://docs.splunk.com/Documentation/Splunk/7.2.4/Data/ScaleHTTPEventCollector
-* You should be familiar with your Kubernetes configuration and know where your log info is collected in Kubernetes.
-* You must have administrator access to your Kubernetes cluster.
-* To install using Helm (recommended), make sure you are running Helm in your Kubernetes configuration. See https://github.com/kubernetes/helm
-* Have a minimum of two Splunk indexes ready to collect the log data, one for both logs and Kubernetes objects, and one for metrics. You can also create separate indexes for logs and objects, in which case you will need three Splunk indexes.
+* You should be familiar with your Kubernetes configuration and know where your log information is collected in your Kubernetes deployment.
+* Administrator access to your Kubernetes cluster.
+* To install using Helm (best practice), verify you are running Helm in your Kubernetes configuration. See https://github.com/kubernetes/helm for more information.
+* A minimum of two Splunk platform indexes ready to collect the log data. One for both logs and Kubernetes objects, and one for metrics. You can also create separate indexes for logs and objects, but you will need three Splunk platform indexes.
 
 ## Before you begin
-Splunk Connect for Kubernetes supports installation using Helm. Ensure that you thoroughly read the Prerequisites and Installation and Deployment documentation before you start your deployment of Splunk Connect for Kubernetes.
+Splunk Connect for Kubernetes supports installation using Helm. Read the Prerequisites and Installation and Deployment documentation before you start your deployment of Splunk Connect for Kubernetes.
 
-Make sure you do the following before you install:
+Perform the following steps before you install:
 
-1. Create a minimum of two Splunk indexes:
+1. Create a minimum of two Splunk platform indexes:
 * One events index, which will handle logs and objects (you may also create two separate indexes for logs and objects).
 * One metrics index.
-If you do not configure these indexes, Kubernetes Connect for Splunk uses the defaults created in your HEC token.
+If you do not configure these indexes, Kubernetes Connect for Splunk uses the defaults created in your HTTP Event Collector (HEC) token.
 
-2. Create a HEC token if you do not already have one. If you are installing the connector on Splunk Cloud, file a ticket with Splunk Customer Service and they will deploy the indexes for your environment and generate your HEC token.
+2. Create a HEC token if you do not already have one. If you are installing the connector on Splunk Cloud, file a ticket with Splunk Customer Service and they will deploy the indexes for your environment, and generate your HEC token.
 
 ## Deploy with Helm
 
-Helm, maintained by the CNCF, allows the Kubernetes administrator to install, upgrade, and manage the applications running in their Kubernetes clusters.  For more information on how to use and configure Helm Charts, please read the Helm [site](https://helm.sh/) and [repository](https://github.com/kubernetes/helm) for tutorials and product documentation. Helm is the only method that Splunk supports for installing Splunk Connect for Kubernetes.
+Helm, maintained by the CNCF, allows the Kubernetes administrator to install, upgrade, and manage the applications running in their Kubernetes clusters.  For more information on how to use and configure Helm Charts,  see the Helm [site](https://helm.sh/) and [repository](https://github.com/kubernetes/helm) for tutorials and product documentation. Helm is the only method that the Splunk software supports for installing Splunk Connect for Kubernetes.
 
 To install and configure defaults with Helm:
 
 * Add Splunk chart repo 
-
-`helm repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/`
+```bash
+helm repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/
+```
 
 * Get values file in your working directory 
 
-`helm show values splunk/splunk-connect-for-kubernetes > values.yaml`
+Helm 2
+```bash
+helm inspect values splunk/splunk-connect-for-kubernetes > values.yaml
+```
+Helm 3
+```bash
+helm show values splunk/splunk-connect-for-kubernetes > values.yaml
+```
+``
 
 * Prepare this Values file. Once you have a Values file, you can simply install the chart with by running
 
 Helm 2
 ```bash
-$ helm install --name my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
+helm install --name my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
 ```
 Helm 3
 ```bash
 helm install my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
+
 ```
 
 To learn more about using and modifying charts, see:
@@ -64,7 +84,9 @@ To learn more about using and modifying charts, see:
 * [The values file for metrics](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-metrics/values.yaml)
 * [The values file for objects](https://github.com/splunk/splunk-connect-for-kubernetes/blob/main/helm-chart/splunk-connect-for-kubernetes/charts/splunk-kubernetes-objects/values.yaml)
 
-## Deploy using YAML
+## Deploy using YAML (unsupported)
+
+> Only deploying by Helm is supported by Splunk.
 
 You can grab the manifest YAML files and use them to create the Kubernetes objects needed to deploy Splunk Connect for Kubernetes. Please note that installation and debugging for Splunk Connect for Kubernetes through YAML is community-supported only.
 
@@ -80,7 +102,7 @@ To configure the Splunk Connector for Kubernetes using YAML files:
 
 # Architecture
 
-Splunk Connect for Kubernetes deploys a daemonset on each node. And in the daemonset, a Fluentd container runs and does the collecting job. Splunk Connector for Kubernetes collects three types of data:
+Splunk Connect for Kubernetes deploys a DaemonSet on each node. And in the DaemonSet, a Fluentd container runs and does the collecting job. Splunk Connector for Kubernetes collects three types of data:
 
 * Logs: Splunk Connect for Kubernetes collects two types of logs:
   * Logs from Kubernetes system components (https://kubernetes.io/docs/concepts/overview/components/)
@@ -97,12 +119,12 @@ To collect the data, Splunk leverages:
 
 ## Logs
 
-Splunk Connect for Kubernetes uses the Kubernetes [node logging agent](https://kubernetes.io/docs/concepts/cluster-administration/logging/#using-a-node-logging-agent) to collect logs. Splunk deploys a daemonset on each of these nodes. Each daemonset holds a Fluentd container to collect the data. The following plugins are enabled in that Fluentd container:
+Splunk Connect for Kubernetes uses the Kubernetes [node logging agent](https://kubernetes.io/docs/concepts/cluster-administration/logging/#using-a-node-logging-agent) to collect logs. Splunk deploys a DaemonSet on each of these nodes. Each DaemonSet holds a Fluentd container to collect the data. The following plugins are enabled in that Fluentd container:
 
 * [in_systemd](https://rubygems.org/gems/fluent-plugin-systemd) reads logs from systemd journal if systemd is available on the host.
 * [in_tail](https://docs.fluentd.org/v1.0/articles/in_tail) reads logs from file system.
 * [filter_jq_transformer](https://rubygems.org/gems/fluent-plugin-jq) transforms the raw events to a Splunk-friendly format and generates source and sourcetypes.
-* [out_splunk_hec](https://github.com/splunk/fluent-plugin-splunk-hec) sends the translated logs to Splunk indexes through the HTTP Event Collector input (HEC).
+* [out_splunk_hec](https://github.com/splunk/fluent-plugin-splunk-hec) sends the translated logs to your Splunk platform indexes through the HTTP Event Collector input (HEC).
 
 ## Kubernetes Objects
 
@@ -120,11 +142,11 @@ Splunk Connect for Kubernetes deploys daemonsets on the Kubernetes cluster. Thes
 
 * [Fluentd metrics plugin](https://github.com/splunk/fluent-plugin-kubernetes-metrics) collects the metrics, formats the metrics for Splunk ingestion by assuring the metrics have proper metric_name, dimensions, etc., and then sends the metrics to Splunk using out_splunk_hec using Fluentd engine.
 
-Make sure your Splunk configuration has a metrics index that is able to receive the data. See [Get started with metrics](http://docs.splunk.com/Documentation/Splunk/7.2.4/Metrics/GetStarted) in the Splunk Enterprise documentaiton.
+Make sure your Splunk configuration has a metrics index that is able to receive the data. See [Get started with metrics](http://docs.splunk.com/Documentation/Splunk/7.2.4/Metrics/GetStarted) in the Splunk Enterprise documentation.
 
 If you want to learn more about how metrics are monitored in a Kubernetes cluster, see Tools for [Monitoring Compute, Storage, and Network Resources](https://kubernetes.io/docs/tasks/debug-application-cluster/resource-usage-monitoring/).
 
-If you want to learn more about which metrics tha are collected and metric names used with Splunk Connect for Kubernetes, view the metrics [schema](https://github.com/splunk/fluent-plugin-kubernetes-metrics).
+If you want to learn more about which metrics are collected and metric names used with Splunk Connect for Kubernetes, view the metrics [schema](https://github.com/splunk/fluent-plugin-kubernetes-metrics).
 
 # Performance
 
@@ -138,14 +160,14 @@ One possible filter option is to enable the processing of multi-line events. Thi
 
 # Managing SCK Log Ingestion by Using Annotations
 
-You can easily instruct Splunk Connect for Kubernetes Logging with these supported annotations.
+Manage Splunk Connect for Kubernetes Logging with these supported annotations.
 
-* Use `splunk.com/index` annotation on pod and/or namespace to tell which Splunk index to ingest to. Pod annotation will take precedence over namespace annotation when both are annotated.
+* Use `splunk.com/index` annotation on pod and/or namespace to tell which Splunk platform indexes to ingest to. Pod annotation will take precedence over namespace annotation when both are annotated.
   ex) `kubectl annotate namespace kube-system splunk.com/index=k8s_events`
-* Set `splunk.com/exclude` annotation to `true` on pod and/or namespace to exclude its logs from ingested to Splunk.
-* Use `splunk.com/sourcetype` annotation on pod to overwrite `sourcetype` field. If not set, it is dynamically generated to be `kube:container:CONTAINER_NAME`. When using this annotation, the sourcetype will be prefixed with `kube:`.
+* Set `splunk.com/exclude` annotation to `true` on pod and/or namespace to exclude its logs from ingested to your Splunk platform deployment.
+* Use `splunk.com/sourcetype` annotation on pod to overwrite `sourcetype` field. If not set, it is dynamically generated to be `container:CONTAINER_NAME`. Note that the sourcetype will be prefixed with `.Values.sourcetypePrefix` (default: `kube:`).
 
-Regarding excluding container logs: If possible, it is more efficient to exlude it using `fluentd.exclude_path` option.
+Regarding excluding container logs: If possible, it is more efficient to exclude it using `fluentd.exclude_path` option.
 
 # Searching for SCK metadata in Splunk
 Splunk Connect for Kubernetes sends events to Splunk which can contain extra meta-data attached to each event. Metadata values such as "pod", "namespace", "container_name","container_id", "cluster_name" will appear as fields when viewing the event data inside Splunk.

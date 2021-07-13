@@ -24,11 +24,11 @@ def test_splunk_index(setup, test_input, expected):
     '''
     Test that user specified index can successfully index the
     log stream from k8s. If no index is specified, default
-    index "circleci_events" will be used.
+    index "ci_events" will be used.
     '''
     logger.info("testing test_splunk_index input={0} expected={1} event(s)".format(
         test_input, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "ci_events"
     search_query = "index=" + index_logging
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
@@ -42,7 +42,7 @@ def test_splunk_index(setup, test_input, expected):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("circleci-k8s-cluster", 1)
+    ("ci-k8s-cluster", 1)
 ])
 def test_cluster_name(setup, test_input, expected):
     '''
@@ -50,7 +50,7 @@ def test_cluster_name(setup, test_input, expected):
     '''
     logger.info("testing test_clusterName input={0} expected={1} event(s)".format(
         test_input, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "ci_events"
     search_query = "index=" + index_logging + " cluster_name::" + test_input
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
@@ -91,7 +91,7 @@ def test_label_collection(setup, label, index, expected):
     ("pod-wo-index-w-ns-index", "ns-anno", 1),
     ("pod-w-index-wo-ns-index", "pod-anno", 1),
     ("pod-wo-index-wo-ns-index", os.environ["CI_INDEX_EVENTS"]
-     if os.environ["CI_INDEX_EVENTS"] else "circleci_events", 1),
+     if os.environ["CI_INDEX_EVENTS"] else "ci_events", 1),
 ])
 def test_annotation_routing(setup, container_name, index, expected):
     '''
@@ -150,7 +150,7 @@ def test_sourcetype(setup, test_input, expected):
     '''
     logger.info("testing for presence of sourcetype={0} expected={1} event(s)".format(
         test_input, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "ci_events"
     source_type = ' sourcetype=""' if test_input == "empty_sourcetype" else ' sourcetype=' + test_input
     search_query = "index=" + index_logging + source_type
     events = check_events_from_splunk(start_time="-24h@h",
@@ -167,7 +167,7 @@ def test_sourcetype(setup, test_input, expected):
 
 @pytest.mark.parametrize("sourcetype,index,expected", [
     ("kube:container:pod-wo-index-w-ns-index", "ns-anno", 1),
-    ("kube:sourcetype-anno", "pod-anno", 1)
+    ("sourcetype-anno", "pod-anno", 1)
 ])
 def test_annotation_sourcetype(setup, sourcetype, index, expected):
     '''
@@ -200,7 +200,7 @@ def test_source(setup, test_input, expected):
     '''
     logger.info("testing for presence of source={0} expected={1} event(s)".format(
         test_input, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "ci_events"
     source = ' source=""' if test_input == "empty_source" else ' source=' + test_input
     search_query = "index=" + index_logging + ' OR index="kube-system"' + source
     events = check_events_from_splunk(start_time="-24h@h",
@@ -225,7 +225,7 @@ def test_host(setup, test_input, expected):
     '''
     logger.info("testing for presence of host={0} expected={1} event(s)".format(
         test_input, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "ci_events"
     host = ' host!=""' if test_input == "dummy_host" else ' host=""'
     search_query = "index=" + index_logging + host
     events = check_events_from_splunk(start_time="-24h@h",
@@ -251,7 +251,7 @@ def test_default_fields(setup, test_input, expected):
     '''
     logger.info("testing test_clusterName input={0} expected={1} event(s)".format(
         test_input, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "ci_events"
     search_query = "index=" + index_logging + " " + test_input + "::*"
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
@@ -263,6 +263,7 @@ def test_default_fields(setup, test_input, expected):
                 len(events))
     assert len(events) >= expected
 
+
 @pytest.mark.parametrize("field,value,expected", [
     ("customfield1", "customvalue1", 1),
     ("customfield2", "customvalue2", 1)
@@ -273,8 +274,35 @@ def test_custom_metadata_fields(setup, field,value, expected):
     '''
     logger.info("testing custom metadata field={0} value={1} expected={2} event(s)".format(
         field,value, expected))
-    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "circleci_events"
+    index_logging = os.environ["CI_INDEX_EVENTS"] if os.environ["CI_INDEX_EVENTS"] else "ci_events"
     search_query = "index=" + index_logging + " " + field + "::" + value
+    events = check_events_from_splunk(start_time="-1h@h",
+                                      url=setup["splunkd_url"],
+                                      user=setup["splunk_user"],
+                                      query=["search {0}".format(
+                                          search_query)],
+                                      password=setup["splunk_password"])
+    logger.info("Splunk received %s events in the last minute",
+                len(events))
+    assert len(events) >= expected
+
+
+
+@pytest.mark.parametrize("label,index,value,expected", [
+    ("pod-w-index-wo-ns-index", "pod-anno", "pod-value-2", 1),
+    ("pod-wo-index-w-ns-index", "ns-anno", "ns-value", 1),
+    ("pod-w-index-w-ns-index", "pod-anno", "pod-value-1", 1)
+])
+def test_custom_metadata_fields_annotations(setup, label, index, value, expected):
+
+    '''
+    Test that user specified labels are resolved from the user specified annotations and attached as a metadata
+    to all the logs
+    '''
+    logger.info("testing custom metadata annotation label={0} value={1} expected={2} event(s)".format(
+        label, value, expected))
+    search_query = "index=" + index + " label_app::" + label + " custom_field::" + value
+
     events = check_events_from_splunk(start_time="-1h@h",
                                       url=setup["splunkd_url"],
                                       user=setup["splunk_user"],

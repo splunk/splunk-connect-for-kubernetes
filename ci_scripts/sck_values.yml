@@ -4,7 +4,7 @@ global:
     hec:
       protocol: https
       insecureSSL: true
-      host: $CI_SPLUNK_HEC_HOST
+      host: $CI_SPLUNK_HOST
       token: $CI_SPLUNK_HEC_TOKEN
 
 splunk-kubernetes-logging:
@@ -13,9 +13,9 @@ splunk-kubernetes-logging:
     clusterName: "ci-k8s-cluster"
   splunk:
     hec:
-      indexName: circleci_events
+      indexName: ci_events
   image:
-    name:
+    name: splunk/fluentd-hec
     pullPolicy: Always
   k8sMetadata:
     podLabels:
@@ -33,22 +33,25 @@ splunk-kubernetes-metrics:
   kubernetes:
     useRestClientSSL: false
     insecureSSL: true
-    kubeletPort: 10255
+    kubeletPort: 10250
     clusterName: "ci-k8s-cluster-metrics"
   splunk:
     hec:
-      indexName: circleci_metrics
+      indexName: ci_metrics
   image:
-    name:
+    name: splunk/k8s-metrics
     pullPolicy: Always
+  imageAgg:
+    name: splunk/k8s-metrics-aggr
 
 splunk-kubernetes-objects:
   splunk:
     hec:
-      indexName: circleci_objects
+      indexName: ci_objects
   kubernetes:
     insecureSSL: true
     clusterName: "ci-k8s-cluster-objects"
   image:
-    name:
+    name: splunk/kube-objects
     pullPolicy: Always
+
