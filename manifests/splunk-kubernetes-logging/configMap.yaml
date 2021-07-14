@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.7
+    version: 1.4.8
 data:
   fluent.conf: |-
     @include system.conf
@@ -279,7 +279,7 @@ data:
       # extract sourcetype
       <filter tail.file.**>
         @type jq_transformer
-        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "cluster_name" | .record.index = "main" | .record'
+        jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "cluster_name" | .record.splunk_index = "main" | .record'
       </filter>
       # = custom filters specified by users =
 
@@ -311,7 +311,7 @@ data:
           label_release
         </fields>
         app_name splunk-kubernetes-logging
-        app_version 1.4.7
+        app_version 1.4.8
         <buffer>
           @type memory
           chunk_limit_records 100000
