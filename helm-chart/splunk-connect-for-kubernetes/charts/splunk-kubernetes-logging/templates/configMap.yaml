@@ -90,7 +90,7 @@ data:
       <parse>
       {{- if eq .Values.containers.logFormatType "cri" }}
         @type regexp
-        expression /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
+        expression /^(?<time>[^\s]+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
         time_format  {{ .Values.containers.logFormat | default "%Y-%m-%dT%H:%M:%S.%N%:z" }}
       {{- else if eq .Values.containers.logFormatType "json" }}
         @type json
