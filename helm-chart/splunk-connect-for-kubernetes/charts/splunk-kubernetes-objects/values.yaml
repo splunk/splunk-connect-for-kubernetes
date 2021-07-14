@@ -179,7 +179,7 @@ image:
   # The name of the image to pull
   name: splunk/kube-objects
   # The tag of the image to pull
-  tag: 1.1.5
+  tag: 1.1.6
   # The policy that specifies when the user wants the images to be pulled
   pullPolicy: IfNotPresent
   # Indicates if the image should be pulled using authentication from a secret
@@ -187,10 +187,10 @@ image:
   # The name of the pull secret to attach to the respective serviceaccount used to pull the image
   pullSecretName:
 
-# Environment variable for metrics daemonset
+# Environment variable for object pod
 environmentVar:
 
-# Pod annotations for metrics daemonset
+# Pod annotations for object pod
 podAnnotations: 
 
 # = Resoruce Limitation Configs =

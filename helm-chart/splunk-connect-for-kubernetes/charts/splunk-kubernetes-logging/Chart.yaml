@@ -1,16 +1,16 @@
 apiVersion: v1
-version: 1.4.7
-appVersion: 1.4.7
+version: 1.4.8
+appVersion: 1.4.8
 name: splunk-kubernetes-logging
 description: Collect logs with Splunk.
 home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart/charts/splunk-kubernetes-logging
 sources:
-- https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart/charts/splunk-kubernetes-logging
-- https://github.com/splunk/fluent-plugin-splunk-hec
+  - https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart/charts/splunk-kubernetes-logging
+  - https://github.com/splunk/fluent-plugin-splunk-hec
 keywords:
-- splunk
-- monitoring
-- logging
+  - splunk
+  - monitoring
+  - logging
 maintainers:
-- name: Splunk Inc.
-  email: DataEdge@splunk.com
+  - name: Splunk Inc.
+    email: DataEdge@splunk.com
