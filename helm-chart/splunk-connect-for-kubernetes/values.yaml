@@ -79,6 +79,7 @@ splunk-kubernetes-logging:
     # Specify the logFormat for "cri" logFormatType - provide time format
     # For example "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift, "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS 
     # Default for "cri": "%Y-%m-%dT%H:%M:%S.%N%:z"
+    # For "json", the log format cannot be changed: "%Y-%m-%dT%H:%M:%S.%NZ"
     logFormat:
     # Specify the interval of refreshing the list of watch file.
     refreshInterval:
