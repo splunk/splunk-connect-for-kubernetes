@@ -43,6 +43,9 @@ podSecurityPolicy:
   # set to false if AppArmor is not available
   apparmor_security: true
 
+# Defines priorityClassName to assign a priority class to pods.
+priorityClassName:
+
 # = Kubernetes Connection Configs =
 kubernetes:
   # the URL for calling kubernetes API, by default it will be read from the environment variables

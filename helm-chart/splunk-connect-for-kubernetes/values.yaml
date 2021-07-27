@@ -557,6 +557,9 @@ splunk-kubernetes-objects:
     # apiGroup can be set to "extensions" for Kubernetes < 1.10.
     apiGroup: policy
 
+  # Defines priorityClassName to assign a priority class to pods.
+  priorityClassName:
+
   # = Kubernetes Connection Configs =
   kubernetes:
     # the URL for calling kubernetes API, by default it will be read from the environment variables
