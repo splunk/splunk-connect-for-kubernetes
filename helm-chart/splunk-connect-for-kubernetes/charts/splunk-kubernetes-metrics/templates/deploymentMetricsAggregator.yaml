@@ -75,6 +75,14 @@ spec:
           - name: secrets
             mountPath: /fluentd/etc/splunk
             readOnly: true
+        livenessProbe:
+          exec:
+            command:
+            - "/bin/sh"
+            - "-c"
+            - "[[ $( ps aux | grep ruby | wc -l)  == 2 ]]"
+          initialDelaySeconds: 300
+          periodSeconds: 60
       volumes:
       - name: conf-configmap
         configMap:

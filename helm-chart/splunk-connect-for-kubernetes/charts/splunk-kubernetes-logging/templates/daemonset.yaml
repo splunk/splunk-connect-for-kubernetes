@@ -104,6 +104,14 @@ spec:
           name: metrics
           protocol: TCP
         {{- end }}
+        livenessProbe:
+          exec:
+            command:
+            - "/bin/sh"
+            - "-c"
+            - "[[ $( ps aux | grep ruby | wc -l)  == 2 ]]"
+          initialDelaySeconds: 300
+          periodSeconds: 60
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog
