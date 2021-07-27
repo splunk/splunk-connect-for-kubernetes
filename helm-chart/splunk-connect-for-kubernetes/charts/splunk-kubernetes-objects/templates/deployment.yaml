@@ -100,3 +100,6 @@ spec:
       - name: checkpoints
 {{ toYaml .Values.checkpointFile.volume | indent 8 }}
       {{- end -}}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
