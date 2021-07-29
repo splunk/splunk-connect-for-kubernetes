@@ -89,6 +89,18 @@ spec:
         - name: secrets
           mountPath: /fluentd/etc/splunk
           readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /api/plugins.json
+            port: 24220
+          initialDelaySeconds: 60
+          periodSeconds: 60
+        {{- if .Values.global.monitoring_agent_enabled }}
+        ports:
+        - containerPort: 24220
+          name: monitor-agent
+          protocol: TCP
+        {{- end }}
       volumes:
       - name: conf-configmap
         configMap:
