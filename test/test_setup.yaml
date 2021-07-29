@@ -41,9 +41,7 @@ spec:
     spec:
       containers:
       - name: pod-w-index-w-ns-index
-        image: rock1017/log-generator:latest
-        args:
-          - "1"
+        image: rock1017/log-generator:2.2.6
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -64,9 +62,7 @@ spec:
     spec:
       containers:
       - name: pod-wo-index-w-ns-index
-        image: rock1017/log-generator:latest
-        args:
-          - "1"
+        image: rock1017/log-generator:2.2.6
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -88,9 +84,7 @@ spec:
     spec:
       containers:
       - name: pod-w-index-wo-ns-index
-        image: rock1017/log-generator:latest
-        args:
-          - "1"
+        image: rock1017/log-generator:2.2.6
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -111,9 +105,7 @@ spec:
     spec:
       containers:
       - name: pod-w-index-w-ns-exclude
-        image: rock1017/log-generator:latest
-        args:
-          - "1"
+        image: rock1017/log-generator:2.2.6
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -134,9 +126,7 @@ spec:
     spec:
       containers:
       - name: pod-w-index-w-ns-exclude
-        image: rock1017/log-generator:latest
-        args:
-          - "1"
+        image: rock1017/log-generator:2.2.6
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -155,6 +145,4 @@ spec:
     spec:
       containers:
       - name: pod-wo-index-wo-ns-index
-        image: rock1017/log-generator:latest
-        args:
-          - "1"
+        image: rock1017/log-generator:2.2.6

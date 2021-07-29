@@ -98,12 +98,23 @@ spec:
         - name: secrets
           mountPath: /fluentd/etc/splunk
           readOnly: true
-        {{- if .Values.global.prometheus_enabled }}
         ports:
+        {{- if .Values.global.prometheus_enabled }}
         - containerPort: 24231
           name: metrics
           protocol: TCP
         {{- end }}
+        {{- if .Values.global.monitoring_agent_enabled }}
+        - containerPort: 24220
+          name: monitor-agent
+          protocol: TCP
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /api/plugins.json
+            port: 24220
+          initialDelaySeconds: 60
+          periodSeconds: 60
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog

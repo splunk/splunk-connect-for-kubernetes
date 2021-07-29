@@ -76,6 +76,22 @@ data:
     {{- end }}
     {{- end }}
 
+    <source>
+      @id fluentd-monitor-agent
+      @type monitor_agent
+      {{- if .Values.global.monitoring_agent_enabled }}
+      tag monitor_agent
+      {{- end }}
+    </source>
+
+    {{- if .Values.global.monitoring_agent_enabled }}
+    # = filters for monitor agent =
+    <filter monitor_agent>
+      @type jq_transformer
+      jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record.splunk_index = \"{{ or .Values.global.monitoring_agent_index_name .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" }}\" {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = \"{{ .value }}\" {{- end }}{{- end }} | .record"
+    </filter>
+    {{- end }}
+
     <filter kube.**>
       @type jq_transformer
       # in ruby '\\' will escape and become just '\', since we need two '\' in the `gsub` jq filter, it becomes '\\\\'.
@@ -99,7 +115,7 @@ data:
     {{- end }}
     {{- end }}
 
-    <match kube.**>
+    <match **>
       @type splunk_hec
       protocol {{ or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol | default "https" }}
       {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
@@ -145,5 +161,10 @@ data:
         {{ $parameter }} {{ $value }}
       {{- end }}
       </buffer>
+      {{- end }}
+      {{- if .Values.global.monitoring_agent_enabled }}
+      <format monitor_agent>
+        @type json
+      </format>
       {{- end }}
     </match>

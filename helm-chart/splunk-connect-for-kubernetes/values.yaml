@@ -44,6 +44,7 @@ global:
     clusterName: "cluster_name"
   prometheus_enabled:
   monitoring_agent_enabled:
+  monitoring_agent_index_name:
   # deploy a ServiceMonitor object for usage of the PrometheusOperator
   serviceMonitor:
     enabled: false
