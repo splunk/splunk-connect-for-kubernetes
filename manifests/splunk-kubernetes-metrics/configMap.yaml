@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.8
+    version: 1.4.9
 data:
   fluent.conf: |
     # system wide configurations
@@ -20,6 +20,12 @@ data:
       cluster_name cluster_name
       interval 15s
     </source>
+
+    <source>
+      @id fluentd-monitor-agent
+      @type monitor_agent
+    </source>
+
     <filter kube.**>
       @type record_modifier
       <record>
@@ -65,7 +71,7 @@ data:
       source ${tag}
       insecure_ssl true
       app_name splunk-kubernetes-metrics
-      app_version 1.4.8
+      app_version 1.4.9
       <buffer>
         @type memory
         chunk_limit_records 10000
