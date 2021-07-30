@@ -5,13 +5,14 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.8
+    version: 1.4.9
 data:
   fluent.conf: |-
     @include system.conf
     @include source.containers.conf
     @include source.files.conf
     @include source.journald.conf
+    @include monit.conf
     @include output.conf
   system.conf: |-
     # system wide configurations
@@ -112,6 +113,8 @@ data:
         field_map_strict true
       </entry>
     </source>
+  monit.conf: "<source>\n  @id fluentd-monitor-agent\n  @type monitor_agent\n  @label
+    @SPLUNK\n</source>  "
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
     <label @CONCAT>
@@ -311,7 +314,7 @@ data:
           label_release
         </fields>
         app_name splunk-kubernetes-logging
-        app_version 1.4.8
+        app_version 1.4.9
         <buffer>
           @type memory
           chunk_limit_records 100000

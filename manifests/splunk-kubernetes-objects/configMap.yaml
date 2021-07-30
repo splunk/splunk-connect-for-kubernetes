@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.8
+    version: 1.4.9
 data:
   fluent.conf: |
     <system>
@@ -30,6 +30,11 @@ data:
       </watch>
     </source>
 
+    <source>
+      @id fluentd-monitor-agent
+      @type monitor_agent
+    </source>
+
     <filter kube.**>
       @type jq_transformer
       # in ruby '\\' will escape and become just '\', since we need two '\' in the `gsub` jq filter, it becomes '\\\\'.
@@ -43,7 +48,7 @@ data:
 
     # = custom filters specified by users =
 
-    <match kube.**>
+    <match **>
       @type splunk_hec
       protocol https
       hec_host "MY-SPLUNK-HOST"
@@ -57,7 +62,7 @@ data:
         cluster_name
       </fields>
       app_name splunk-kubernetes-objects
-      app_version 1.4.8
+      app_version 1.4.9
       <buffer>
         @type memory
         chunk_limit_records 10000
