@@ -1,4 +1,4 @@
-# Splunk Connect for Kubernetes is a umbraller chart for three charts
+# Splunk Connect for Kubernetes is a umbrella chart for three charts
 # * splunk-kubernetes-logging
 # * splunk-kubernetes-objects
 # * splunk-kubernetes-metrics
