@@ -478,6 +478,10 @@ global:
   prometheus_enabled: true
   monitoring_agent_enabled: true
   monitoring_agent_index_name:
+  metrics:
+    service:
+      enabled: true
+      headless: true
   # deploy a ServiceMonitor object for usage of the PrometheusOperator
   serviceMonitor:
     enabled: false
