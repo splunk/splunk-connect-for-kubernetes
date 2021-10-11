@@ -171,8 +171,11 @@ tolerations:
 # blank by default.
 aggregatorTolerations: {}
 
-# Defines priorityClassName to assign a priority class to pods.
-priorityClassName:
+# Defines priorityClassName to assign a priority class to metrics (daemonset) pods.
+priorityClassName: 
+
+# Defines priorityClassName to assign a priority class to metrics aggregetor (deployment) pods.
+priorityClassNameAgg: 
 
 # Defines node affinity to restrict pod deployment.
 affinity: {}
