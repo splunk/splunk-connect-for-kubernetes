@@ -102,3 +102,7 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "splunk-kubernetes-metrics.secret" . }}
+      {{- if .Values.priorityClassNameAgg }}
+      priorityClassName: {{ .Values.priorityClassNameAgg }}
+      {{- end }}
+
