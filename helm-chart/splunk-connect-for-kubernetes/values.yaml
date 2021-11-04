@@ -93,6 +93,8 @@ splunk-kubernetes-logging:
     logFormat:
     # Specify the interval of refreshing the list of watch file.
     refreshInterval:
+    # Boolean to whether to remove blank events or not
+    removeBlankEvents: true
 
   # Enriches log record with kubernetes data
   k8sMetadata:

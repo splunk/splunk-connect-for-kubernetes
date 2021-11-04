@@ -239,7 +239,8 @@ data:
       </match>
     </label>
     <label @SPLUNK>
-      # filter to  remove empty lines
+      {{- if .Values.containers.removeBlankEvents }}
+      # filter to remove empty lines
       <filter tail.containers.**>
         @type grep
         <exclude>
@@ -247,6 +248,7 @@ data:
          pattern \A\z
         </exclude>
       </filter>
+      {{- end }}
       # Enrich log with k8s metadata
       <filter tail.containers.**>
         @type kubernetes_metadata
