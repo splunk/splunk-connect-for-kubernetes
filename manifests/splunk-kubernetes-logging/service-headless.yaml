@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: splunk-kubernetes-logging-headless
+  namespace: default
+  labels:
+    app: splunk-kubernetes-logging
+    version: 1.4.10
+spec:
+  type: ClusterIP
+  ports:
+  - port: 24231
+    protocol: TCP
+    name: http-metrics
+  selector:
+    app: splunk-kubernetes-logging
+    release: RELEASE-NAME
