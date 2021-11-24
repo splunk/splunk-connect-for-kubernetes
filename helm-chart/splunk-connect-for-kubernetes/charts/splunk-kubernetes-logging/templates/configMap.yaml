@@ -274,7 +274,7 @@ data:
           cluster_name {{ . }}
           {{- end }}
           # set the splunk_index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
-          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("{{ or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName | default "main"}}")}
+          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) ? record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) : record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("{{ or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName | default "main"}}")}
           {{- range .Values.k8sMetadata.podLabels }}
           label_{{ . }} ${record.dig("kubernetes","labels","{{ . }}")}
           {{- end }}
