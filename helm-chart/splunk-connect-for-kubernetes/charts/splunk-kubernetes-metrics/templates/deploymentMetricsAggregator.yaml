@@ -42,7 +42,7 @@ spec:
       {{- end }}
       {{- if .Values.imageAgg.usePullSecret }}
       imagePullSecrets:
-      - name: {{ .Values.imageAgg.pullsecretName}}
+      - name: {{ .Values.imageAgg.pullSecretName}}
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-metrics-agg

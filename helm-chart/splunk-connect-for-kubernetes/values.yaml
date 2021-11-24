@@ -905,7 +905,7 @@ splunk-kubernetes-metrics:
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
-    pullsecretName:
+    pullSecretName:
 
   # Defines which version of image to use, and how it should be pulled.
   imageAgg:
@@ -920,7 +920,7 @@ splunk-kubernetes-metrics:
     # Indicates if the image should be pulled using authentication from a secret
     usePullSecret: false
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
-    pullsecretName:
+    pullSecretName:
 
   # Environment variable for metrics daemonset
   environmentVar:
