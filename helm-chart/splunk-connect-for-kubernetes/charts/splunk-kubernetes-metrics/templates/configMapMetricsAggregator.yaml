@@ -109,6 +109,8 @@ data:
       {{ $filterDef.body | indent 8 }}
       {{- end }}
     </filter>
+    {{- end }}
+    {{- end }}
     <match kube.**>
       @type splunk_hec
       data_type metric
