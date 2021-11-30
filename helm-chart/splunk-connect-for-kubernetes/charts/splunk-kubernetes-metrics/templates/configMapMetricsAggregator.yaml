@@ -100,6 +100,15 @@ data:
         source ${record['node']}/${record['pod-name']}/${record['container-name']}
       </record>
     </filter>
+    # = custom filters specified by users =
+    {{- range $name, $filterDef := .Values.customFilters }}
+    {{- if and $filterDef.tag $filterDef.type }}
+    <filter {{ $filterDef.tag }}>
+      @type {{ $filterDef.type }}
+      {{- if $filterDef.body }}
+      {{ $filterDef.body | indent 8 }}
+      {{- end }}
+    </filter>
     <match kube.**>
       @type splunk_hec
       data_type metric
