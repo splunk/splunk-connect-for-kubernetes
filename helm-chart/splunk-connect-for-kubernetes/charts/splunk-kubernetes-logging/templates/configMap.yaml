@@ -344,13 +344,16 @@ data:
 
       # = output =
       <match **>
-        {{- if or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
+        {{- if or .Values.splunk.hec.host .Values.global.splunk.hec.host .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
         @type splunk_hec
         {{- with or .Values.splunk.hec.protocol .Values.global.splunk.hec.protocol }}
         protocol {{ . }}
         {{- end }}
         {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
         hec_host {{ . | quote }}
+        {{- end }}
+        {{- with .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl}}
+        full_url {{ . | quote }}
         {{- end }}
         {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
         hec_port {{ . }}
