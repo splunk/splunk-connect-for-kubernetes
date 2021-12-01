@@ -19,6 +19,8 @@ global:
       # protocol has two options: "http" and "https", default is "https"
       # For self signed certificate leave this field blank
       protocol:
+      # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk
+      fullUrl:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
       # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default is false.
@@ -151,7 +153,7 @@ splunk-kubernetes-logging:
     # Configurations for HEC (HTTP Event Collector)
     hec:
       # host is required and should be provided by user
-      host:
+      myhost:
       # port to HEC, optional, default 8088
       port:
       # token is required and should be provided by user
@@ -159,6 +161,8 @@ splunk-kubernetes-logging:
       # protocol has two options: "http" and "https", default is "https"
       # For self signed certificate leave this field blank
       protocol:
+      # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk 
+      fullUrl:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
       # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default is false.
@@ -670,6 +674,10 @@ splunk-kubernetes-objects:
       # protocol has two options: "http" and "https". Default value: "https"
       # For self signed certificate leave this field blank
       protocol:
+      # port to HEC, optional, default 8088
+      port:
+      # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk
+      fullUrl:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
       # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false.
@@ -869,6 +877,8 @@ splunk-kubernetes-metrics:
       # protocol has two options: "http" and "https". Default value: "https"
       # For self signed certificate leave this field blank
       protocol:
+      # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk
+      fullUrl:
       # indexName tells which index to use, OPTIONAL. If it's not present, will use "main".
       indexName:
       # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false

@@ -112,6 +112,9 @@ data:
       {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
       hec_port {{ . }}
       {{- end }}
+      {{- with .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
+      full_url {{ . | quote }}
+      {{- end }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
       {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}

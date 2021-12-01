@@ -53,6 +53,8 @@ splunk:
     token:
     # protocol has two options: "http" and "https". Default value: "https"
     protocol:
+    # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk
+    fullUrl:
     # indexName tells which index to use, OPTIONAL. If it's not present, the default index configured in HEC will be used.
     indexName:
     # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false
