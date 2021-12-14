@@ -183,14 +183,6 @@ data:
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
     <label @CONCAT>
-    # Remove HEC token from log
-      <filter tail.containers.var.log.containers.{{ .Release.Name }}-*.log>
-        @type grep
-        <exclude>
-         key log
-         pattern /hec_token \"[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}\"/
-        </exclude>
-      </filter>
       {{- if .Values.charEncodingUtf8 }}
       # = set strings to uft-8 encoding =
       <filter **>
