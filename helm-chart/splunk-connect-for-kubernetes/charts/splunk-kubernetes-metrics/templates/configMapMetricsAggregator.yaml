@@ -101,7 +101,7 @@ data:
       </record>
     </filter>
     # = custom filters specified by users =
-    {{- range $name, $filterDef := .Values.customFilters }}
+    {{- range $name, $filterDef := .Values.customFiltersAggr }}
     {{- if and $filterDef.tag $filterDef.type }}
     <filter {{ $filterDef.tag }}>
       @type {{ $filterDef.type }}
