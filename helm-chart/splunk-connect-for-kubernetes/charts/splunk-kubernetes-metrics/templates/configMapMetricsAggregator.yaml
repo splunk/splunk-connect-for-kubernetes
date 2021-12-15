@@ -117,7 +117,8 @@ data:
       {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
       index {{ . }}
       {{- end }}
-      source source
+      source ${tag}
+      sourcetype kube:metrics:agg
       insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
       {{- if or .Values.splunk.hec.clientCert .Values.global.splunk.hec.clientCert }}
       client_cert /fluentd/etc/splunk/hec_client_cert
