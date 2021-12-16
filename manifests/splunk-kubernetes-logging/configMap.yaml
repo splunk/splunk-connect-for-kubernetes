@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.10
+    version: 1.4.11
 data:
   fluent.conf: |-
     @include system.conf
@@ -314,7 +314,7 @@ data:
           label_release
         </fields>
         app_name splunk-kubernetes-logging
-        app_version 1.4.9
+        app_version 1.4.11
         <buffer>
           @type memory
           chunk_limit_records 100000
