@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics-aggregator
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.10
+    version: 1.4.11
 data:
   fluent.conf: |
     # system wide configurations
@@ -64,6 +64,7 @@ data:
         source ${record['node']}/${record['pod-name']}/${record['container-name']}
       </record>
     </filter>
+    # = custom filters specified by users =
     <match kube.**>
       @type splunk_hec
       data_type metric
@@ -74,10 +75,11 @@ data:
       hec_port 8088
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
-      source source
+      source ${tag}
+      sourcetype kube:metrics:agg
       insecure_ssl true
       app_name splunk-kubernetes-metrics
-      app_version 1.4.9
+      app_version 1.4.11
       <buffer>
         @type memory
         chunk_limit_records 10000
