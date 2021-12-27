@@ -20,6 +20,7 @@ spec:
     metadata:
       labels:
         app: {{ template "splunk-kubernetes-metrics.name" . }}
+        chart: {{ template "splunk-kubernetes-metrics.chart" . }}
         release: {{ .Release.Name }}
         component: aggregator
       annotations:
