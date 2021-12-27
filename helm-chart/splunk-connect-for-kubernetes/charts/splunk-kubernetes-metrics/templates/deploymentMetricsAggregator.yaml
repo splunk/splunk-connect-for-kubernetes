@@ -7,6 +7,7 @@ metadata:
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    component: aggregator
 spec:
   strategy:
     type: RollingUpdate
@@ -20,6 +21,7 @@ spec:
       labels:
         app: {{ template "splunk-kubernetes-metrics.name" . }}
         release: {{ .Release.Name }}
+        component: aggregator
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         checksum/config: {{ include (print $.Template.BasePath "/configMapMetricsAggregator.yaml") . | sha256sum }}
