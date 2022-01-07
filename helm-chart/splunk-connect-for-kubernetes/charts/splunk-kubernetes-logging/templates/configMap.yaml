@@ -330,17 +330,6 @@ data:
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record.splunk_index = \"{{ or .Values.global.monitoring_agent_index_name .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" }}\" {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = \"{{ .value }}\" {{- end }}{{- end }} | .record"
       </filter>
       {{- end }}
-      # = custom filters specified by users =
-      {{- range $name, $filterDef := .Values.customFilters }}
-      {{- if and $filterDef.tag $filterDef.type }}
-      <filter {{ $filterDef.tag }}>
-        @type {{ $filterDef.type }}
-        {{- with $filterDef.body }}
-        {{ . | nindent 8 }}
-        {{- end }}
-      </filter>
-      {{- end }}
-      {{- end }}
 
       # = output =
       <match **>
@@ -456,5 +445,24 @@ data:
           add_newline false
         </format>
         {{- end }}
+      </match>
+    </label>
+    # = custom filters specified by users =
+    <label @CUSTOM>
+      {{- range $name, $filterDef := .Values.customFilters }}
+      {{- if and $filterDef.tag $filterDef.type }}
+      <filter {{ $filterDef.tag }}>
+        @type {{ $filterDef.type }}
+        {{- with $filterDef.body }}
+        {{ . | nindent 8 }}
+        {{- end }}
+      </filter>
+      {{- end }}
+      {{- end }}
+
+      # Events are relabeled then emitted to the SPLUNK label
+      <match **>
+        @type relabel
+        @label @SPLUNK
       </match>
     </label>
