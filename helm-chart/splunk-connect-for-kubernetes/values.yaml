@@ -101,6 +101,8 @@ splunk-kubernetes-logging:
     refreshInterval:
     # Boolean to whether to remove blank events or not
     removeBlankEvents: true
+    # Boolean if true, uses local time. UTC. Otherwise, UTC is used
+    localTime: false
 
   # Enriches log record with kubernetes data
   k8sMetadata:
