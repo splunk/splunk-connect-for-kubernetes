@@ -75,7 +75,7 @@ data:
     <source>
       @id containers.log
       @type tail
-      @label @CONCAT
+      @label @CUSTOM
       tag tail.containers.*
       path {{ .Values.fluentd.path | default "/var/log/containers/*.log" }}
       {{- if .Values.fluentd.exclude_path }}
@@ -109,7 +109,7 @@ data:
     <source>
       @id tail.file.{{ $name }}
       @type tail
-      @label @CONCAT
+      @label @CUSTOM
       tag tail.file.{{ or $logDef.sourcetype $name }}
       path {{ $logDef.from.file.path }}
       pos_file {{ $.Values.containers.path }}/splunk-fluentd-{{ $name }}.pos
@@ -152,7 +152,7 @@ data:
     <source>
       @id journald-{{ $name }}
       @type systemd
-      @label @CONCAT
+      @label @CUSTOM
       tag journald.{{ or $logDef.sourcetype $name }}
       path {{ $.Values.journalLogPath | quote }}
       matches [{ "_SYSTEMD_UNIT": {{ $logDef.from.journald.unit | quote }} }]
@@ -460,9 +460,9 @@ data:
       {{- end }}
       {{- end }}
 
-      # Events are relabeled then emitted to the SPLUNK label
+      # Events are relabeled then emitted to the CONCAT label
       <match **>
         @type relabel
-        @label @SPLUNK
+        @label @CONCAT
       </match>
     </label>
