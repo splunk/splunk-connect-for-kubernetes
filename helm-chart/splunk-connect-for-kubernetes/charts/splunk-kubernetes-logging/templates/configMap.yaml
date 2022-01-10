@@ -96,7 +96,7 @@ data:
       {{- end }}
         time_key time
         time_type string
-        localtime false
+        localtime {{ .Values.containers.localTime | default false }}
       </parse>
     </source>
 

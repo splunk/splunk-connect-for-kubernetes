@@ -38,6 +38,8 @@ containers:
   refreshInterval:
   # Boolean to whether to remove blank events or not
   removeBlankEvents: true
+  # Boolean if true, uses local time. UTC. Otherwise, UTC is used
+  localTime: false
 
 # Directory where to read journald logs. (docker daemon logs, kubelet logs, and anyother specified serivce logs)
 journalLogPath: /run/log/journal
