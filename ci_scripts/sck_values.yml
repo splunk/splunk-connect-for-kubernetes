@@ -31,7 +31,6 @@ splunk-kubernetes-logging:
 
 splunk-kubernetes-metrics:
   kubernetes:
-    useRestClientSSL: false
     insecureSSL: true
     kubeletPort: 10250
     clusterName: "ci-k8s-cluster-metrics"
