@@ -1,0 +1,9 @@
+pytest-expect file v1
+(3, 9, 7, 'final', 0)
+u'k8s_metrics_tests/test_metric_aggr_plugin.py::test_metric_name_on_metrics_aggregator[kube.namespace.cpu.usage]': FAIL
+u'k8s_metrics_tests/test_metric_aggr_plugin.py::test_metric_name_on_metrics_aggregator[kube.node.cpu.reservation]': FAIL
+u'k8s_metrics_tests/test_metric_aggr_plugin.py::test_metric_name_on_metrics_aggregator[kube.node.cpu.utilization]': FAIL
+u'k8s_metrics_tests/test_metric_aggr_plugin.py::test_metric_name_on_metrics_aggregator[kube.node.memory.reservation]': FAIL
+u'k8s_metrics_tests/test_metric_aggr_plugin.py::test_metric_name_on_metrics_aggregator[kube.node.memory.utilization]': FAIL
+u'k8s_metrics_tests/test_metric_plugin.py::test_metric_from_summary[kube.pod.cpu.usage_rate]': FAIL
+u'k8s_metrics_tests/test_metric_plugin.py::test_metric_from_summary[kube.container.cpu.usage_rate]': FAIL
