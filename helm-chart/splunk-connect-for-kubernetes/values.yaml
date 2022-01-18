@@ -288,17 +288,11 @@ splunk-kubernetes-logging:
       from:
         journald:
           unit: docker.service
-      timestampExtraction:
-        regexp: time="(?<time>\d{4}-\d{2}-\d{2}T[0-2]\d:[0-5]\d:[0-5]\d.\d{9}Z)"
-        format: "%Y-%m-%dT%H:%M:%S.%NZ"
       sourcetype: kube:docker
     kubelet: &glog
       from:
         journald:
           unit: kubelet.service
-      timestampExtraction:
-        regexp: \w(?<time>[0-1]\d[0-3]\d [^\s]*)
-        format: "%m%d %H:%M:%S.%N"
       multiline:
         firstline: /^\w[0-1]\d[0-3]\d/
       sourcetype: kube:kubelet
@@ -306,23 +300,14 @@ splunk-kubernetes-logging:
       from:
         pod: etcd-server
         container: etcd-container
-      timestampExtraction:
-        regexp: (?<time>\d{4}-\d{2}-\d{2} [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
-        format: "%Y-%m-%d %H:%M:%S.%N"
     etcd-minikube:
       from:
         pod: etcd-minikube
         container: etcd
-      timestampExtraction:
-        regexp: (?<time>\d{4}-\d{2}-\d{2} [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
-        format: "%Y-%m-%d %H:%M:%S.%N"
     etcd-events:
       from:
         pod: etcd-server-events
         container: etcd-container
-      timestampExtraction:
-        regexp: (?<time>\d{4}-[0-1]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d\.\d{6})
-        format: "%Y-%m-%d %H:%M:%S.%N"
     kube-apiserver:
       <<: *glog
       from:
