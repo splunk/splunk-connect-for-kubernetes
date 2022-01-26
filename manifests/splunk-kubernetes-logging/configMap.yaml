@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-logging
   labels:
     app: splunk-kubernetes-logging
-    version: 1.4.11
+    version: 1.4.12
 data:
   fluent.conf: |-
     @include system.conf
@@ -41,7 +41,7 @@ data:
     <source>
       @id containers.log
       @type tail
-      @label @CONCAT
+      @label @CUSTOM
       tag tail.containers.*
       path /var/log/containers/*.log
       pos_file /var/log/splunk-fluentd-containers.log.pos
@@ -61,7 +61,7 @@ data:
     <source>
       @id tail.file.kube-audit
       @type tail
-      @label @CONCAT
+      @label @CUSTOM
       tag tail.file.kube:apiserver-audit
       path /var/log/kube-apiserver-audit.log
       pos_file /var/log/splunk-fluentd-kube-audit.pos
@@ -80,7 +80,7 @@ data:
     <source>
       @id journald-docker
       @type systemd
-      @label @CONCAT
+      @label @CUSTOM
       tag journald.kube:docker
       path "/run/log/journal"
       matches [{ "_SYSTEMD_UNIT": "docker.service" }]
@@ -98,7 +98,7 @@ data:
     <source>
       @id journald-kubelet
       @type systemd
-      @label @CONCAT
+      @label @CUSTOM
       tag journald.kube:kubelet
       path "/run/log/journal"
       matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
@@ -255,7 +255,7 @@ data:
           # set the cluster_name field to the configured value, or default to "cluster_name"
           cluster_name cluster_name
           # set the splunk_index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
-          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("main")}
+          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) ? record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) : record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("main")}
           label_app ${record.dig("kubernetes","labels","app")}
           label_k8s-app ${record.dig("kubernetes","labels","k8s-app")}
           label_release ${record.dig("kubernetes","labels","release")}
@@ -284,7 +284,6 @@ data:
         @type jq_transformer
         jq '.record.sourcetype = (.tag | ltrimstr("tail.file.")) | .record.cluster_name = "cluster_name" | .record.splunk_index = "main" | .record'
       </filter>
-      # = custom filters specified by users =
 
       # = output =
       <match **>
@@ -314,7 +313,7 @@ data:
           label_release
         </fields>
         app_name splunk-kubernetes-logging
-        app_version 1.4.11
+        app_version 1.4.12
         <buffer>
           @type memory
           chunk_limit_records 100000
@@ -332,5 +331,14 @@ data:
           message_key log
           add_newline false
         </format>
+      </match>
+    </label>
+    # = custom filters specified by users =
+    <label @CUSTOM>
+
+      # Events are relabeled then emitted to the CONCAT label
+      <match **>
+        @type relabel
+        @label @CONCAT
       </match>
     </label>
