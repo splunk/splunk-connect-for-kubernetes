@@ -307,6 +307,18 @@ data:
       </filter>
       {{- end }}
 
+      # Add sourcetype for pod if provided in values file
+      {{- range $name, $logDef := .Values.logs }}
+      {{- if and $logDef.from.pod $logDef.sourcetype }}
+      <filter tail.containers.var.log.containers.{{ $logDef.from.pod }}*{{ or $logDef.from.container $name }}*.log>
+        @type record_transformer
+        <record>
+          sourcetype {{ $logDef.sourcetype }}
+        </record>
+      </filter>
+      {{- end }}
+      {{- end }}
+
       # create source and sourcetype
       {{- if $checks.hasJournald }}
       <filter journald.**>
