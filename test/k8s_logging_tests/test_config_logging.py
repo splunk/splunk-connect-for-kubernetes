@@ -135,9 +135,9 @@ def test_annotation_excluding(setup, container_name, expected):
 
 
 @pytest.mark.parametrize("test_input,expected", [
-    ("kube:container:kube-apiserver", 1),
+    ("kube:kube-apiserver", 1),
     ("kube:container:etcd", 1),
-    ("kube:container:kube-controller-manager", 1),
+    ("kube:kube-controller-manager", 1),
     ("kube:container:splunk-fluentd-k8s-metrics-agg", 1),
     ("kube:container:splunk-fluentd-k8s-metrics", 1),
     ("kube:container:splunk-fluentd-k8s-logs", 1),
