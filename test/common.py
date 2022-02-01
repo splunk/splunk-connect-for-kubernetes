@@ -35,7 +35,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def check_events_from_splunk(index="circleci_events",
+def check_events_from_splunk(index="ci_events",
                              start_time="-1h@h",
                              end_time="now",
                              url="",
@@ -50,7 +50,7 @@ def check_events_from_splunk(index="circleci_events",
 
     return events
 
-def check_metrics_from_splunk(index="circleci_metrics",
+def check_metrics_from_splunk(index="ci_metrics",
                              start_time="-1h@h",
                              end_time="now",
                              url="",

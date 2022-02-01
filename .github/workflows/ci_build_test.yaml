@@ -128,7 +128,12 @@ jobs:
         run: |
           kubectl apply -f test/test_setup.yaml
           sleep 80
-          kubectl logs -l engine=fluentd
+          echo "logging pod logs"
+          kubectl logs -l app=splunk-kubernetes-logging
+          echo "metrics pod logs"
+          kubectl logs -l app=splunk-kubernetes-metrics
+          echo "objects pod logs"
+          kubectl logs -l app=splunk-kubernetes-objects
 
       - uses: actions/setup-python@v2
         with:

@@ -15,6 +15,7 @@ spec:
   selector:
     matchLabels:
       name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+      component: collector
   template:
     metadata:
       name: {{ template "splunk-kubernetes-metrics.fullname" . }}
