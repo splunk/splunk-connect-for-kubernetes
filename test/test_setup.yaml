@@ -146,3 +146,19 @@ spec:
       containers:
       - name: pod-wo-index-wo-ns-index
         image: rock1017/log-generator:2.2.6
+        resources:
+          limits:
+           cpu: 50m
+           memory: 50Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+      - name: pod-wo-index-wo-ns-index-dup
+        image: rock1017/log-generator:2.2.6
+        resources:
+          limits:
+           cpu: 50m
+           memory: 50Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi

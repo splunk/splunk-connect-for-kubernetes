@@ -26,5 +26,7 @@
 
 # How metric tests works
 Test collects test data from metric_data, each data contains metric name, field selector for metric and list of asserions.
-For example, for `kube.node.uptime` test, selector value is `node`. So test will search `| mstats max(kube.node.uptime) where index=ci_metric by node`. It will collect uptime value for each node and test will assert each values to be greater than zero.
-All selector fields are listed in [selector.conf](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/test/k8s_metrics_tests/metric_data/selector.conf) file.
+
+Generic search query used in metric tests: `| mstats max(<metric-name>) where index=<index-name> by <selector field>`
+
+All selector fields are listed in [selector.md](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/test/k8s_metrics_tests/metric_data/selector.md)
