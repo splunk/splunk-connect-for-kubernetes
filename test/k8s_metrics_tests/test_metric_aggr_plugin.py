@@ -185,3 +185,39 @@ def test_namespace_limit_and_requests(setup, index_metrics):
                 + actual_data["splunk-fluentd-k8s-objects"]
                 + actual_data["splunk-fluentd-k8s-metrics-agg"]
             )
+
+def test_multi_container_pod_limit_and_request(setup, index_metrics):
+    selector = "name"
+    for resource in ["cpu", "memory"]:
+        for metric in ["limit", "request"]:
+            logger.info(
+                "testing {} metric".format(f"kube.container.{resource}.{metric} for multi-container pods")
+            )
+            container_events = collect_metric_from_splunk(
+                f"kube.container.{resource}.{metric}",
+                index_metrics,
+                selector,
+                url=setup["splunkd_url"],
+                user=setup["splunk_user"],
+                password=setup["splunk_password"],
+                func="avg",
+            )
+            if not "pod-wo-index-wo-ns-index-dup" in container_events:
+                pytest.fail("pod 'pod-wo-index-wo-ns-index-dup' not found" )
+
+            assert container_events["pod-wo-index-wo-ns-index"] == 50
+            assert container_events["pod-wo-index-wo-ns-index-dup"] == 50
+            
+            pod_events = collect_metric_from_splunk(
+                f"kube.pod.{resource}.{metric}",
+                index_metrics,
+                selector,
+                url=setup["splunkd_url"],
+                user=setup["splunk_user"],
+                password=setup["splunk_password"],
+                func="avg",
+            )
+
+            for pod_name, metric_value in pod_events.items():
+                if "pod-wo-index-wo-ns-index" in pod_name:
+                    assert metric_value == 100, f"{resource}.{metric} of pod '{pod_name}' should be 100"
