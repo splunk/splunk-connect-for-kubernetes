@@ -15,5 +15,6 @@ helm install ci-sck --set global.splunk.hec.token=$CI_SPLUNK_HEC_TOKEN \
 -f ci_scripts/sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
 #wait for deployment to finish
 until kubectl get pod | grep Running | [[ $(wc -l) == 4 ]]; do
-   sleep 1;
+   sleep 5;
+   kubectl get pods
 done
