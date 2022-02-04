@@ -156,6 +156,9 @@ data:
         {{ . }}
         {{- end }}
       </fields>
+      {{- with or .Values.splunk.hec.consume_chunk_on_4xx_errors .Values.global.splunk.hec.consume_chunk_on_4xx_errors }}
+      consume_chunk_on_4xx_errors {{ . }}
+      {{- end }}
       app_name {{ .Chart.Name }}
       app_version {{ .Chart.Version }}
       {{- with .Values.buffer }}

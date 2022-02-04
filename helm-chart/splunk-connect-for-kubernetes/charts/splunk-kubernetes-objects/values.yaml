@@ -173,6 +173,8 @@ splunk:
     #     type: jq_transformer
     #     body: jq '.record.index = "my_awesome_index" | .record'
     indexRouting:
+    # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk. (Default: true)
+    consume_chunk_on_4xx_errors: 
 
 # Create or use existing secret if name is empty default name is used
 secret:
@@ -224,7 +226,9 @@ buffer:
   flush_interval: 3s
   flush_thread_count: 1
   overflow_action: block
-  retry_max_times: 3
+  retry_max_times: 10
+  retry_type: periodic
+  retry_wait: 30
 
 # Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector:
@@ -311,6 +315,8 @@ global:
       clientCert:
       clientKey:
       caFile:
+      fullUrl:
+      consume_chunk_on_4xx_errors:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true

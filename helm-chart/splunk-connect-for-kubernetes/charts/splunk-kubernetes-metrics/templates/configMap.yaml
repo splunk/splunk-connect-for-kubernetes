@@ -151,6 +151,9 @@ data:
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
       {{- end }}
+      {{- with or .Values.splunk.hec.consume_chunk_on_4xx_errors .Values.global.splunk.hec.consume_chunk_on_4xx_errors }}
+      consume_chunk_on_4xx_errors {{ . }}
+      {{- end }}
       app_name {{ .Chart.Name }}
       app_version {{ .Chart.Version }}
       {{- with .Values.buffer }}
@@ -170,6 +173,9 @@ data:
       {{- end }}
       {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
       hec_port {{ . }}
+      {{- end }}
+      {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
+      full_url {{ . | quote }}
       {{- end }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
@@ -195,6 +201,9 @@ data:
       {{- end }}
       {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
       ca_file /fluentd/etc/splunk/hec_ca_file
+      {{- end }}
+      {{- with or .Values.splunk.hec.consume_chunk_on_4xx_errors .Values.global.splunk.hec.consume_chunk_on_4xx_errors }}
+      consume_chunk_on_4xx_errors {{ . }}
       {{- end }}
       app_name {{ .Chart.Name }}
       app_version {{ .Chart.Version }}
