@@ -16,6 +16,7 @@ spec:
     matchLabels:
       app: {{ template "splunk-kubernetes-metrics.name" . }}
       release: {{ .Release.Name }}
+      component: aggregator
   template:
     metadata:
       labels:

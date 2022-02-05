@@ -68,7 +68,7 @@ def test_container_limit_and_requests(setup, index_metrics):
                 url=setup["splunkd_url"],
                 user=setup["splunk_user"],
                 password=setup["splunk_password"],
-                func="avg",
+                func="latest",
             )
             actual_data = container_limit_request[resource][metric]
             for container_name in containers:
@@ -108,7 +108,7 @@ def test_pod_and_cluster_limit_and_requests(setup, index_metrics):
                 url=setup["splunkd_url"],
                 user=setup["splunk_user"],
                 password=setup["splunk_password"],
-                func="avg",
+                func="latest",
             )
 
             actual_data = container_limit_request[resource][metric]
@@ -142,7 +142,7 @@ def test_pod_and_cluster_limit_and_requests(setup, index_metrics):
                 url=setup["splunkd_url"],
                 user=setup["splunk_user"],
                 password=setup["splunk_password"],
-                func="avg",
+                func="latest",
             )
             logger.info(
                 "{} metric received by splunk: {}".format(
@@ -167,7 +167,7 @@ def test_namespace_limit_and_requests(setup, index_metrics):
                 url=setup["splunkd_url"],
                 user=setup["splunk_user"],
                 password=setup["splunk_password"],
-                func="avg",
+                func="latest",
             )
             logger.info(
                 "Splunk received {} events for metric {}".format(
@@ -200,7 +200,7 @@ def test_multi_container_pod_limit_and_request(setup, index_metrics):
                 url=setup["splunkd_url"],
                 user=setup["splunk_user"],
                 password=setup["splunk_password"],
-                func="avg",
+                func="latest",
             )
             if not "pod-wo-index-wo-ns-index-dup" in container_events:
                 pytest.fail("pod 'pod-wo-index-wo-ns-index-dup' not found" )
@@ -215,7 +215,7 @@ def test_multi_container_pod_limit_and_request(setup, index_metrics):
                 url=setup["splunkd_url"],
                 user=setup["splunk_user"],
                 password=setup["splunk_password"],
-                func="avg",
+                func="latest",
             )
 
             for pod_name, metric_value in pod_events.items():

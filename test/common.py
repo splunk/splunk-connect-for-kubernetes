@@ -36,15 +36,13 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def check_events_from_splunk(
-    index="circleci_events",
-    start_time="-1h@h",
-    end_time="now",
-    url="",
-    user="",
-    query="",
-    password="",
-):
+def check_events_from_splunk(index="ci_events",
+                             start_time="-1h@h",
+                             end_time="now",
+                             url="",
+                             user="",
+                             query="",
+                             password=""):
     """
     send a search request to splunk and return the events from the result
     """
@@ -53,16 +51,14 @@ def check_events_from_splunk(
 
     return events
 
-
-def check_metrics_from_splunk(
-    index="circleci_metrics",
-    start_time="-1h@h",
-    end_time="now",
-    url="",
-    user="",
-    password="",
-    metric_name="",
-):
+def check_metrics_from_splunk(index="ci_metrics",
+                             start_time="-1h@h",
+                             end_time="now",
+                             url="",
+                             user="",
+                             password="",
+                             metric_name=""):
+    
     """
     send a search api request to splunk to check for values associated with a given metric and dimension
     """
