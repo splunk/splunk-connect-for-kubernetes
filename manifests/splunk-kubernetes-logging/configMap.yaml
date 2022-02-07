@@ -272,6 +272,62 @@ data:
       </filter>
       # extract pod_uid and container_name for CRIO runtime
 
+      # Add sourcetype for pod if provided in values file
+      <filter tail.containers.var.log.containers.dns-controller*dns-controller*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:dns-controller
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns*sidecar*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:kubedns-sidecar
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns*dnsmasq*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:dnsmasq
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-apiserver*kube-apiserver*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:kube-apiserver
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-controller-manager*kube-controller-manager*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:kube-controller-manager
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns-autoscaler*autoscaler*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:kube-dns-autoscaler
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-proxy*kube-proxy*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:kube-proxy
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-scheduler*kube-scheduler*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:kube-scheduler
+        </record>
+      </filter>
+      <filter tail.containers.var.log.containers.kube-dns*kubedns*.log>
+        @type record_transformer
+        <record>
+          sourcetype kube:kubedns
+        </record>
+      </filter>
+
       # create source and sourcetype
       <filter journald.**>
         @type jq_transformer
