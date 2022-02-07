@@ -86,7 +86,7 @@ splunk:
     # NOTE: The content of the file itself should be used here, not the file path.
     #       The file will be stored as a secret in kubernetes.
     caFile:
-    # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk. (Default: true)
+    # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
     consume_chunk_on_4xx_errors: 
   # Configurations for Ingest API
   ingest_api:

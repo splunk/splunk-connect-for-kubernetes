@@ -41,7 +41,7 @@ global:
       caFile:
       # For object and metrics
       indexRouting:
-      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk. (Default: true)
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
       consume_chunk_on_4xx_errors: 
   kubernetes:
     # The cluster name used to tag logs. Default is cluster_name
@@ -184,7 +184,7 @@ splunk-kubernetes-logging:
       # NOTE: The content of the file itself should be used here, not the file path.
       #       The file will be stored as a secret in kubernetes.
       caFile:
-      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk. (Default: true)
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
       consume_chunk_on_4xx_errors: 
     # Configurations for Ingest API
     ingest_api:
@@ -692,7 +692,7 @@ splunk-kubernetes-objects:
       #     type: jq_transformer
       #     body: jq '.record.index = "my_awesome_index" | .record'
       indexRouting:
-      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk. (Default: true)
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
       consume_chunk_on_4xx_errors: 
 
   # Create or use existing secret if name is empty default name is used
@@ -891,7 +891,7 @@ splunk-kubernetes-metrics:
       # NOTE: The content of the file itself should be used here, not the file path.
       #       The file will be stored as a secret in kubernetes.
       caFile:
-      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk. (Default: true)
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
       consume_chunk_on_4xx_errors: 
 
   # Create or use existing secret if name is empty default name is used

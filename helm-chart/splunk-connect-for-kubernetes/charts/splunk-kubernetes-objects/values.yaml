@@ -173,7 +173,7 @@ splunk:
     #     type: jq_transformer
     #     body: jq '.record.index = "my_awesome_index" | .record'
     indexRouting:
-    # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk. (Default: true)
+    # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
     consume_chunk_on_4xx_errors: 
 
 # Create or use existing secret if name is empty default name is used
