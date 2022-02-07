@@ -127,6 +127,7 @@ data:
       {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
       full_url {{ . | quote }}
       {{- end }}
+      consume_chunk_on_4xx_errors {{ template "splunk-kubernetes-objects.should_consume_chunk_on_4xx_errors" . }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
       source_key source
@@ -156,9 +157,6 @@ data:
         {{ . }}
         {{- end }}
       </fields>
-      {{- with or .Values.splunk.hec.consume_chunk_on_4xx_errors .Values.global.splunk.hec.consume_chunk_on_4xx_errors }}
-      consume_chunk_on_4xx_errors {{ . }}
-      {{- end }}
       app_name {{ .Chart.Name }}
       app_version {{ .Chart.Version }}
       {{- with .Values.buffer }}

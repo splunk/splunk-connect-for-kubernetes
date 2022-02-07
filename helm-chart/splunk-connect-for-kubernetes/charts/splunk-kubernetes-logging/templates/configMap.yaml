@@ -356,6 +356,7 @@ data:
         {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl}}
         full_url {{ . | quote }}
         {{- end }}
+        consume_chunk_on_4xx_errors {{ template "splunk-kubernetes-logging.should_consume_chunk_on_4xx_errors" . }}
         {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
         hec_port {{ . }}
         {{- end }}
@@ -370,9 +371,6 @@ data:
         {{- end }}
         {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
         ca_file /fluentd/etc/splunk/hec_ca_file
-        {{- end }}
-        {{- with or .Values.splunk.hec.consume_chunk_on_4xx_errors .Values.global.splunk.hec.consume_chunk_on_4xx_errors }}
-        consume_chunk_on_4xx_errors {{ . }}
         {{- end }}
         {{- else }}
         @type splunk_ingest_api
