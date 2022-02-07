@@ -60,7 +60,7 @@ The following table lists all components (i.e. kubernetes objects) of this chart
 Component | Description | Template
 --- | --- | ---
 `Daemonset` | deploys one pod that runs fluentd on each node to collect logs. | [daemonset.yaml](templates/daemonset.yaml)
-`ConfigMap` | contains configuration files for fluentd. | [configMap.yaml](templates/configMap.yaml)
+`ConfigMap` | contains configuration files for fluentd. | [configmap.yaml](templates/configmap.yaml)
 `Secret` | stores credentials like the Splunk HEC token, and SSL certs and keys for HTTPS connection, etc. | [secret.yaml](templates/secret.yaml)
 
 ## License ##
