@@ -24,3 +24,9 @@
     * Description: splunk user password  
     * Default: changeme
 
+# How metric tests works
+Test collects test data from metric_data, each data contains metric name, field selector for metric and list of asserions.
+
+Generic search query used in metric tests: `| mstats max(<metric-name>) where index=<index-name> by <selector field>`
+
+All selector fields are listed in [selector.md](https://github.com/splunk/splunk-connect-for-kubernetes/blob/develop/test/k8s_metrics_tests/metric_data/selector.md)

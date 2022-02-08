@@ -75,7 +75,7 @@ data:
     <source>
       @id containers.log
       @type tail
-      @label @CONCAT
+      @label @CUSTOM
       tag tail.containers.*
       path {{ .Values.fluentd.path | default "/var/log/containers/*.log" }}
       {{- if .Values.fluentd.exclude_path }}
@@ -96,7 +96,7 @@ data:
       {{- end }}
         time_key time
         time_type string
-        localtime false
+        localtime {{ .Values.containers.localTime | default false }}
       </parse>
     </source>
 
@@ -109,7 +109,7 @@ data:
     <source>
       @id tail.file.{{ $name }}
       @type tail
-      @label @CONCAT
+      @label @CUSTOM
       tag tail.file.{{ or $logDef.sourcetype $name }}
       path {{ $logDef.from.file.path }}
       pos_file {{ $.Values.containers.path }}/splunk-fluentd-{{ $name }}.pos
@@ -152,7 +152,7 @@ data:
     <source>
       @id journald-{{ $name }}
       @type systemd
-      @label @CONCAT
+      @label @CUSTOM
       tag journald.{{ or $logDef.sourcetype $name }}
       path {{ $.Values.journalLogPath | quote }}
       matches [{ "_SYSTEMD_UNIT": {{ $logDef.from.journald.unit | quote }} }]
@@ -274,7 +274,7 @@ data:
           cluster_name {{ . }}
           {{- end }}
           # set the splunk_index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
-          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("{{ or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName | default "main"}}")}
+          splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) ? record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) : record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("{{ or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName | default "main"}}")}
           {{- range .Values.k8sMetadata.podLabels }}
           label_{{ . }} ${record.dig("kubernetes","labels","{{ . }}")}
           {{- end }}
@@ -307,6 +307,18 @@ data:
       </filter>
       {{- end }}
 
+      # Add sourcetype for pod if provided in values file
+      {{- range $name, $logDef := .Values.logs }}
+      {{- if and $logDef.from.pod $logDef.sourcetype }}
+      <filter tail.containers.var.log.containers.{{ $logDef.from.pod }}*{{ or $logDef.from.container $name }}*.log>
+        @type record_transformer
+        <record>
+          sourcetype {{ $logDef.sourcetype }}
+        </record>
+      </filter>
+      {{- end }}
+      {{- end }}
+
       # create source and sourcetype
       {{- if $checks.hasJournald }}
       <filter journald.**>
@@ -329,17 +341,6 @@ data:
         @type jq_transformer
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record.splunk_index = \"{{ or .Values.global.monitoring_agent_index_name .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" }}\" {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = \"{{ .value }}\" {{- end }}{{- end }} | .record"
       </filter>
-      {{- end }}
-      # = custom filters specified by users =
-      {{- range $name, $filterDef := .Values.customFilters }}
-      {{- if and $filterDef.tag $filterDef.type }}
-      <filter {{ $filterDef.tag }}>
-        @type {{ $filterDef.type }}
-        {{- with $filterDef.body }}
-        {{ . | nindent 8 }}
-        {{- end }}
-      </filter>
-      {{- end }}
       {{- end }}
 
       # = output =
@@ -456,5 +457,24 @@ data:
           add_newline false
         </format>
         {{- end }}
+      </match>
+    </label>
+    # = custom filters specified by users =
+    <label @CUSTOM>
+      {{- range $name, $filterDef := .Values.customFilters }}
+      {{- if and $filterDef.tag $filterDef.type }}
+      <filter {{ $filterDef.tag }}>
+        @type {{ $filterDef.type }}
+        {{- with $filterDef.body }}
+        {{ . | nindent 8 }}
+        {{- end }}
+      </filter>
+      {{- end }}
+      {{- end }}
+
+      # Events are relabeled then emitted to the CONCAT label
+      <match **>
+        @type relabel
+        @label @CONCAT
       </match>
     </label>
