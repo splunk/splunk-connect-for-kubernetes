@@ -57,7 +57,6 @@ Helm 3
 ```bash
 helm show values splunk/splunk-connect-for-kubernetes > values.yaml
 ```
-``
 
 * Prepare this Values file. Once you have a Values file, you can simply install the chart with by running
 
