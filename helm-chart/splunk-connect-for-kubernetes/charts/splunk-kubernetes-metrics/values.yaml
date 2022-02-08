@@ -71,6 +71,8 @@ splunk:
     # NOTE: The content of the file itself should be used here, not the file path.
     #       The file will be stored as a secret in kubernetes.
     caFile:
+    # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
+    consume_chunk_on_4xx_errors: 
 
 # Create or use existing secret if name is empty default name is used
 secret:
@@ -143,7 +145,9 @@ buffer:
   flush_interval: 5s
   flush_thread_count: 1
   overflow_action: block
-  retry_max_times: 3
+  retry_max_times: 10
+  retry_type: periodic
+  retry_wait: 30
 
   # Controls the output buffer for fluentd for the metrics aggregator pod
 aggregatorBuffer:
@@ -154,7 +158,9 @@ aggregatorBuffer:
   flush_interval: 5s
   flush_thread_count: 1
   overflow_action: block
-  retry_max_times: 3
+  retry_max_times: 10
+  retry_type: periodic
+  retry_wait: 30
 
 # Configure how often SCK pulls metrics for its kubenetes sources. 15s is the default where 's' is seconds.
 metricsInterval: 15s
@@ -292,6 +298,8 @@ global:
       clientCert:
       clientKey:
       caFile:
+      fullUrl:
+      consume_chunk_on_4xx_errors:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true

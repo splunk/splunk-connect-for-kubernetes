@@ -126,6 +126,7 @@ data:
       {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
       full_url {{ . | quote }}
       {{- end }}
+      consume_chunk_on_4xx_errors {{ template "splunk-kubernetes-metrics.should_consume_chunk_on_4xx_errors" . }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
       {{- with or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName }}
@@ -163,6 +164,10 @@ data:
       {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
       hec_port {{ . }}
       {{- end }}
+      {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
+      full_url {{ . | quote }}
+      {{- end }}
+      consume_chunk_on_4xx_errors {{ template "splunk-kubernetes-metrics.should_consume_chunk_on_4xx_errors" . }}
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
       index_key splunk_index

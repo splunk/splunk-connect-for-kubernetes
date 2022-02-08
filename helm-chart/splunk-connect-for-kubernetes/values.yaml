@@ -41,6 +41,8 @@ global:
       caFile:
       # For object and metrics
       indexRouting:
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
+      consume_chunk_on_4xx_errors: 
   kubernetes:
     # The cluster name used to tag logs. Default is cluster_name
     clusterName: "cluster_name"
@@ -182,6 +184,8 @@ splunk-kubernetes-logging:
       # NOTE: The content of the file itself should be used here, not the file path.
       #       The file will be stored as a secret in kubernetes.
       caFile:
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
+      consume_chunk_on_4xx_errors: 
     # Configurations for Ingest API
     ingest_api:
       # serviceClientIdentifier is a string, the client identifier is used to make requests to the ingest API with authorization.
@@ -410,8 +414,9 @@ splunk-kubernetes-logging:
     flush_interval: 5s
     flush_thread_count: 1
     overflow_action: block
-    retry_max_times: 5
+    retry_max_times: 10
     retry_type: periodic
+    retry_wait: 30
 
   # set to true to keep the structure created by docker or journald
   sendAllMetadata: false
@@ -687,6 +692,8 @@ splunk-kubernetes-objects:
       #     type: jq_transformer
       #     body: jq '.record.index = "my_awesome_index" | .record'
       indexRouting:
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
+      consume_chunk_on_4xx_errors: 
 
   # Create or use existing secret if name is empty default name is used
   secret:
@@ -738,8 +745,9 @@ splunk-kubernetes-objects:
     flush_interval: 5s
     flush_thread_count: 1
     overflow_action: block
-    retry_max_times: 5
+    retry_max_times: 10
     retry_type: periodic
+    retry_wait: 30
 
   # Defines which nodes should be selected to deploy the fluentd daemonset.
   nodeSelector:
@@ -883,6 +891,8 @@ splunk-kubernetes-metrics:
       # NOTE: The content of the file itself should be used here, not the file path.
       #       The file will be stored as a secret in kubernetes.
       caFile:
+      # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
+      consume_chunk_on_4xx_errors: 
 
   # Create or use existing secret if name is empty default name is used
   secret:
@@ -955,8 +965,9 @@ splunk-kubernetes-metrics:
     flush_interval: 5s
     flush_thread_count: 1
     overflow_action: block
-    retry_max_times: 5
+    retry_max_times: 10
     retry_type: periodic
+    retry_wait: 30
 
   # Controls the output buffer for fluentd for the metrics aggregator pod
   aggregatorBuffer:
@@ -967,8 +978,9 @@ splunk-kubernetes-metrics:
     flush_interval: 5s
     flush_thread_count: 1
     overflow_action: block
-    retry_max_times: 5
+    retry_max_times: 10
     retry_type: periodic
+    retry_wait: 30
 
   # Configure how often SCK pulls metrics for its kubernetes sources. 15s is the default where 's' is seconds.
   metricsInterval: 15s

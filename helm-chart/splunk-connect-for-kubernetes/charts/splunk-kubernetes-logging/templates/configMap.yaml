@@ -356,6 +356,7 @@ data:
         {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl}}
         full_url {{ . | quote }}
         {{- end }}
+        consume_chunk_on_4xx_errors {{ template "splunk-kubernetes-logging.should_consume_chunk_on_4xx_errors" . }}
         {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
         hec_port {{ . }}
         {{- end }}
