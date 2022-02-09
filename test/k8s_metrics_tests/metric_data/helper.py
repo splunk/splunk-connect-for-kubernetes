@@ -44,7 +44,7 @@ def greater_or_equal(test_name, data, value):
 def some_should_be_greater(test_name, data, val):
     count = 0
     for value in data.values():
-        if value <= val:
+        if value > val:
             count += 1
     if len(data) > 0 and count == 0:
         logger.info(
