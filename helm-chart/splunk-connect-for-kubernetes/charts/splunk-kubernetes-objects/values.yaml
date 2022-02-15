@@ -53,12 +53,6 @@ kubernetes:
   # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
   insecureSSL: false
   # Path to the certificate file for this client.
-  #       Make sure you are providing the certificate as multiline string (use `|-`)
-  # Example: 
-  # caFile: |-
-  #   -----BEGIN CERTIFICATE-----
-  #   ...
-  #   -----END CERTIFICATE-----
   clientCert:
   # Path to the private key file for this client.
   clientKey:
@@ -163,12 +157,6 @@ splunk:
     # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false.
     insecureSSL:
     # The *content* of a PEM-format CA certificate for this client.
-    # Make sure you are providing the certificate as multiline string (use `|-`)
-    # Example: 
-    # caFile: |-
-    #   -----BEGIN CERTIFICATE-----
-    #   ...
-    #   -----END CERTIFICATE-----
     clientCert:
     # The *content* of the private key for this client.
     clientKey:

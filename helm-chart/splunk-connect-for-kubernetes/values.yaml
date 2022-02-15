@@ -29,12 +29,6 @@ global:
       # The PEM-format CA certificate for this client.
       # NOTE: The content of the certificate itself should be used here, not the file path.
       #       The certificate will be stored as a secret in kubernetes.
-      #       Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
-      # caFile: |-
-      #   -----BEGIN CERTIFICATE-----
-      #   ...
-      #   -----END CERTIFICATE-----
       clientCert:
       # The private key for this client.
       # NOTE: The content of the key itself should be used here, not the file path.
@@ -181,12 +175,6 @@ splunk-kubernetes-logging:
       # The PEM-format CA certificate for this client.
       # NOTE: The content of the certificate itself should be used here, not the file path.
       #       The certificate will be stored as a secret in kubernetes.
-      #       Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
-      # caFile: |-
-      #   -----BEGIN CERTIFICATE-----
-      #   ...
-      #   -----END CERTIFICATE-----
       clientCert:
       # The private key for this client.
       # NOTE: The content of the key itself should be used here, not the file path.
@@ -582,12 +570,6 @@ splunk-kubernetes-objects:
     # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
     insecureSSL: false
     # Path to the certificate file for this client.
-    # Make sure you are providing the certificate as multiline string (use `|-`)
-    # Example: 
-    # caFile: |-
-    #   -----BEGIN CERTIFICATE-----
-    #   ...
-    #   -----END CERTIFICATE-----
     clientCert:
     # Path to the private key file for this client.
     clientKey:
@@ -694,12 +676,6 @@ splunk-kubernetes-objects:
       # For a self signed certificate this value should be true
       insecureSSL:
       # The *content* of a PEM-format CA certificate for this client.
-      # Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
-      # caFile: |-
-      #   -----BEGIN CERTIFICATE-----
-      #   ...
-      #   -----END CERTIFICATE-----
       clientCert:
       # The *content* of the private key for this client.
       clientKey:
@@ -906,12 +882,6 @@ splunk-kubernetes-metrics:
       # The PEM-format CA certificate for this client.
       # NOTE: The content of the certificate itself should be used here, not the file path.
       #       The certificate will be stored as a secret in kubernetes.
-      #       Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
-      # caFile: |-
-      #   -----BEGIN CERTIFICATE-----
-      #   ...
-      #   -----END CERTIFICATE-----
       clientCert:
       # The private key for this client.
       # NOTE: The content of the key itself should be used here, not the file path.
@@ -1053,12 +1023,6 @@ splunk-kubernetes-metrics:
     # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
     insecureSSL: false
     # Path to the CA file.
-    # Make sure you are providing the certificate as multiline string (use `|-`)
-    # Example: 
-    # caFile: |-
-    #   -----BEGIN CERTIFICATE-----
-    #   ...
-    #   -----END CERTIFICATE-----
     caFile:
     # Path to the file contains the API token. By default it reads from the file "token" in the `secret_dir`.
     bearerTokenFile:
