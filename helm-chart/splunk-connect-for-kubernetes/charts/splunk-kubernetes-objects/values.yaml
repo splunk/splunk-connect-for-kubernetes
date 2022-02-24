@@ -43,6 +43,11 @@ podSecurityPolicy:
   # set to false if AppArmor is not available
   apparmor_security: true
 
+# Set the daemonset's update strategy
+updateStrategy:
+  type: RollingUpdate
+  maxUnavailable: "100%"
+
 # Defines priorityClassName to assign a priority class to pods.
 priorityClassName:
 

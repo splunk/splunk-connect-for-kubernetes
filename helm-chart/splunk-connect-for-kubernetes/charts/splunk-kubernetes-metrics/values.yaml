@@ -41,6 +41,11 @@ podSecurityPolicy:
   # set to false if AppArmor is not available
   apparmor_security: true
 
+# Set the daemonset's update strategy
+updateStrategy:
+  type: RollingUpdate
+  maxUnavailable: "100%"
+
 # = Splunk HEC Connection =
 splunk:
   # Configurations for HEC (HTTP Event Collector)

@@ -10,8 +10,10 @@ metadata:
     component: collector
     engine: fluentd
 spec:
+{{- with .Values.updateStrategy }}
   updateStrategy:
-    type: RollingUpdate
+    {{- toYaml . | nindent 4 }}
+{{- end }}
   selector:
     matchLabels:
       name: {{ template "splunk-kubernetes-metrics.fullname" . }}
