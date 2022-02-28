@@ -174,7 +174,7 @@ data:
     <source>
       @id fluentd-monitor-agent
       @type monitor_agent
-      @label @SPLUNK
+      @label @PARSE
       {{- if .Values.global.monitoring_agent_enabled }}
       tag monitor_agent
       {{- end }}
@@ -198,7 +198,7 @@ data:
         partial_key logtag
         partial_value P
         separator ''
-        timeout_label @SPLUNK
+        timeout_label @PARSE
       </filter>
       {{- end }}
       {{- range $name, $logDef := .Values.logs }}
@@ -206,7 +206,7 @@ data:
       <filter tail.containers.var.log.containers.{{ $logDef.from.pod }}*{{ or $logDef.from.container $name }}*.log>
         @type concat
         key log
-        timeout_label @SPLUNK
+        timeout_label @PARSE
         stream_identity_key stream
         {{- if $logDef.multiline.firstline }}
         multiline_start_regexp {{ $logDef.multiline.firstline }}
@@ -226,19 +226,19 @@ data:
       <filter journald.{{ or $logDef.sourcetype $name }}>
         @type concat
         key log
-        timeout_label @SPLUNK
+        timeout_label @PARSE
         multiline_start_regexp {{ $logDef.multiline.firstline }}
         flush_interval {{ $logDef.multiline.flushInterval | default 5 }}
       </filter>
       {{- end }}
       {{- end }}
-      # Events are relabeled then emitted to the SPLUNK label for processing
+      # Events are relabeled then emitted to the PARSE label for processing
       <match **>
         @type relabel
-        @label @SPLUNK
+        @label @PARSE
       </match>
     </label>
-    <label @SPLUNK>
+    <label @PARSE>
       {{- if .Values.containers.removeBlankEvents }}
       # filter to remove empty lines
       <filter tail.containers.**>
@@ -353,13 +353,13 @@ data:
       </filter>
       {{- end }}
       {{- end }}
-      # Events are relabeled then emitted to the INGEST label for ingestion
+      # Events are relabeled then emitted to the SPLUNK label for ingestion
       <match **>
         @type relabel
-        @label @INGEST
+        @label @SPLUNK
       </match>
     </label>
-    <label @INGEST>
+    <label @SPLUNK>
       # = output =
       <match **>
         {{- if or .Values.splunk.hec.host .Values.global.splunk.hec.host .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
