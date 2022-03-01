@@ -75,7 +75,7 @@ data:
     <source>
       @id containers.log
       @type tail
-      @label @CUSTOM
+      @label @CONCAT
       tag tail.containers.*
       path {{ .Values.fluentd.path | default "/var/log/containers/*.log" }}
       {{- if .Values.fluentd.exclude_path }}
@@ -109,7 +109,7 @@ data:
     <source>
       @id tail.file.{{ $name }}
       @type tail
-      @label @CUSTOM
+      @label @CONCAT
       tag tail.file.{{ or $logDef.sourcetype $name }}
       path {{ $logDef.from.file.path }}
       pos_file {{ $.Values.containers.path }}/splunk-fluentd-{{ $name }}.pos
@@ -152,7 +152,7 @@ data:
     <source>
       @id journald-{{ $name }}
       @type systemd
-      @label @CUSTOM
+      @label @CONCAT
       tag journald.{{ or $logDef.sourcetype $name }}
       path {{ $.Values.journalLogPath | quote }}
       matches [{ "_SYSTEMD_UNIT": {{ $logDef.from.journald.unit | quote }} }]
@@ -174,7 +174,7 @@ data:
     <source>
       @id fluentd-monitor-agent
       @type monitor_agent
-      @label @SPLUNK
+      @label @PARSE
       {{- if .Values.global.monitoring_agent_enabled }}
       tag monitor_agent
       {{- end }}
@@ -198,7 +198,7 @@ data:
         partial_key logtag
         partial_value P
         separator ''
-        timeout_label @SPLUNK
+        timeout_label @PARSE
       </filter>
       {{- end }}
       {{- range $name, $logDef := .Values.logs }}
@@ -206,7 +206,7 @@ data:
       <filter tail.containers.var.log.containers.{{ $logDef.from.pod }}*{{ or $logDef.from.container $name }}*.log>
         @type concat
         key log
-        timeout_label @SPLUNK
+        timeout_label @PARSE
         stream_identity_key stream
         {{- if $logDef.multiline.firstline }}
         multiline_start_regexp {{ $logDef.multiline.firstline }}
@@ -226,19 +226,19 @@ data:
       <filter journald.{{ or $logDef.sourcetype $name }}>
         @type concat
         key log
-        timeout_label @SPLUNK
+        timeout_label @PARSE
         multiline_start_regexp {{ $logDef.multiline.firstline }}
         flush_interval {{ $logDef.multiline.flushInterval | default 5 }}
       </filter>
       {{- end }}
       {{- end }}
-      # Events are relabeled then emitted to the SPLUNK label
+      # Events are relabeled then emitted to the PARSE label for processing
       <match **>
         @type relabel
-        @label @SPLUNK
+        @label @PARSE
       </match>
     </label>
-    <label @SPLUNK>
+    <label @PARSE>
       {{- if .Values.containers.removeBlankEvents }}
       # filter to remove empty lines
       <filter tail.containers.**>
@@ -342,7 +342,24 @@ data:
         jq ".record.source = \"namespace:#{ENV['MY_NAMESPACE']}/pod:#{ENV['MY_POD_NAME']}\" | .record.sourcetype = \"fluentd:monitor-agent\" | .record.cluster_name = \"{{ or .Values.kubernetes.clusterName .Values.global.kubernetes.clusterName | default "cluster_name" }}\" | .record.splunk_index = \"{{ or .Values.global.monitoring_agent_index_name .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" }}\" {{- if .Values.customMetadata }}{{- range .Values.customMetadata }}| .record.{{ .name }} = \"{{ .value }}\" {{- end }}{{- end }} | .record"
       </filter>
       {{- end }}
-
+      # = custom filters specified by users =
+      {{- range $name, $filterDef := .Values.customFilters }}
+      {{- if and $filterDef.tag $filterDef.type }}
+      <filter {{ $filterDef.tag }}>
+        @type {{ $filterDef.type }}
+        {{- with $filterDef.body }}
+        {{ . | nindent 8 }}
+        {{- end }}
+      </filter>
+      {{- end }}
+      {{- end }}
+      # Events are relabeled then emitted to the SPLUNK label for ingestion
+      <match **>
+        @type relabel
+        @label @SPLUNK
+      </match>
+    </label>
+    <label @SPLUNK>
       # = output =
       <match **>
         {{- if or .Values.splunk.hec.host .Values.global.splunk.hec.host .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
@@ -458,24 +475,5 @@ data:
           add_newline false
         </format>
         {{- end }}
-      </match>
-    </label>
-    # = custom filters specified by users =
-    <label @CUSTOM>
-      {{- range $name, $filterDef := .Values.customFilters }}
-      {{- if and $filterDef.tag $filterDef.type }}
-      <filter {{ $filterDef.tag }}>
-        @type {{ $filterDef.type }}
-        {{- with $filterDef.body }}
-        {{ . | nindent 8 }}
-        {{- end }}
-      </filter>
-      {{- end }}
-      {{- end }}
-
-      # Events are relabeled then emitted to the CONCAT label
-      <match **>
-        @type relabel
-        @label @CONCAT
       </match>
     </label>
