@@ -163,7 +163,7 @@ splunk-kubernetes-logging:
     # Configurations for HEC (HTTP Event Collector)
     hec:
       # host is required and should be provided by user
-      myhost:
+      host:
       # port to HEC, optional, default 8088
       port:
       # token is required and should be provided by user
