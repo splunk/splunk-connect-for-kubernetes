@@ -181,7 +181,7 @@ data:
       {{- if .Values.global.monitoring_agent_enabled }}
       tag monitor_agent
       {{- end }}
-    </source>  
+    </source>
 
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
@@ -372,6 +372,9 @@ data:
         {{- end }}
         {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
         hec_host {{ . | quote }}
+        {{- end }}
+        {{- with or .Values.splunk.hec.endpoint .Values.global.splunk.hec.endpoint }}
+        hec_endpoint {{ . | quote }}
         {{- end }}
         {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl}}
         full_url {{ . | quote }}

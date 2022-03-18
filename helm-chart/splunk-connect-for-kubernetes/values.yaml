@@ -19,6 +19,8 @@ global:
       # protocol has two options: "http" and "https", default is "https"
       # For self signed certificate leave this field blank
       protocol:
+      # Allow specifying the HEC endpoint to use, default is "/services/collector"
+      endpoint:
       # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk
       fullUrl:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
@@ -30,7 +32,7 @@ global:
       # NOTE: The content of the certificate itself should be used here, not the file path.
       #       The certificate will be stored as a secret in kubernetes.
       #       Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
+      # Example:
       # caFile: |-
       #   -----BEGIN CERTIFICATE-----
       #   ...
@@ -48,7 +50,7 @@ global:
       # For object and metrics
       indexRouting:
       # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
-      consume_chunk_on_4xx_errors: 
+      consume_chunk_on_4xx_errors:
   kubernetes:
     # The cluster name used to tag logs. Default is cluster_name
     clusterName: "cluster_name"
@@ -101,7 +103,7 @@ splunk-kubernetes-logging:
     # Log format type, "json" or "cri"
     logFormatType: json
     # Specify the logFormat for "cri" logFormatType - provide time format
-    # For example "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift, "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS 
+    # For example "%Y-%m-%dT%H:%M:%S.%N%:z" for openshift, "%Y-%m-%dT%H:%M:%S.%NZ" for IBM IKS
     # Default for "cri": "%Y-%m-%dT%H:%M:%S.%N%:z"
     # For "json", the log format cannot be changed: "%Y-%m-%dT%H:%M:%S.%NZ"
     logFormat:
@@ -123,7 +125,7 @@ splunk-kubernetes-logging:
     cache_ttl: 3600
 
   sourcetypePrefix: "kube"
-  
+
   rbac:
     # Specifies whether RBAC resources should be created.
     # This should be set to `false` if either:
@@ -171,7 +173,9 @@ splunk-kubernetes-logging:
       # protocol has two options: "http" and "https", default is "https"
       # For self signed certificate leave this field blank
       protocol:
-      # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk 
+      # Allow specifying the HEC endpoint to use, default is "/services/collector"
+      endpoint:
+      # Instead of providing host, port, and protocol, you can provide full url for splunk. For example: https://mydomain.com:8088/apps/splunk
       fullUrl:
       # indexName tells which index to use, this is optional. If it's not present, will use "main".
       indexName:
@@ -182,7 +186,7 @@ splunk-kubernetes-logging:
       # NOTE: The content of the certificate itself should be used here, not the file path.
       #       The certificate will be stored as a secret in kubernetes.
       #       Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
+      # Example:
       # caFile: |-
       #   -----BEGIN CERTIFICATE-----
       #   ...
@@ -197,7 +201,7 @@ splunk-kubernetes-logging:
       #       The file will be stored as a secret in kubernetes.
       caFile:
       # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
-      consume_chunk_on_4xx_errors: 
+      consume_chunk_on_4xx_errors:
     # Configurations for Ingest API
     ingest_api:
       # serviceClientIdentifier is a string, the client identifier is used to make requests to the ingest API with authorization.
@@ -598,7 +602,7 @@ splunk-kubernetes-objects:
     insecureSSL: false
     # Path to the certificate file for this client.
     # Make sure you are providing the certificate as multiline string (use `|-`)
-    # Example: 
+    # Example:
     # caFile: |-
     #   -----BEGIN CERTIFICATE-----
     #   ...
@@ -710,7 +714,7 @@ splunk-kubernetes-objects:
       insecureSSL:
       # The *content* of a PEM-format CA certificate for this client.
       # Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
+      # Example:
       # caFile: |-
       #   -----BEGIN CERTIFICATE-----
       #   ...
@@ -732,7 +736,7 @@ splunk-kubernetes-objects:
       #     body: jq '.record.index = "my_awesome_index" | .record'
       indexRouting:
       # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
-      consume_chunk_on_4xx_errors: 
+      consume_chunk_on_4xx_errors:
 
   # Create or use existing secret if name is empty default name is used
   secret:
@@ -758,7 +762,7 @@ splunk-kubernetes-objects:
   environmentVar:
 
   # Pod annotations for objects daemonset
-  podAnnotations: 
+  podAnnotations:
 
   # Extra labels for objects daemonset, pods
   extraLabels:
@@ -925,7 +929,7 @@ splunk-kubernetes-metrics:
       # NOTE: The content of the certificate itself should be used here, not the file path.
       #       The certificate will be stored as a secret in kubernetes.
       #       Make sure you are providing the certificate as multiline string (use `|-`)
-      # Example: 
+      # Example:
       # caFile: |-
       #   -----BEGIN CERTIFICATE-----
       #   ...
@@ -940,7 +944,7 @@ splunk-kubernetes-metrics:
       #       The file will be stored as a secret in kubernetes.
       caFile:
       # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
-      consume_chunk_on_4xx_errors: 
+      consume_chunk_on_4xx_errors:
 
   # Create or use existing secret if name is empty default name is used
   secret:
@@ -982,9 +986,9 @@ splunk-kubernetes-metrics:
 
   # Environment variable for metrics aggregator pod
   environmentVarAgg:
-      
+
   # Pod annotations for metrics daemonset
-  podAnnotations: 
+  podAnnotations:
 
   # Pod annotations for metrics aggregator pod
   podAnnotationsAgg:
@@ -1054,10 +1058,10 @@ splunk-kubernetes-metrics:
   aggregatorTolerations: {}
 
   # Defines priorityClassName to assign a priority class to metrics (daemonset) pods.
-  priorityClassName: 
+  priorityClassName:
 
   # Defines priorityClassName to assign a priority class to metrics aggregetor (deployment) pods.
-  priorityClassNameAgg: 
+  priorityClassNameAgg:
 
 
   # Defines node affinity to restrict pod deployment.
@@ -1078,7 +1082,7 @@ splunk-kubernetes-metrics:
     insecureSSL: false
     # Path to the CA file.
     # Make sure you are providing the certificate as multiline string (use `|-`)
-    # Example: 
+    # Example:
     # caFile: |-
     #   -----BEGIN CERTIFICATE-----
     #   ...
@@ -1158,5 +1162,5 @@ splunk-kubernetes-metrics:
   #     body: |
   #       <record>
   #         cluster_name "my_awesome_cluster"
-  #       </record>  
+  #       </record>
   customFiltersAggr: {}
