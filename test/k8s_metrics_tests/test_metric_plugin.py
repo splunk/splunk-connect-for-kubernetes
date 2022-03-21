@@ -53,7 +53,7 @@ def test_metric_from_stats(setup, stats_metric, index_metrics):
             password=setup["splunk_password"],
         )
         is_stats_endpoint_enabled = len(result) == 0
-        if is_stats_endpoint_enabled:
+        if not is_stats_endpoint_enabled:
             logger.info("Skipping tests from stats metrics")
 
     if not is_stats_endpoint_enabled:

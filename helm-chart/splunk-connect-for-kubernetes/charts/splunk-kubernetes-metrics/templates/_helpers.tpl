@@ -65,3 +65,14 @@ Create the aggregate image name
 {{- define "splunk-kubernetes-metrics.imageAgg" -}}
 {{- printf "%s/%s:%s" .Values.imageAgg.registry .Values.imageAgg.name .Values.imageAgg.tag -}}
 {{- end -}}
+
+{{/*  evaluate field consume_chunk_on_4xx_errors */}}
+{{- define "splunk-kubernetes-metrics.should_consume_chunk_on_4xx_errors" -}}
+{{- if ne .Values.splunk.hec.consume_chunk_on_4xx_errors nil -}}
+{{- print .Values.splunk.hec.consume_chunk_on_4xx_errors -}}
+{{- else if ne .Values.global.splunk.hec.consume_chunk_on_4xx_errors nil -}}
+{{- print .Values.global.splunk.hec.consume_chunk_on_4xx_errors -}}
+{{- else -}}
+{{- print true -}}
+{{- end -}}
+{{- end -}}

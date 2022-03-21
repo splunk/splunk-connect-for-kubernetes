@@ -88,3 +88,14 @@ Create the image name
 {{- define "splunk-kubernetes-objects.image" -}}
 {{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
 {{- end -}}
+
+{{/*  evaluate field consume_chunk_on_4xx_errors */}}
+{{- define "splunk-kubernetes-objects.should_consume_chunk_on_4xx_errors" -}}
+{{- if ne .Values.splunk.hec.consume_chunk_on_4xx_errors nil -}}
+{{- print .Values.splunk.hec.consume_chunk_on_4xx_errors -}}
+{{- else if ne .Values.global.splunk.hec.consume_chunk_on_4xx_errors nil -}}
+{{- print .Values.global.splunk.hec.consume_chunk_on_4xx_errors -}}
+{{- else -}}
+{{- print true -}}
+{{- end -}}
+{{- end -}}

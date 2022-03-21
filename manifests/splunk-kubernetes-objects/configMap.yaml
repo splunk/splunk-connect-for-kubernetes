@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.12
+    version: 1.4.13
 data:
   fluent.conf: |
     <system>
@@ -53,6 +53,7 @@ data:
       protocol https
       hec_host "MY-SPLUNK-HOST"
       hec_port 8088
+      consume_chunk_on_4xx_errors true
       hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
       host "#{ENV['NODE_NAME']}"
       source_key source
@@ -62,7 +63,7 @@ data:
         cluster_name
       </fields>
       app_name splunk-kubernetes-objects
-      app_version 1.4.12
+      app_version 1.4.13
       <buffer>
         @type memory
         chunk_limit_records 10000
@@ -70,8 +71,9 @@ data:
         flush_interval 5s
         flush_thread_count 1
         overflow_action block
-        retry_max_times 5
+        retry_max_times 10
         retry_type periodic
+        retry_wait 30
         total_limit_size 600m
       </buffer>
     </match>

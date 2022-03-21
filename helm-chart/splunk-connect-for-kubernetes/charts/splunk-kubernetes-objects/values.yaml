@@ -53,6 +53,12 @@ kubernetes:
   # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
   insecureSSL: false
   # Path to the certificate file for this client.
+  #       Make sure you are providing the certificate as multiline string (use `|-`)
+  # Example: 
+  # caFile: |-
+  #   -----BEGIN CERTIFICATE-----
+  #   ...
+  #   -----END CERTIFICATE-----
   clientCert:
   # Path to the private key file for this client.
   clientKey:
@@ -157,6 +163,12 @@ splunk:
     # insecureSSL is a boolean, it indicates should it allow insecure SSL connection (when protocol is "https"). Default value: false.
     insecureSSL:
     # The *content* of a PEM-format CA certificate for this client.
+    # Make sure you are providing the certificate as multiline string (use `|-`)
+    # Example: 
+    # caFile: |-
+    #   -----BEGIN CERTIFICATE-----
+    #   ...
+    #   -----END CERTIFICATE-----
     clientCert:
     # The *content* of the private key for this client.
     clientKey:
@@ -173,6 +185,8 @@ splunk:
     #     type: jq_transformer
     #     body: jq '.record.index = "my_awesome_index" | .record'
     indexRouting:
+    # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
+    consume_chunk_on_4xx_errors: 
 
 # Create or use existing secret if name is empty default name is used
 secret:
@@ -186,7 +200,7 @@ image:
   # The name of the image to pull
   name: splunk/kube-objects
   # The tag of the image to pull
-  tag: 1.1.9
+  tag: 1.1.10
   # The policy that specifies when the user wants the images to be pulled
   pullPolicy: IfNotPresent
   # Indicates if the image should be pulled using authentication from a secret
@@ -224,7 +238,9 @@ buffer:
   flush_interval: 3s
   flush_thread_count: 1
   overflow_action: block
-  retry_max_times: 3
+  retry_max_times: 10
+  retry_type: periodic
+  retry_wait: 30
 
 # Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector:
@@ -311,6 +327,8 @@ global:
       clientCert:
       clientKey:
       caFile:
+      fullUrl:
+      consume_chunk_on_4xx_errors:
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true
