@@ -127,6 +127,9 @@ podAnnotations:
 # Pod annotations for metrics aggregator pod
 podAnnotationsAgg: 
 
+# Extra labels for daemonset, pods
+extraLabels:
+
 # Controls the resources used by the fluentd daemonset
 resources:
   fluent:

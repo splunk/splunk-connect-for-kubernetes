@@ -214,6 +214,9 @@ environmentVar:
 # Pod annotations for object pod
 podAnnotations: 
 
+# Extra labels for object deployment, pods
+extraLabels:
+
 # = Resoruce Limitation Configs =
 resources:
   # limits:
