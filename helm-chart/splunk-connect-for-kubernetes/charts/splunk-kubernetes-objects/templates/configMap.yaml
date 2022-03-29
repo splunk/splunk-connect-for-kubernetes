@@ -21,10 +21,11 @@ data:
       {{- with $.Values.kubernetes.url }}
       kubernetes_url {{ . }}
       {{- end }}
-      {{- if eq ($apiGroup | lower) "core" }}
       api_version {{ $apiVersion | quote }}
+      {{- if eq ($apiGroup | lower) "core" }}
+      api_endpoint "api"
       {{- else }}
-      api_version {{ list $apiGroup $apiVersion | join "/" | quote }}
+      api_endpoint {{ list "apis" $apiGroup | join "/" | quote }}
       {{- end }}
       insecure_ssl {{ $.Values.kubernetes.insecureSSL }}
       {{- with $.Values.kubernetes.secretDir }}

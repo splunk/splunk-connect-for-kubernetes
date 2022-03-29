@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-objects
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.13
+    version: 1.4.14
 data:
   fluent.conf: |
     <system>
@@ -15,6 +15,7 @@ data:
       @type kubernetes_objects
       tag kube.objects.*
       api_version "v1"
+      api_endpoint "api"
       insecure_ssl true
       <pull>
         resource_name pods
@@ -63,7 +64,7 @@ data:
         cluster_name
       </fields>
       app_name splunk-kubernetes-objects
-      app_version 1.4.13
+      app_version 1.4.14
       <buffer>
         @type memory
         chunk_limit_records 10000
