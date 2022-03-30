@@ -172,6 +172,7 @@ charEncodingUtf8: false
 #     firstline: "<regexp_to_detect_firstline_of_multiline>"
 #     flushInterval 5
 #   sourcetype: "<sourcetype_of_logs>"
+#   limitRecentlyModified: <time_duration>
 # ```
 #
 # = <source> =
@@ -222,6 +223,17 @@ charEncodingUtf8: false
 # = sourcetype =
 # sourcetype of each kind of log can be defined using the `sourcetype` field.
 # If `sourcetype` is not defined, `name` will be used.
+#
+# = limitRecentlyModified =
+# Limits the watching files that the modification time is within the specified time period when using * in path.
+# - <INTEGER>s: seconds
+# - <INTEGER>m: minutes
+# - <INTEGER>h: hours
+# - <INTEGER>d: days
+# - Otherwise, the field is parsed as float, and that float is the number of seconds
+# Example, specifying `limitRecentlyModified: 24h` will parse only files with modification time within 24 hours.
+# Files modified earlier will be skipped.
+# If `limitRecentlyModified` is not defined, this option will be disabled.
 #
 # ---
 # Here we have some default timestampExtraction and multiline settings for kubernetes components.
