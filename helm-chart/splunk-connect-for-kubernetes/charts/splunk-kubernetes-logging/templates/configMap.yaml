@@ -114,6 +114,9 @@ data:
       path {{ $logDef.from.file.path }}
       pos_file {{ $.Values.containers.path }}/splunk-fluentd-{{ $name }}.pos
       read_from_head true
+      {{- if $logDef.limitRecentlyModified }}
+      limit_recently_modified {{ $logDef.limitRecentlyModified }}
+      {{- end }}
       path_key source
       {{- if $logDef.multiline }}
       multiline_flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
