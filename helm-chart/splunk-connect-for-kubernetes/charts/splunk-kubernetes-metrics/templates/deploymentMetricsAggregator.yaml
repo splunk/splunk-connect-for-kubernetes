@@ -8,6 +8,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: aggregator
+    {{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+    {{- end }}
 spec:
   strategy:
     type: RollingUpdate
@@ -24,6 +27,9 @@ spec:
         chart: {{ template "splunk-kubernetes-metrics.chart" . }}
         release: {{ .Release.Name }}
         component: aggregator
+        {{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 8 }}
+        {{- end }}
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         checksum/config: {{ include (print $.Template.BasePath "/configMapMetricsAggregator.yaml") . | sha256sum }}
