@@ -339,6 +339,9 @@ environmentVar:
 # Pod annotations for daemonset
 podAnnotations:
 
+# Extra labels for daemonset, pods
+extraLabels:
+
 # Controls the resources used by the fluentd daemonset
 resources:
   # limits:

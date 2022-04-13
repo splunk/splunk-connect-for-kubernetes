@@ -411,8 +411,11 @@ splunk-kubernetes-logging:
   # Environment variable for daemonset
   environmentVar:
 
-  # Pod annotations for object pod
+  # Pod annotations for logging pod
   podAnnotations:
+
+  # Extra labels for logging daemonset, pods
+  extraLabels:
 
   # Controls the resources used by the fluentd daemonset
   resources:
@@ -751,11 +754,14 @@ splunk-kubernetes-objects:
     # The name of the pull secret to attach to the respective serviceaccount used to pull the image
     pullSecretName:
 
-  # Environment variable for metrics daemonset
+  # Environment variable for objects daemonset
   environmentVar:
 
-  # Pod annotations for metrics daemonset
+  # Pod annotations for objects daemonset
   podAnnotations: 
+
+  # Extra labels for objects daemonset, pods
+  extraLabels:
 
   # = Resource Limitation Configs =
   resources:
@@ -981,7 +987,13 @@ splunk-kubernetes-metrics:
   podAnnotations: 
 
   # Pod annotations for metrics aggregator pod
-  podAnnotationsAgg: 
+  podAnnotationsAgg:
+
+  # Extra labels for metrics aggregator daemonset, pods
+  extraLabels:
+
+  # Extra labels for metrics aggregator deployment, pods
+  extraLabelsAgg:
 
   # Controls the resources used by the fluentd daemonset
   resources:
