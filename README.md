@@ -62,11 +62,11 @@ helm show values splunk/splunk-connect-for-kubernetes > values.yaml
 
 Helm 2
 ```bash
-helm install --name my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
+helm install --name my-splunk-connect -f values.yaml splunk/splunk-connect-for-kubernetes
 ```
 Helm 3
 ```bash
-helm install my-splunk-connect -f my_values.yaml splunk/splunk-connect-for-kubernetes
+helm install my-splunk-connect -f values.yaml splunk/splunk-connect-for-kubernetes
 
 ```
 
