@@ -7,6 +7,9 @@ metadata:
     chart: {{ template "splunk-kubernetes-objects.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+    {{- end }}
 spec:
   strategy:
     type: RollingUpdate
@@ -22,6 +25,9 @@ spec:
         app: {{ template "splunk-kubernetes-objects.name" . }}
         release: {{ .Release.Name }}
         engine: fluentd
+        {{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 8 }}
+        {{- end }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
         {{- if .Values.podAnnotations }}

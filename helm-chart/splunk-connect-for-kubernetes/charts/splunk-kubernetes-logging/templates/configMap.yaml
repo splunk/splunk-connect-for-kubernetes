@@ -114,6 +114,9 @@ data:
       path {{ $logDef.from.file.path }}
       pos_file {{ $.Values.containers.path }}/splunk-fluentd-{{ $name }}.pos
       read_from_head true
+      {{- if $logDef.limitRecentlyModified }}
+      limit_recently_modified {{ $logDef.limitRecentlyModified }}
+      {{- end }}
       path_key source
       {{- if $logDef.multiline }}
       multiline_flush_interval {{ $logDef.multiline.flushInterval | default "5s" }}
@@ -178,7 +181,7 @@ data:
       {{- if .Values.global.monitoring_agent_enabled }}
       tag monitor_agent
       {{- end }}
-    </source>  
+    </source>
 
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
@@ -369,6 +372,9 @@ data:
         {{- end }}
         {{- with or .Values.splunk.hec.host .Values.global.splunk.hec.host }}
         hec_host {{ . | quote }}
+        {{- end }}
+        {{- with or .Values.splunk.hec.endpoint .Values.global.splunk.hec.endpoint }}
+        hec_endpoint {{ . | quote }}
         {{- end }}
         {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl}}
         full_url {{ . | quote }}

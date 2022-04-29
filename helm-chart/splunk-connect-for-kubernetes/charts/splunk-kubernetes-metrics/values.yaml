@@ -92,7 +92,7 @@ image:
   # The name of the image to pull
   name: splunk/k8s-metrics
   # The tag of the image to pull
-  tag: 1.1.11
+  tag: 1.1.12
   # The policy that specifies when the user wants the images to be pulled
   pullPolicy: IfNotPresent
   # Indicates if the image should be pulled using authentication from a secret
@@ -107,7 +107,7 @@ imageAgg:
   # The name of the image to pull
   name: splunk/k8s-metrics-aggr
   # The tag of the image to pull
-  tag: 1.1.11
+  tag: 1.1.12
   # The policy that specifies when the user wants the images to be pulled
   pullPolicy: IfNotPresent
   # Indicates if the image should be pulled using authentication from a secret
@@ -126,6 +126,12 @@ podAnnotations:
 
 # Pod annotations for metrics aggregator pod
 podAnnotationsAgg: 
+
+# Extra labels for metrics daemonset, pods
+extraLabels:
+
+# Extra labels for metrics aggregator deployment, pods
+extraLabelsAgg:
 
 # Controls the resources used by the fluentd daemonset
 resources:
