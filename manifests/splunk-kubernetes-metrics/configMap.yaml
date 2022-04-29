@@ -5,7 +5,7 @@ metadata:
   name: splunk-kubernetes-metrics
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.4.14
+    version: 1.4.15
 data:
   fluent.conf: |
     # system wide configurations
@@ -73,7 +73,7 @@ data:
       sourcetype kube:metrics
       insecure_ssl true
       app_name splunk-kubernetes-metrics
-      app_version 1.4.14
+      app_version 1.4.15
       <buffer>
         @type memory
         chunk_limit_records 10000
