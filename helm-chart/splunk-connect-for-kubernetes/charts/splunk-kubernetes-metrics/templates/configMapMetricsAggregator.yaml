@@ -123,6 +123,9 @@ data:
       {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
       hec_port {{ . }}
       {{- end }}
+      {{- with or .Values.splunk.hec.endpoint .Values.global.splunk.hec.endpoint }}
+      hec_endpoint {{ . | quote }}
+      {{- end }}
       {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
       full_url {{ . | quote }}
       {{- end }}
@@ -163,6 +166,9 @@ data:
       {{- end }}
       {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
       hec_port {{ . }}
+      {{- end }}
+      {{- with or .Values.splunk.hec.endpoint .Values.global.splunk.hec.endpoint }}
+      hec_endpoint {{ . | quote }}
       {{- end }}
       {{- with or .Values.splunk.hec.fullUrl .Values.global.splunk.hec.fullUrl }}
       full_url {{ . | quote }}
