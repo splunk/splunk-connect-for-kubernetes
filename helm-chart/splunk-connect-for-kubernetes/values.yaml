@@ -547,6 +547,22 @@ splunk-kubernetes-logging:
   # WARNING: The fields being used here must be available inside the fluentd record.
   indexFields: []
 
+  # Configure DaemonSet .spec.updateStrategy.rollingUpdate params if you want to speed up
+  # rolling out a new version. By default only one pod after another is replaced when
+  # upgrading.
+  #
+  # Example: replace 5 pods in parallel
+  #
+  # ```
+  # rollingUpdate:
+  #   maxUnavailable: 5
+  # ```
+  #
+  # See https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/
+  # or `kubectl explain daemonset.spec.updateStrategy.rollingUpdate` for
+  # documentation of available keys.
+  rollingUpdate:
+
 ## Enabling splunk-kubernetes-objects will install the `splunk-kubernetes-objects` chart to a kubernetes
 ## cluster to collect kubernetes objects in the cluster to a Splunk indexer/indexer cluster.
 splunk-kubernetes-objects:
@@ -1164,3 +1180,19 @@ splunk-kubernetes-metrics:
   #         cluster_name "my_awesome_cluster"
   #       </record>
   customFiltersAggr: {}
+
+  # Configure DaemonSet .spec.updateStrategy.rollingUpdate params if you want to speed up
+  # rolling out a new version. By default only one pod after another is replaced when
+  # upgrading.
+  #
+  # Example: replace 5 pods in parallel
+  #
+  # ```
+  # rollingUpdate:
+  #   maxUnavailable: 5
+  # ```
+  #
+  # See https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/
+  # or `kubectl explain daemonset.spec.updateStrategy.rollingUpdate` for
+  # documentation of available keys.
+  rollingUpdate:

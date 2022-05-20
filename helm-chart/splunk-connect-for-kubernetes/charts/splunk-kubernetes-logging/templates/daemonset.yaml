@@ -14,6 +14,10 @@ metadata:
 spec:
   updateStrategy:
     type: RollingUpdate
+    {{- if .Values.rollingUpdate }}
+    rollingUpdate:
+{{ toYaml .Values.rollingUpdate | indent 6 }}
+    {{- end }}
   selector:
     matchLabels:
       app: {{ template "splunk-kubernetes-logging.name" . }}
