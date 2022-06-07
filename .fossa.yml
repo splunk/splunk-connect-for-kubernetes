@@ -1,0 +1,5 @@
+version: 3
+server: https://app.fossa.com
+project:
+  id: "splunk-connect-for-kubernetes"
+  team: "TA-Automation"
