@@ -38,7 +38,7 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ template "splunk-kubernetes-metrics.serviceAccountName" . }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.aggregatorNodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
       {{- end }}

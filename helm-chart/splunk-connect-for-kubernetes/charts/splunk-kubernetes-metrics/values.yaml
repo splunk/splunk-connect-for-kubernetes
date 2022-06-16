@@ -191,6 +191,10 @@ tolerations:
 # blank by default.
 aggregatorTolerations: {}
 
+# Defines aggregator's nodeSelector. This may need to be different to metrics's daemonset.
+aggregatorNodeSelector:
+  beta.kubernetes.io/os: linux
+
 # Defines priorityClassName to assign a priority class to metrics (daemonset) pods.
 priorityClassName:
 
