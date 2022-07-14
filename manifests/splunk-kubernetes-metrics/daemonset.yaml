@@ -29,7 +29,7 @@ spec:
     spec:
       serviceAccountName: splunk-kubernetes-metrics
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
       tolerations:
       - effect: NoSchedule
         key: node-role.kubernetes.io/master

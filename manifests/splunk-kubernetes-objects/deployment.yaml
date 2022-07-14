@@ -25,7 +25,7 @@ spec:
       serviceAccountName: splunk-kubernetes-objects
       terminationGracePeriodSeconds: 30
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
       containers:
       - name: splunk-fluentd-k8s-objects
         image: docker.io/splunk/kube-objects:1.1.12
