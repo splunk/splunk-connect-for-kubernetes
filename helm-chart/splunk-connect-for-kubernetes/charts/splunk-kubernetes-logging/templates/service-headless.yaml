@@ -7,7 +7,7 @@ metadata:
   {{- else }}
   name: {{ template "splunk-kubernetes-logging.fullname" . }}
   {{- end }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ template "splunk-kubernetes-logging.namespace" . }}
   labels:
     app: {{ template "splunk-kubernetes-logging.name" . }}
     chart: {{ template "splunk-kubernetes-logging.chart" . }}

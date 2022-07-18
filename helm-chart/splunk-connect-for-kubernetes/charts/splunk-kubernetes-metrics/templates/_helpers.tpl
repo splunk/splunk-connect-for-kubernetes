@@ -43,6 +43,17 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Get namespace to deploy to.
+*/}}
+{{- define "splunk-kubernetes-metrics.namespace" -}}
+{{- if .Values.namespace -}}
+{{- .Values.namespace -}}
+{{- else -}}
+{{- .Release.Namespace -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "splunk-kubernetes-metrics.serviceAccountName" -}}

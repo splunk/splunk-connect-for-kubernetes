@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+  namespace: {{ template "splunk-kubernetes-metrics.namespace" . }}
   labels:
     app: {{ template "splunk-kubernetes-metrics.name" . }}
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}

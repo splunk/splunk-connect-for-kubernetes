@@ -13,6 +13,9 @@
 # Default value: "info"
 logLevel:
 
+# Namespace to deploy agent in (Optional: Will default to release namespace)
+namespace:
+
 rbac:
   # Specifies whether RBAC resources should be created.
   # This should be set to `false` if either:
