@@ -96,6 +96,8 @@ splunk:
     caFile:
     # Indicates if 4xx errors should consume chunk. If set to true, plugin will not retry sending chunk to splunk when 4xx error occurs. (Default: true)
     consume_chunk_on_4xx_errors:
+    # gzip_compression - boolean. If true, data is compressed before transfer to splunk. (Default: false)
+    gzip_compression:
   # Configurations for Ingest API
   ingest_api:
     # serviceClientIdentifier is a string, the client identifier is used to make requests to the ingest API with authorization.
@@ -506,6 +508,7 @@ global:
       caFile:
       fullUrl:
       consume_chunk_on_4xx_errors:
+      gzip_compression: false
   kubernetes:
     clusterName: "cluster_name"
   prometheus_enabled: true

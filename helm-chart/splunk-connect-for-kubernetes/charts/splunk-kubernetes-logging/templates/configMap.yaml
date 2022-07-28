@@ -383,6 +383,9 @@ data:
         {{- with or .Values.splunk.hec.port .Values.global.splunk.hec.port }}
         hec_port {{ . }}
         {{- end }}
+        {{- with or .Values.splunk.hec.gzip_compression .Values.global.splunk.hec.gzip_compression }}
+        gzip_compression {{ . }}
+        {{- end }}
         hec_token "#{ENV['SPLUNK_HEC_TOKEN']}"
         index_key splunk_index
         insecure_ssl {{ or .Values.splunk.hec.insecureSSL .Values.global.splunk.hec.insecureSSL | default false }}
