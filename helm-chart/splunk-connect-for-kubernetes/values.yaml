@@ -462,7 +462,7 @@ splunk-kubernetes-logging:
 
   # Defines which nodes should be selected to deploy the fluentd daemonset.
   nodeSelector:
-    beta.kubernetes.io/os: linux
+    kubernetes.io/os: linux
 
   # Defines node affinity to restrict pod deployment.
   affinity: {}
@@ -815,7 +815,7 @@ splunk-kubernetes-objects:
 
   # Defines which nodes should be selected to deploy the fluentd daemonset.
   nodeSelector:
-    beta.kubernetes.io/os: linux
+    kubernetes.io/os: linux
 
   # This default tolerations allow the daemonset to be deployed on master nodes,
   # so that we can also collect metrics from those nodes.
@@ -1063,11 +1063,11 @@ splunk-kubernetes-metrics:
 
   # Defines which nodes should be selected to deploy the fluentd daemonset.
   nodeSelector:
-    beta.kubernetes.io/os: linux
+    kubernetes.io/os: linux
 
   # Defines which nodes should be selected to deploy the aggregator deployment
   aggregatorNodeSelector:
-    beta.kubernetes.io/os: linux
+    kubernetes.io/os: linux
 
   # This default tolerations allow the daemonset to be deployed on master nodes,
   # so that we can also collect metrics from those nodes.

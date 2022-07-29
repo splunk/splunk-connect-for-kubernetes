@@ -179,7 +179,7 @@ metricsInterval: 15s
 
 # Defines which nodes should be selected to deploy the fluentd daemonset.
 nodeSelector:
-  beta.kubernetes.io/os: linux
+  kubernetes.io/os: linux
 
 # This default tolerations allow the daemonset to be deployed on master nodes,
 # so that we can also collect metrics from those nodes.
@@ -193,7 +193,7 @@ aggregatorTolerations: {}
 
 # Defines aggregator's nodeSelector. This may need to be different to metrics's daemonset.
 aggregatorNodeSelector:
-  beta.kubernetes.io/os: linux
+  kubernetes.io/os: linux
 
 # Defines priorityClassName to assign a priority class to metrics (daemonset) pods.
 priorityClassName:
