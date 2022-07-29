@@ -86,7 +86,11 @@ Rules:
 Create the image name
 */}}
 {{- define "splunk-kubernetes-objects.image" -}}
+{{- if contains .Values.image.tag "sha256" -}}
+{{- printf "%s/%s@%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- else -}}
 {{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}
 {{- end -}}
 
 {{/*  evaluate field consume_chunk_on_4xx_errors */}}
