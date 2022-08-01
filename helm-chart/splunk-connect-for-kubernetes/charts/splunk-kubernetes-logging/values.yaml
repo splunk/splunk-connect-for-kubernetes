@@ -10,6 +10,9 @@
 # * error
 logLevel:
 
+# Namespace to deploy agent in (Optional: Will default to release namespace)
+namespace:
+
 # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
 fluentd:
   # path of logfiles, default /var/log/containers/*.log

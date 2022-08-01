@@ -83,6 +83,9 @@ splunk-kubernetes-logging:
   # * error
   logLevel:
 
+  # Namespace to deploy agent in (Optional: Will default to release namespace)
+  namespace:
+
   # This is can be used to exclude verbose logs including various system and Helm/Tiller related logs.
   fluentd:
     # path of logfiles, default /var/log/containers/*.log
@@ -577,6 +580,9 @@ splunk-kubernetes-objects:
   # * error
   logLevel:
 
+  # Namespace to deploy agent in (Optional: Will default to release namespace)
+  namespace:
+
   rbac:
     # Specifies whether RBAC resources should be created.
     # This should be set to `false` if either:
@@ -890,6 +896,9 @@ splunk-kubernetes-metrics:
   # * warn
   # * error
   logLevel:
+
+  # Namespace to deploy agent in (Optional: Will default to release namespace)
+  namespace:
 
   rbac:
     # Specifies whether RBAC resources should be created.

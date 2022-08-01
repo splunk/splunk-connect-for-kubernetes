@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "splunk-kubernetes-metrics.fullname" . }}-agg
+  namespace: {{ template "splunk-kubernetes-metrics.namespace" . }}
   labels:
     app: {{ template "splunk-kubernetes-metrics.name" . }}
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}

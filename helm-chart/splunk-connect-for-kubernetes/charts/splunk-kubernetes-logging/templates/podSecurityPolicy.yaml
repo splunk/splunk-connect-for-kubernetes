@@ -3,6 +3,7 @@ apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: {{ template "splunk-kubernetes-logging.fullname" . }}
+  namespace: {{ template "splunk-kubernetes-logging.namespace" . }}
   labels:
     app: {{ template "splunk-kubernetes-logging.name" . }}
     chart: {{ template "splunk-kubernetes-logging.chart" . }}

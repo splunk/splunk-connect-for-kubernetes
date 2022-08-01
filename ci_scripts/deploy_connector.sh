@@ -9,7 +9,7 @@ else
    helm delete $(helm ls --short)
 fi
 echo "Deploying k8s-connect with latest changes"
-helm install ci-sck --set global.splunk.hec.token=$CI_SPLUNK_HEC_TOKEN \
+helm install --create-namespace ci-sck --set global.splunk.hec.token=$CI_SPLUNK_HEC_TOKEN \
 --set global.splunk.hec.host=$CI_SPLUNK_HOST \
 --set kubelet.serviceMonitor.https=true \
 -f ci_scripts/sck_values.yml helm-artifacts/splunk-connect-for-kubernetes*.tgz
