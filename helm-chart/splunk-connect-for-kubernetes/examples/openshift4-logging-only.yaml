@@ -25,6 +25,7 @@ splunk-kubernetes-logging:
   containers:
     logFormatType: cri
     logFormat: "%Y-%m-%dT%H:%M:%S.%N%:z"
+  journalLogPath: /var/log/journal
   logs:
     # The `kube-audit` file has another path on OpenShift
     kube-audit:

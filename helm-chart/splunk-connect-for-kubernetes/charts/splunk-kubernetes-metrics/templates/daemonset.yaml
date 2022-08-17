@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ template "splunk-kubernetes-metrics.fullname" . }}
+  namespace: {{ template "splunk-kubernetes-metrics.namespace" . }}
   labels:
     app: {{ template "splunk-kubernetes-metrics.name" . }}
     chart: {{ template "splunk-kubernetes-metrics.chart" . }}
@@ -15,6 +16,10 @@ metadata:
 spec:
   updateStrategy:
     type: RollingUpdate
+    {{- if .Values.rollingUpdate }}
+    rollingUpdate:
+{{ toYaml .Values.rollingUpdate | indent 6 }}
+    {{- end }}
   selector:
     matchLabels:
       name: {{ template "splunk-kubernetes-metrics.fullname" . }}

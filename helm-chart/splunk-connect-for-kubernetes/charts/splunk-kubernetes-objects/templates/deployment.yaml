@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "splunk-kubernetes-objects.fullname" . }}
+  namespace: {{ template "splunk-kubernetes-objects.namespace" . }}
   labels:
     app: {{ template "splunk-kubernetes-objects.name" . }}
     chart: {{ template "splunk-kubernetes-objects.chart" . }}

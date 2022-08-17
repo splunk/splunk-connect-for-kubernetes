@@ -43,6 +43,17 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Get namespace to deploy to.
+*/}}
+{{- define "splunk-kubernetes-metrics.namespace" -}}
+{{- if .Values.namespace -}}
+{{- .Values.namespace -}}
+{{- else -}}
+{{- .Release.Namespace -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "splunk-kubernetes-metrics.serviceAccountName" -}}
@@ -57,13 +68,21 @@ Create the name of the service account to use
 Create the image name
 */}}
 {{- define "splunk-kubernetes-metrics.image" -}}
+{{- if contains .Values.image.tag "sha256" -}}
+{{- printf "%s/%s@%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- else -}}
 {{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}
 {{- end -}}
 {{/*
 Create the aggregate image name
 */}}
 {{- define "splunk-kubernetes-metrics.imageAgg" -}}
+{{- if contains .Values.imageAgg.tag "sha256" -}}
+{{- printf "%s/%s@%s" .Values.imageAgg.registry .Values.imageAgg.name .Values.imageAgg.tag -}}
+{{- else -}}
 {{- printf "%s/%s:%s" .Values.imageAgg.registry .Values.imageAgg.name .Values.imageAgg.tag -}}
+{{- end -}}
 {{- end -}}
 
 {{/*  evaluate field consume_chunk_on_4xx_errors */}}

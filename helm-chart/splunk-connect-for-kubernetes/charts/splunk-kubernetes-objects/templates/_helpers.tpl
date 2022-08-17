@@ -32,6 +32,17 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Get namespace to deploy to.
+*/}}
+{{- define "splunk-kubernetes-objects.namespace" -}}
+{{- if .Values.namespace -}}
+{{- .Values.namespace -}}
+{{- else -}}
+{{- .Release.Namespace -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "splunk-kubernetes-objects.serviceAccountName" -}}
@@ -86,7 +97,11 @@ Rules:
 Create the image name
 */}}
 {{- define "splunk-kubernetes-objects.image" -}}
+{{- if contains .Values.image.tag "sha256" -}}
+{{- printf "%s/%s@%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- else -}}
 {{- printf "%s/%s:%s" .Values.image.registry .Values.image.name .Values.image.tag -}}
+{{- end -}}
 {{- end -}}
 
 {{/*  evaluate field consume_chunk_on_4xx_errors */}}
