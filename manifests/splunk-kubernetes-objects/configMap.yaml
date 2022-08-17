@@ -3,9 +3,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: splunk-kubernetes-objects
+  namespace: default
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.15
+    version: 1.5.0
 data:
   fluent.conf: |
     <system>
@@ -64,7 +65,7 @@ data:
         cluster_name
       </fields>
       app_name splunk-kubernetes-objects
-      app_version 1.4.15
+      app_version 1.5.0
       <buffer>
         @type memory
         chunk_limit_records 10000

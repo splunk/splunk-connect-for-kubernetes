@@ -3,9 +3,10 @@ apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: splunk-kubernetes-objects
+  namespace: default
   labels:
     app: splunk-kubernetes-objects
-    version: 1.4.15
+    version: 1.5.0
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: runtime/default
     seccomp.security.alpha.kubernetes.io/defaultProfileName: runtime/default
