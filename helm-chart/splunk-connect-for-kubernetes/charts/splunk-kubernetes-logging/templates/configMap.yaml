@@ -466,7 +466,7 @@ data:
         app_name {{ .Chart.Name }}
         app_version {{ .Chart.Version }}
         {{- with .Values.buffer }}
-        <buffer>
+        <buffer {{ join "," $.Values.bufferChunkKeys }}>
         {{- range $parameter, $value := . }}
           {{ $parameter }} {{ $value }}
         {{- end }}
