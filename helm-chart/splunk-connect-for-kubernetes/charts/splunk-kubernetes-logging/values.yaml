@@ -365,6 +365,8 @@ resources:
   # All buffer parameters (except Argument) defined in
   # https://docs.fluentd.org/v1.0/articles/buffer-section#parameters
   # can be configured here.
+bufferChunkKeys:
+  - index
 buffer:
   "@type": memory
   total_limit_size: 600m
