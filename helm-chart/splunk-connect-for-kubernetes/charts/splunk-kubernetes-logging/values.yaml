@@ -177,7 +177,8 @@ charEncodingUtf8: false
 #     format: "<format_of_the_timestamp>"
 #   multiline:
 #     firstline: "<regexp_to_detect_firstline_of_multiline>"
-#     flushInterval 5
+#     flushInterval: 5
+#     separator: ""
 #   sourcetype: "<sourcetype_of_logs>"
 #   limitRecentlyModified: <time_duration>
 # ```
@@ -226,6 +227,7 @@ charEncodingUtf8: false
 # - `firstline`: a Regular Expression used to detect the first line of a multiline log.
 # - `endline`: a Regular Expression used to detect the end line of a multiline log.
 # - `flushInterval`: The number of seconds after which the last received event log will be flushed, default value: 5.
+# - `separator`: The separator of lines.  This *only* works for `container` source.
 #
 # = sourcetype =
 # sourcetype of each kind of log can be defined using the `sourcetype` field.
