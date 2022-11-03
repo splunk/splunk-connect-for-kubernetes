@@ -521,6 +521,7 @@ global:
   prometheus_enabled: true
   monitoring_agent_enabled: true
   monitoring_agent_index_name:
+  monitoring_agent_bind_address:
   metrics:
     service:
       enabled: true

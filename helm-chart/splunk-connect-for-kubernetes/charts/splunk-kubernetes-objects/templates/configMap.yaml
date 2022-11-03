@@ -81,6 +81,8 @@ data:
     <source>
       @id fluentd-monitor-agent
       @type monitor_agent
+      bind {{ $.Values.global.monitoring_agent_bind_address | default "0.0.0.0"}}
+      port 24220
       {{- if .Values.global.monitoring_agent_enabled }}
       tag monitor_agent
       {{- end }}
