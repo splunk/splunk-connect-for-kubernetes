@@ -119,6 +119,8 @@ data:
       @id fluentd-monitor-agent
       @type monitor_agent
       @label @PARSE
+      bind 0.0.0.0
+      port 24220
     </source>
   output.conf: |-
     #Events are emitted to the CONCAT label from the container, file and journald sources for multiline processing.
@@ -383,7 +385,7 @@ data:
         </fields>
         app_name splunk-kubernetes-logging
         app_version 1.5.0
-        <buffer>
+        <buffer index>
           @type memory
           chunk_limit_records 100000
           chunk_limit_size 20m

@@ -57,6 +57,7 @@ global:
   prometheus_enabled:
   monitoring_agent_enabled:
   monitoring_agent_index_name:
+  monitoring_agent_bind_address:
   metrics:
     service:
       enabled: true

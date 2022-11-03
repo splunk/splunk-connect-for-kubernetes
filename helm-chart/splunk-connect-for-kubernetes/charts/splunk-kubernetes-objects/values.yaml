@@ -340,3 +340,4 @@ global:
   prometheus_enabled: true
   monitoring_agent_enabled: false
   monitoring_agent_index_name: false
+  monitoring_agent_bind_address:

@@ -21,6 +21,8 @@ data:
     <source>
       @id fluentd-monitor-agent
       @type monitor_agent
+      bind 0.0.0.0
+      port 24220
     </source>
     <filter kube.**>
       @type record_modifier
