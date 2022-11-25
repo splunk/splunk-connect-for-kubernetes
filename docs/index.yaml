@@ -2,8 +2,47 @@ apiVersion: v1
 entries:
   splunk-connect-for-kubernetes:
   - apiVersion: v1
+    appVersion: 1.5.1
+    created: "2022-11-24T12:27:00.506766+05:30"
+    dependencies:
+    - condition: splunk-kubernetes-logging.enabled
+      name: splunk-kubernetes-logging
+      repository: https://splunk.github.io/splunk-connect-for-kubernetes/
+      version: 1.5.1
+    - condition: splunk-kubernetes-objects.enabled
+      name: splunk-kubernetes-objects
+      repository: https://splunk.github.io/splunk-connect-for-kubernetes/
+      version: 1.5.1
+    - condition: splunk-kubernetes-metrics.enabled
+      name: splunk-kubernetes-metrics
+      repository: https://splunk.github.io/splunk-connect-for-kubernetes/
+      version: 1.5.1
+    description: Collect logs, objects (metadata), and metrics with Splunk.
+    digest: a38d04c3cc851a6ca1a8907faaa2256a8e197357fdb751344d76471befb31adb
+    home: https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart
+    keywords:
+    - splunk
+    - monitoring
+    - logging
+    - metrics
+    - metadata
+    - objects
+    maintainers:
+    - email: DataEdge@splunk.com
+      name: Splunk Inc.
+    name: splunk-connect-for-kubernetes
+    sources:
+    - https://github.com/splunk/splunk-connect-for-kubernetes/tree/main/helm-chart
+    - https://github.com/splunk/fluent-plugin-splunk-hec
+    - https://github.com/splunk/fluent-plugin-kubernetes-metrics
+    - https://github.com/splunk/fluent-plugin-k8s-metrics-agg
+    - https://github.com/splunk/fluent-plugin-kubernetes-objects
+    urls:
+    - splunk-connect-for-kubernetes-1.5.1.tgz
+    version: 1.5.1
+  - apiVersion: v1
     appVersion: 1.5.0
-    created: "2022-08-16T18:44:10.203682+05:30"
+    created: "2022-11-24T12:27:00.500688+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -42,7 +81,7 @@ entries:
     version: 1.5.0
   - apiVersion: v1
     appVersion: 1.4.15
-    created: "2022-08-16T18:44:10.129152+05:30"
+    created: "2022-11-24T12:27:00.452817+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -81,7 +120,7 @@ entries:
     version: 1.4.15
   - apiVersion: v1
     appVersion: 1.4.14
-    created: "2022-08-16T18:44:10.122055+05:30"
+    created: "2022-11-24T12:27:00.446406+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -120,7 +159,7 @@ entries:
     version: 1.4.14
   - apiVersion: v1
     appVersion: 1.4.13
-    created: "2022-08-16T18:44:10.114754+05:30"
+    created: "2022-11-24T12:27:00.440689+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -159,7 +198,7 @@ entries:
     version: 1.4.13
   - apiVersion: v1
     appVersion: 1.4.12
-    created: "2022-08-16T18:44:10.108047+05:30"
+    created: "2022-11-24T12:27:00.434076+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -198,7 +237,7 @@ entries:
     version: 1.4.12
   - apiVersion: v1
     appVersion: 1.4.11
-    created: "2022-08-16T18:44:10.08817+05:30"
+    created: "2022-11-24T12:27:00.427138+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -237,7 +276,7 @@ entries:
     version: 1.4.11
   - apiVersion: v1
     appVersion: 1.4.10
-    created: "2022-08-16T18:44:10.044157+05:30"
+    created: "2022-11-24T12:27:00.419758+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -276,7 +315,7 @@ entries:
     version: 1.4.10
   - apiVersion: v1
     appVersion: 1.4.9
-    created: "2022-08-16T18:44:10.197987+05:30"
+    created: "2022-11-24T12:27:00.495203+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -315,7 +354,7 @@ entries:
     version: 1.4.9
   - apiVersion: v1
     appVersion: 1.4.8
-    created: "2022-08-16T18:44:10.191822+05:30"
+    created: "2022-11-24T12:27:00.48837+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -354,7 +393,7 @@ entries:
     version: 1.4.8
   - apiVersion: v1
     appVersion: 1.4.7
-    created: "2022-08-16T18:44:10.185504+05:30"
+    created: "2022-11-24T12:27:00.48295+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -393,7 +432,7 @@ entries:
     version: 1.4.7
   - apiVersion: v1
     appVersion: 1.4.6
-    created: "2022-08-16T18:44:10.165633+05:30"
+    created: "2022-11-24T12:27:00.476784+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -432,7 +471,7 @@ entries:
     version: 1.4.6
   - apiVersion: v1
     appVersion: 1.4.5
-    created: "2022-08-16T18:44:10.146481+05:30"
+    created: "2022-11-24T12:27:00.470417+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -471,7 +510,7 @@ entries:
     version: 1.4.5
   - apiVersion: v1
     appVersion: 1.4.4
-    created: "2022-08-16T18:44:10.140971+05:30"
+    created: "2022-11-24T12:27:00.464654+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -510,7 +549,7 @@ entries:
     version: 1.4.4
   - apiVersion: v1
     appVersion: 1.4.3
-    created: "2022-08-16T18:44:10.134822+05:30"
+    created: "2022-11-24T12:27:00.458052+05:30"
     dependencies:
     - condition: splunk-kubernetes-logging.enabled
       name: splunk-kubernetes-logging
@@ -547,4 +586,4 @@ entries:
     urls:
     - splunk-connect-for-kubernetes-1.4.3.tgz
     version: 1.4.3
-generated: "2022-08-16T18:44:09.998934+05:30"
+generated: "2022-11-24T12:27:00.411778+05:30"
