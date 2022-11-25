@@ -127,6 +127,7 @@ splunk-kubernetes-logging:
       - release
     watch: true
     cache_ttl: 3600
+    propagate_namespace_labels: false
 
   sourcetypePrefix: "kube"
 
