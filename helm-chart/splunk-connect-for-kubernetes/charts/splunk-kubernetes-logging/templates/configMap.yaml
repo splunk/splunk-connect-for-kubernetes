@@ -309,7 +309,7 @@ data:
       {{- if eq .Values.containers.logFormatType "cri" }}
       <filter tail.containers.var.log.pods.**>
         @type jq_transformer
-        jq '.record | . + (.source | capture("/var/log/pods/(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("{{ .Values.sourcetypePrefix }}:container:" + .container_name) | .splunk_index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }}'
+        jq '.record | . + (.source | capture("/var/log/pods/(?<namespace>[^/_]+)_(?<pod_name>[^/_]+)_(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/(?<container_retry>[0-9]+).log")) | .sourcetype = ("{{ .Values.sourcetypePrefix }}:container:" + .container_name) | .splunk_index = {{ or .Values.global.splunk.hec.indexName .Values.splunk.hec.indexName | default "main" | quote }}'
       </filter>
       {{- end }}
 
