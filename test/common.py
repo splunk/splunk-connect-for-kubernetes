@@ -85,6 +85,7 @@ def collect_metric_from_splunk(
     send a search request to splunk and return the results from the result dict
     """
     query = f"| mstats {func}({metric_name}) where index={index_name} by {selector}"
+    logger.info(f"Query: {query}")
     events = _collect_events(
         query, start_time, end_time, url, user, password, "results"
     )

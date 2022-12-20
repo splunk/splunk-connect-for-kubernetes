@@ -46,7 +46,9 @@ def test_metric_from_stats(setup, stats_metric, index_metrics):
             else "ci_events"
         )
         query = f"| search index= {index_event} \"'/stats' endpoint is not available. It has been deprecated since k8s v1.15, disabled since v1.18, and removed in v1.21 and onwards\""
+        logger.info(f"Query, check whether to skip stats metrics tests: {query}")
         result = check_events_from_splunk(
+            start_time="-10d@d",
             query=query,
             url=setup["splunkd_url"],
             user=setup["splunk_user"],
