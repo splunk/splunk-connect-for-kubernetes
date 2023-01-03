@@ -15,10 +15,10 @@ Splunk Inc. is a proud contributor to the Cloud Native Computing Foundation (CNC
 
 ## Prerequisites
 
-* Splunk Enterprise 7.0 or later
+* Splunk Enterprise 8.0 or later
 * An HEC token. See the following topics for more information:
-  * http://docs.splunk.com/Documentation/Splunk/7.2.4/Data/UsetheHTTPEventCollector
-  * http://docs.splunk.com/Documentation/Splunk/7.2.4/Data/ScaleHTTPEventCollector
+  * https://docs.splunk.com/Documentation/Splunk/8.2.9/Data/UsetheHTTPEventCollector
+  * https://docs.splunk.com/Documentation/Splunk/8.2.9/Data/ScaleHTTPEventCollector
 * You should be familiar with your Kubernetes configuration and know where your log information is collected in your Kubernetes deployment.
 * Administrator access to your Kubernetes cluster.
 * To install using Helm (best practice), verify you are running Helm in your Kubernetes configuration. See https://github.com/kubernetes/helm for more information.
