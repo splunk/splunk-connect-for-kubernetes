@@ -58,6 +58,7 @@ k8sMetadata:
     - release
   watch: true
   cache_ttl: 3600
+  # Boolean to propagate listed labels also from namespace if none is found in pod
   propagate_namespace_labels: false
 
 sourcetypePrefix: "kube"
