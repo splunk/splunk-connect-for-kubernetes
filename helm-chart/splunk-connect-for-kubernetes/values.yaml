@@ -117,6 +117,9 @@ splunk-kubernetes-logging:
     removeBlankEvents: true
     # Boolean if true, uses local time. UTC. Otherwise, UTC is used
     localTime: false
+    # Boolean to whether enables the additional inotify-based watcher.
+    # Setting this parameter to false will disable the inotify events and use only timer watcher for file tailing.
+    enableStatWatcher: true
 
   # Enriches log record with kubernetes data
   k8sMetadata:
