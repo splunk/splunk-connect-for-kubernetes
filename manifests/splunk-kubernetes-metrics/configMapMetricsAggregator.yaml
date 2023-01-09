@@ -6,7 +6,7 @@ metadata:
   namespace: default
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.5.1
+    version: 1.5.2
 data:
   fluent.conf: |
     # system wide configurations
@@ -83,7 +83,7 @@ data:
       sourcetype kube:metrics:agg
       insecure_ssl true
       app_name splunk-kubernetes-metrics
-      app_version 1.5.1
+      app_version 1.5.2
       <buffer>
         @type memory
         chunk_limit_records 10000
