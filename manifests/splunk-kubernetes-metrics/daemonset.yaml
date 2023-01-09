@@ -8,7 +8,7 @@ metadata:
     app: splunk-kubernetes-metrics
     component: collector
     engine: fluentd
-    version: 1.5.1
+    version: 1.5.2
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -24,7 +24,7 @@ spec:
         app: splunk-kubernetes-metrics
         component: collector
         engine: fluentd
-        version: 1.5.1
+        version: 1.5.2
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:

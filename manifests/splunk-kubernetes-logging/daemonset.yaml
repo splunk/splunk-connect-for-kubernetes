@@ -7,7 +7,7 @@ metadata:
   labels:
     app: splunk-kubernetes-logging
     engine: fluentd
-    version: 1.5.1
+    version: 1.5.2
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -18,7 +18,7 @@ spec:
     metadata:
       labels:
         app: splunk-kubernetes-logging
-        version: 1.5.1
+        version: 1.5.2
       annotations: {}
     spec:
       serviceAccountName: splunk-kubernetes-logging
