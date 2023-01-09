@@ -281,8 +281,13 @@ data:
           {{- end }}
           # set the splunk_index field to the value found in the pod splunk.com/index annotations. if not set, use namespace annotation, or default to the default_index
           splunk_index ${record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) ? record.dig("kubernetes", "annotations", "splunk.com/index."+record.dig("kubernetes","container_name")) : record.dig("kubernetes", "annotations", "splunk.com/index") ? record.dig("kubernetes", "annotations", "splunk.com/index") : record.dig("kubernetes", "namespace_annotations", "splunk.com/index") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/index"]) : ("{{ or .Values.splunk.hec.indexName .Values.global.splunk.hec.indexName | default "main"}}")}
+          {{- $root := . }}
           {{- range .Values.k8sMetadata.podLabels }}
+          {{- if $root.Values.k8sMetadata.propagate_namespace_labels }}          
+          label_{{ . }} ${record.dig("kubernetes","labels","{{ . }}") ? record.dig("kubernetes","labels","{{ . }}") : record.dig("kubernetes","namespace_labels","{{ . }}")}
+          {{- else }}
           label_{{ . }} ${record.dig("kubernetes","labels","{{ . }}")}
+          {{- end }}
           {{- end }}
           exclude_list ${record.dig("kubernetes", "annotations", "splunk.com/exclude") ? record.dig("kubernetes", "annotations", "splunk.com/exclude") : record.dig("kubernetes", "namespace_annotations", "splunk.com/exclude") ? (record["kubernetes"]["namespace_annotations"]["splunk.com/exclude"]) : ("false")}
           {{- if .Values.customMetadata }}
