@@ -220,7 +220,7 @@ kubernetes:
   useRestClientSSL: true
   # if insecureSSL is set to true, insecure HTTPS API call is allowed, default false
   insecureSSL: false
-  # Path to the CA file.
+  # Content of the the CA file.
   #       Make sure you are providing the certificate as multiline string (use `|-`)
   # Example:
   # caFile: |-

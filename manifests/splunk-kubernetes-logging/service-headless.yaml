@@ -15,4 +15,4 @@ spec:
     name: http-metrics
   selector:
     app: splunk-kubernetes-logging
-    release: RELEASE-NAME
+    release: release-name
