@@ -26,6 +26,9 @@ data:
       {{- with .Values.metricsInterval }}
       interval {{ . }}
       {{- end }}
+      {{- if .Values.kubernetes.caFile }}
+      ca_file /fluentd/etc/splunk/k8s_ca_file
+      {{- end }}
     </source>
     <source>
       @id fluentd-monitor-agent
