@@ -419,7 +419,7 @@ splunk-kubernetes-logging:
     # The name of the image to pull
     name: splunk/fluentd-hec
     # The tag of the image to pull
-    tag: 1.3.1
+    tag: 1.3.2
     # The policy that specifies when the user wants the images to be pulled
     pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
@@ -786,7 +786,7 @@ splunk-kubernetes-objects:
     # The name of the image to pull
     name: splunk/kube-objects
     # The tag of the image to pull
-    tag: 1.2.1
+    tag: 1.2.2
     # The policy that specifies when the user wants the images to be pulled
     pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
@@ -997,7 +997,7 @@ splunk-kubernetes-metrics:
     # The name of the image to pull
     name: splunk/k8s-metrics
     # The tag of the image to pull
-    tag: 1.2.1
+    tag: 1.2.2
     # The policy that specifies when the user wants the images to be pulled
     pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
@@ -1012,7 +1012,7 @@ splunk-kubernetes-metrics:
     # The name of the image to pull
     name: splunk/k8s-metrics-aggr
     # The tag of the image to pull
-    tag: 1.2.1
+    tag: 1.2.2
     # The policy that specifies when the user wants the images to be pulled
     pullPolicy: IfNotPresent
     # Indicates if the image should be pulled using authentication from a secret
