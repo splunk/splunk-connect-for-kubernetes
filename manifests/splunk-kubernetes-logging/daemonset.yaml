@@ -70,7 +70,7 @@ spec:
         - name: secrets
           mountPath: "/fluentd/etc/splunk"
           readOnly: true
-        ports:
+        ports: 
         livenessProbe:
           httpGet:
             path: "/api/plugins.json"
