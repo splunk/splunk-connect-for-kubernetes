@@ -8,7 +8,7 @@ metadata:
     app: splunk-kubernetes-metrics
     component: collector
     engine: fluentd
-    version: 1.5.3
+    version: 1.5.4
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -24,7 +24,7 @@ spec:
         app: splunk-kubernetes-metrics
         component: collector
         engine: fluentd
-        version: 1.5.3
+        version: 1.5.4
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
@@ -36,7 +36,7 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: splunk-fluentd-k8s-metrics
-        image: docker.io/splunk/k8s-metrics:1.2.2
+        image: docker.io/splunk/k8s-metrics:1.2.3
         imagePullPolicy: IfNotPresent
         env:
         - name: KUBERNETES_NODE_IP
