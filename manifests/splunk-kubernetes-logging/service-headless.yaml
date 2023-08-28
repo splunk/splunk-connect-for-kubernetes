@@ -6,7 +6,7 @@ metadata:
   namespace: default
   labels:
     app: splunk-kubernetes-logging
-    version: 1.5.3
+    version: 1.5.4
 spec:
   type: ClusterIP
   ports:

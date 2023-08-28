@@ -7,7 +7,7 @@ metadata:
   labels:
     app: splunk-kubernetes-metrics
     component: aggregator
-    version: 1.5.3
+    version: 1.5.4
 spec:
   strategy:
     type: RollingUpdate
@@ -21,7 +21,7 @@ spec:
       labels:
         app: splunk-kubernetes-metrics
         component: aggregator
-        version: 1.5.3
+        version: 1.5.4
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
@@ -30,7 +30,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: splunk-fluentd-k8s-metrics-agg
-        image: docker.io/splunk/k8s-metrics-aggr:1.2.2
+        image: docker.io/splunk/k8s-metrics-aggr:1.2.3
         imagePullPolicy: IfNotPresent
         env:
         - name: SPLUNK_HEC_TOKEN

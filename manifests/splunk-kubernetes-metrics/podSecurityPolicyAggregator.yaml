@@ -6,7 +6,7 @@ metadata:
   namespace: default
   labels:
     app: splunk-kubernetes-metrics
-    version: 1.5.3
+    version: 1.5.4
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: runtime/default
     apparmor.security.beta.kubernetes.io/allowedProfileNames: runtime/default
