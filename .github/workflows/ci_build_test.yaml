@@ -115,6 +115,8 @@ jobs:
           curl -X POST -u $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD -k https://$CI_SPLUNK_HOST:$CI_SPLUNK_PORT/servicesNS/nobody/splunk_httpinput/data/inputs/http/http/enable
           # Create new HEC token
           curl -X POST -u $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD -k -d "name=splunk_hec_token&token=a6b5e77f-d5f6-415a-bd43-930cecb12959&disabled=0&index=default-events&indexes=default-events,$CI_INDEX_METRICS,$CI_INDEX_OBJECTS,$CI_INDEX_EVENTS,ns-anno,pod-anno" https://$CI_SPLUNK_HOST:$CI_SPLUNK_PORT/servicesNS/nobody/splunk_httpinput/data/inputs/http
+          # lower the limit to 50MiB. Higher limits throws error 'Search not executed XXXX'
+          kubectl exec -it splunk -- bash -c 'echo -e "\n[diskUsage]\nminFreeSpace = 50" >> /opt/splunk/etc/system/local/server.conf'
           # Restart Splunk
           curl -k -u $CI_SPLUNK_USERNAME:$CI_SPLUNK_PASSWORD https://$CI_SPLUNK_HOST:$CI_SPLUNK_PORT/services/server/control/restart -X POST
 
