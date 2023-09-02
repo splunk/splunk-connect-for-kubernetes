@@ -236,6 +236,13 @@ splunk-kubernetes-logging:
   secret:
     create: true
     name:
+    # Ignore follwoing config if create is false 
+    # Enable it if secret has hec_client_key
+    has_client_key: false
+    # Enable it if secret has hec_client_cert
+    has_client_cert: false
+    # Enable it if secret has hec_ca_file
+    has_ca_file: false
 
   # Directory where to read journald logs (docker daemon logs, kubelet logs, and any other specified service logs).
   # Journald will use `/var/log/journal` automagically if the directory exists. For example on OpenShift this 
@@ -778,6 +785,13 @@ splunk-kubernetes-objects:
   secret:
     create: true
     name:
+      # Ignore follwoing config if create is false 
+    # Enable it if secret has hec_client_key
+    has_client_key: false
+    # Enable it if secret has hec_client_cert
+    has_client_cert: false
+    # Enable it if secret has hec_ca_file
+    has_ca_file: false
 
   # Defines which version of image to use, and how it should be pulled.
   image:
@@ -989,6 +1003,13 @@ splunk-kubernetes-metrics:
   secret:
     create: true
     name:
+    # Ignore follwoing config if create is false 
+    # Enable it if secret has hec_client_key
+    has_client_key: false
+    # Enable it if secret has hec_client_cert
+    has_client_cert: false
+    # Enable it if secret has hec_ca_file
+    has_ca_file: false
 
   # Defines which version of image to use, and how it should be pulled.
   image:
