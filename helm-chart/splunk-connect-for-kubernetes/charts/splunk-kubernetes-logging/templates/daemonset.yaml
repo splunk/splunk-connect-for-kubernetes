@@ -42,6 +42,7 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-logs
+        command: ["/bin/sh", "-c", "bundle exec fluentd -c /fluentd/etc/fluent.conf"]
         image: {{ template "splunk-kubernetes-logging.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if or .Values.global.kubernetes.securityContext .Values.kubernetes.securityContext }}

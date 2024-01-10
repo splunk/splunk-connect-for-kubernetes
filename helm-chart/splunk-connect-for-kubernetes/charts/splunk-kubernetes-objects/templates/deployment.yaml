@@ -41,6 +41,7 @@ spec:
       {{- end }}
       containers:
       - name: splunk-fluentd-k8s-objects
+        command: ["/bin/sh", "-c", "bundle exec fluentd -c /fluentd/etc/fluent.conf"]
         image: {{ template "splunk-kubernetes-objects.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
