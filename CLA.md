@@ -16,3 +16,6 @@ code control systems, and issue tracking systems that are managed by, or on beha
 the project/repository. 
 
 “Work” shall mean the collective software, content, and documentation in this project/repository.
+
+
+Minor update to documentation.
