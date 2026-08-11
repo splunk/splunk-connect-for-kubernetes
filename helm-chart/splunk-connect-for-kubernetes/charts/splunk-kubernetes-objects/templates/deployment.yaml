@@ -53,6 +53,10 @@ spec:
       imagePullSecrets:
       - name: {{ .Values.image.pullSecretName }}
       {{ end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: 
+{{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: splunk-fluentd-k8s-objects
         image: {{ template "splunk-kubernetes-objects.image" . }}

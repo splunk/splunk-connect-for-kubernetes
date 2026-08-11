@@ -55,6 +55,10 @@ spec:
       imagePullSecrets:
       - name: {{ .Values.imageAgg.pullsecretName}}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: 
+{{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: splunk-fluentd-k8s-metrics-agg
         image: {{ template "splunk-kubernetes-metrics.imageAgg" . }}

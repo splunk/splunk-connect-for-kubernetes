@@ -259,6 +259,18 @@ tolerations: []
 # Defines node affinity to restrict pod deployment.
 affinity: {}
 
+# Defines topologySpreadConstraints to restrict pod deployment.
+topologySpreadConstraints: []
+#- maxSkew: 1
+#  topologyKey: topology.kubernetes.io/zone
+#  whenUnsatisfiable: DoNotSchedule
+#  labelSelector:
+#    matchExpressions:
+#    - key: app
+#      operator: In
+#      values:
+#      - splunk-kubernetes-objects
+
 # `customFilters` defines the custom filters to be used.
 # This section can be used to define custom filters using plugins like https://github.com/splunk/fluent-plugin-jq
 # Its also possible to use other filters like https://www.fluentd.org/plugins#filter
