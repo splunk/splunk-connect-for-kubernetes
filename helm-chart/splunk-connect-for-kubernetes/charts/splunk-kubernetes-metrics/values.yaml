@@ -87,6 +87,13 @@ splunk:
 secret:
   create: true
   name:
+  # Ignore follwoing config if create is false 
+  # Enable it if secret has hec_client_key
+  has_client_key: false
+  # Enable it if secret has hec_client_cert
+  has_client_cert: false
+  # Enable it if secret has hec_ca_file
+  has_ca_file: false
 
 # Defines which version of image to use, and how it should be pulled.
 image:
